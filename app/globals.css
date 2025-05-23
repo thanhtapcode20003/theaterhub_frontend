@@ -44,8 +44,7 @@ body {
   --shadow-dark-200: 2px 0px 20px 0px rgba(39, 36, 36, 0.04);
 
   /* Background Images */
-  --bg-auth-dark: url("/images/auth-dark.png");
-  --bg-auth-light: url("/images/auth-light.png");
+  --bg-auth: url("/images/auth-form_bg.png");
 
   /* Screens */
   --breakpoint-xs: 420px;
@@ -92,16 +91,16 @@ body {
     @apply bg-light-800 dark:bg-dark-300;
   }
 
-  .background-light800_dark200 {
-    @apply bg-light-800 dark:bg-dark-200;
+  .background-light800 {
+    @apply bg-light-800;
   }
 
   .background-dark400_light900 {
     @apply dark:bg-dark-400 bg-light-900;
   }
 
-  .text-dark100_light900 {
-    @apply text-dark-100 dark:text-light-900;
+  .text-dark100 {
+    @apply text-dark-100;
   }
 
   .text-dark200_light900 {
@@ -157,7 +156,7 @@ body {
   }
 
   .light-border {
-    @apply border-light-800 dark:border-dark-300;
+    @apply border-light-800;
   }
 
   .light-border-2 {
@@ -252,8 +251,8 @@ body {
     @apply invert dark:invert-0;
   }
 
-  .shadow-light100_dark100 {
-    @apply shadow-light-100 dark:shadow-dark-100;
+  .shadow-light100 {
+    @apply shadow-light-100;
   }
 
   .shadow-light100_darknone {
@@ -329,6 +328,13 @@ body {
 
   .tab {
     @apply min-h-full dark:bg-dark-400 bg-light-800 text-light-500 dark:data-[state=active]:bg-dark-300 data-[state=active]:bg-primary-100 data-[state=active]:text-primary-500;
+  }
+
+  .bg-auth {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--bg-auth);
+    background-size: cover;
+    background-position: center;
   }
 }
 
