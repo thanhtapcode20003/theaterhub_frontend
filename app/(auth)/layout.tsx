@@ -8,9 +8,9 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
       <section className="light-border background-light800 shadow-light100 min-w-full rounded-[10px] border px-4 py-10 shadow-md sm:min-w-[520px] sm:px-8">
         <div className="flex items-center justify-between gap-2">
           <div className="space-y-2.5">
-            <h1 className="h2-bold text-light900">Join DevFlow</h1>
+            <h1 className="h2-bold text-light900">Tham gia TheaterHub</h1>
             <p className="paragraph-regular text-dark500">
-              To get your questions answered
+              Để trải nghiệm thế giới nghệ thuật kịch nói
             </p>
           </div>
           <Image
