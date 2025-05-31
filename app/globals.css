@@ -47,7 +47,7 @@ body {
 @theme {
   /* Colors */
   --color-primary-100: #fff1e6;
-  --color-primary-500: #ff7000;
+  --color-primary-500: #dc2626;
   --color-dark-100: #000000;
   --color-dark-200: #0f1117;
   --color-dark-300: #151821;
@@ -286,7 +286,7 @@ body {
   }
 
   .primary-gradient {
-    background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+    background: linear-gradient(129deg, #dc2626 0%, #000000 100%);
   }
 
   .dark-gradient {
@@ -306,7 +306,7 @@ body {
   }
 
   .primary-text-gradient {
-    background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+    background: linear-gradient(129deg, #dc2626 0%, #000000 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -448,7 +448,7 @@ code {
   hyphens: auto;
 
   padding: 2px;
-  color: #ff7000;
+  color: #dc2626;
 }
 
 .markdown pre {
