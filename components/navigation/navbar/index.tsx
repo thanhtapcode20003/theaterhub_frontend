@@ -4,10 +4,43 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { LuTicketCheck, LuUser, LuLogOut, LuSettings } from "react-icons/lu";
+import { useAuth } from "@/contexts/AuthContext";
+
 const Navbar = () => {
-  // TODO: Replace with actual authentication state
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { user, isAuthenticated, loading, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <nav className="flex w-full flex-col">
+        <div className="flex justify-between items-center bg-black w-full p-3 px-6 md:px-30">
+          <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-1">
+              <Image
+                src="/logo/logo_icon.png"
+                alt="TheaterHub Logo"
+                width={50}
+                height={50}
+                className="sm:hidden w-[50px] h-[50px]"
+              />
+              <Image
+                src="/logo/logo_text.png"
+                alt="TheaterHub Logo"
+                width={200}
+                height={50}
+                className="hidden sm:block w-[200px] h-[50px]"
+              />
+            </Link>
+
+            {/* Loading indicator */}
+            <div className="text-white">Loading...</div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="flex w-full flex-col">
@@ -22,7 +55,7 @@ const Navbar = () => {
               alt="TheaterHub Logo"
               width={50}
               height={50}
-              className="sm:hidden"
+              className="sm:hidden w-[50px] h-[50px]"
             />
             {/* Logo for larger screens */}
             <Image
@@ -30,7 +63,7 @@ const Navbar = () => {
               alt="TheaterHub Logo"
               width={200}
               height={50}
-              className="hidden sm:block"
+              className="hidden sm:block w-[200px] h-[50px]"
             />
           </Link>
 
@@ -48,7 +81,7 @@ const Navbar = () => {
 
           {/* Right navigation buttons */}
           <div className="flex items-center gap-4 lg:gap-12">
-            {isLoggedIn && (
+            {isAuthenticated && (
               <Link
                 href="/tickets"
                 className="hidden md:flex items-center text-white"
@@ -59,18 +92,36 @@ const Navbar = () => {
             )}
 
             {/* Authentication section */}
-            {isLoggedIn ? (
+            {isAuthenticated && user ? (
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center text-white hover:text-gray-300 cursor-pointer"
                 >
-                  <span className="mr-1 base-medium">Tài khoản</span>
+                  <div className="flex items-center mr-2">
+                    <Image
+                      src={user.avatar}
+                      alt={user.name}
+                      width={32}
+                      height={32}
+                      className="rounded-full mr-2"
+                    />
+                    <span className="base-medium">{user.name}</span>
+                  </div>
                   <span className="small-regular">▼</span>
                 </button>
 
                 {showDropdown && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-light100 py-1 z-50">
+                    <div className="px-4 py-2 border-b border-gray-200">
+                      <p className="text-sm font-medium text-gray-900">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <p className="text-xs text-gray-400 capitalize">
+                        {user.role}
+                      </p>
+                    </div>
                     <Link
                       href="/tickets"
                       className="flex items-center px-4 py-2 text-dark400 hover:bg-gray-100"
@@ -97,10 +148,10 @@ const Navbar = () => {
                     </Link>
                     <button
                       onClick={() => {
-                        setIsLoggedIn(false);
+                        logout();
                         setShowDropdown(false);
                       }}
-                      className="flex items-center w-full px-4 py-2 text-dark400 hover:bg-gray-100"
+                      className="flex items-center w-full px-4 py-2 text-dark400 hover:bg-gray-100 cursor-pointer"
                     >
                       <LuLogOut className="w-4 h-4 mr-2" />
                       <span className="body-medium">Đăng xuất</span>

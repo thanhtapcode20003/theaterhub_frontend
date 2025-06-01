@@ -6,6 +6,9 @@ import "./globals.css";
 // import { SessionProvider } from "next-auth/react";
 // import { auth } from "@/auth";
 import { ReactNode } from "react";
+import { Bounce, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const inter = localFont({
   src: "./fonts/InterVF.ttf",
@@ -44,15 +47,20 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
       <body
         className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
       >
-        {/* <ThemeProvider
-						attribute="class"
-						defaultTheme="system"
-						enableSystem
-						disableTransitionOnChange
-					> */}
-        {children}
-        {/* </ThemeProvider> */}
-        {/* <Toaster position="top-right" /> */}
+        <AuthProvider>{children}</AuthProvider>
+        <ToastContainer
+          position="top-right"
+          autoClose={10000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}
+        />
       </body>
       {/* </SessionProvider> */}
     </html>
