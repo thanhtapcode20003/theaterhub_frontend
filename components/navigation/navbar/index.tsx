@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { LuTicketCheck, LuUser, LuLogOut, LuSettings } from "react-icons/lu";
-// import Theme from "./Theme";
-// import MobileNavigation from "./MobileNavigation";
 const Navbar = () => {
   // TODO: Replace with actual authentication state
   const [isLoggedIn, setIsLoggedIn] = useState(true);

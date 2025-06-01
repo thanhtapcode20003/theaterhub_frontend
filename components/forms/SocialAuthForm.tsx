@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
@@ -5,9 +7,14 @@ import Image from "next/image";
 const SocialAuthForm = () => {
   const buttonClass =
     "group background-light900 body-medium text-dark200 min-h-12 w-full rounded-2 px-4 py-3.5 cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-50 hover:scale-[1.02] hover:shadow-lg hover:shadow-gray-200/50 active:scale-[0.98] border border-gray-200 hover:border-gray-300";
+
+  const handleGoogleSignIn = () => {
+    window.location.href = "http://localhost:8080/auth/google";
+  };
+
   return (
     <div className="mt-10">
-      <Button className={buttonClass}>
+      <Button className={buttonClass} onClick={handleGoogleSignIn}>
         <Image
           src="/icons/google.svg"
           alt="Google Logo"
