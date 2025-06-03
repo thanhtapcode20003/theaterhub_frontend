@@ -6,9 +6,42 @@ import React, { useState } from "react";
 import { LuTicketCheck, LuUser, LuLogOut, LuSettings } from "react-icons/lu";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Dynamic menu configuration
+const getDropdownMenuItems = (userRole?: string) => [
+  {
+    href: "/tickets",
+    icon: LuTicketCheck,
+    label: "Vé đã mua",
+    visible: true,
+  },
+  {
+    href: "/profile",
+    icon: LuUser,
+    label: "Sự kiện của tôi",
+    visible: true,
+  },
+  {
+    href: "/account",
+    icon: LuSettings,
+    label: "Tài khoản của tôi",
+    visible: true,
+  },
+  // Add more items based on user role if needed
+  // {
+  //   href: "/admin",
+  //   icon: LuSettings,
+  //   label: "Admin Panel",
+  //   visible: userRole === "admin",
+  // },
+];
+
 const Navbar = () => {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+
+  // Get dynamic menu items based on user role
+  const dropdownMenuItems = getDropdownMenuItems(user?.role);
+  const visibleMenuItems = dropdownMenuItems.filter((item) => item.visible);
 
   // Show loading state while checking authentication
   if (loading) {
@@ -112,7 +145,7 @@ const Navbar = () => {
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-light100 py-1 z-50">
+                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-md shadow-light100 py-1 z-50">
                     <div className="px-4 py-2 border-b border-gray-200">
                       <p className="text-sm font-medium text-gray-900">
                         {user.name}
@@ -122,30 +155,20 @@ const Navbar = () => {
                         {user.role}
                       </p>
                     </div>
-                    <Link
-                      href="/tickets"
-                      className="flex items-center px-4 py-2 text-dark400 hover:bg-gray-100"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      <LuTicketCheck className="w-4 h-4 mr-2" />
-                      <span className="body-medium">Vé đã mua</span>
-                    </Link>
-                    <Link
-                      href="/profile"
-                      className="flex items-center px-4 py-2 text-dark400 hover:bg-gray-100"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      <LuUser className="w-4 h-4 mr-2" />
-                      <span className="body-medium">Sự kiện của tôi</span>
-                    </Link>
-                    <Link
-                      href="/account"
-                      className="flex items-center px-4 py-2 text-dark400 hover:bg-gray-100"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      <LuSettings className="w-4 h-4 mr-2" />
-                      <span className="body-medium">Tài khoản của tôi</span>
-                    </Link>
+                    {visibleMenuItems.map((item, index) => {
+                      const IconComponent = item.icon;
+                      return (
+                        <Link
+                          key={index}
+                          href={item.href}
+                          className="flex items-center px-4 py-2 text-dark400 hover:bg-gray-100"
+                          onClick={() => setShowDropdown(false)}
+                        >
+                          <IconComponent className="w-4 h-4 mr-2" />
+                          <span className="body-medium">{item.label}</span>
+                        </Link>
+                      );
+                    })}
                     <button
                       onClick={() => {
                         logout();
