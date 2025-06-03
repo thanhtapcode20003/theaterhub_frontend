@@ -119,7 +119,7 @@ const AuthForm = <T extends FieldValues>({
                     name={"email" as Path<T>}
                     render={({ field }) => (
                       <FormItem className="flex w-full flex-col gap-2.5">
-                        <FormLabel className="paragraph-medium text-dark400_light700">
+                        <FormLabel className="paragraph-medium text-dark500">
                           Email Address
                         </FormLabel>
                         <FormControl>
@@ -127,7 +127,7 @@ const AuthForm = <T extends FieldValues>({
                             required
                             type="email"
                             {...field}
-                            className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
+                            className="paragraph-regular background-light900_dark300 light-border-2 text-dark500 no-focus min-h-12 rounded-1.5 border"
                           />
                         </FormControl>
                         <FormMessage />
@@ -149,7 +149,7 @@ const AuthForm = <T extends FieldValues>({
             {signUpStep === "verification" && (
               <>
                 <div className="flex w-full flex-col gap-2.5">
-                  <p className="paragraph-medium text-dark400_light700">
+                  <p className="paragraph-medium text-dark500">
                     Enter the 6-digit code sent to {userEmail}
                   </p>
                   <Input
@@ -158,7 +158,7 @@ const AuthForm = <T extends FieldValues>({
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
                     placeholder="6-digit code"
-                    className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border text-center text-lg tracking-widest"
+                    className="paragraph-regular background-light900_dark300 light-border-2 text-dark500 no-focus min-h-12 rounded-1.5 border text-center text-lg tracking-widest"
                   />
                 </div>
                 <Button
@@ -183,7 +183,7 @@ const AuthForm = <T extends FieldValues>({
                       name={field as Path<T>}
                       render={({ field }) => (
                         <FormItem className="flex w-full flex-col gap-2.5">
-                          <FormLabel className="paragraph-medium text-dark400_light700">
+                          <FormLabel className="paragraph-medium text-dark500">
                             {field.name === "confirmPassword"
                               ? "Confirm Password"
                               : field.name.charAt(0).toUpperCase() +
@@ -199,7 +199,7 @@ const AuthForm = <T extends FieldValues>({
                                   : "text"
                               }
                               {...field}
-                              className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
+                              className="paragraph-regular background-light900_dark300 light-border-2 text-dark500 no-focus min-h-12 rounded-1.5 border"
                             />
                           </FormControl>
                           <FormMessage />
@@ -226,7 +226,7 @@ const AuthForm = <T extends FieldValues>({
                 name={field as Path<T>}
                 render={({ field }) => (
                   <FormItem className="flex w-full flex-col gap-2.5">
-                    <FormLabel className="paragraph-medium text-dark400_light700">
+                    <FormLabel className="paragraph-medium text-gray-700">
                       {field.name === "email"
                         ? "Email Address"
                         : field.name.charAt(0).toUpperCase() +
@@ -237,7 +237,7 @@ const AuthForm = <T extends FieldValues>({
                         required
                         type={field.name === "password" ? "password" : "text"}
                         {...field}
-                        className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
+                        className="paragraph-regular bg-white border-gray-300 text-gray-900 no-focus min-h-12 rounded-1.5 border"
                       />
                     </FormControl>
                     <FormMessage />

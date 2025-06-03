@@ -35,7 +35,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   // const session = await auth();
 
   return (
-    <html lang="vi" suppressHydrationWarning className="bg-background">
+    <html lang="vi" suppressHydrationWarning>
       <head>
         <link
           rel="stylesheet"
@@ -45,7 +45,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
       </head>
       {/* <SessionProvider session={session}> */}
       <body
-        className={`${inter.className} ${spaceGrotesk.variable} antialiased bg-background`}
+        className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
       >
         <AuthProvider>{children}</AuthProvider>
         <ToastContainer
