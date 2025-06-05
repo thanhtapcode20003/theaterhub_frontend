@@ -181,6 +181,26 @@ body {
     @apply text-light-400 whitespace-nowrap;
   }
 
+  .text-light700 {
+    @apply text-light-700 whitespace-nowrap;
+  }
+
+  .text-light800 {
+    @apply text-light-800 whitespace-nowrap;
+  }
+
+  .text-light900 {
+    @apply text-light-900 whitespace-nowrap;
+  }
+
+  .text-gray-secondary {
+    @apply text-gray-400 hover:text-white transition-colors;
+  }
+
+  .text-white-primary {
+    @apply text-white;
+  }
+
   .light-border {
     @apply border-light-800;
   }

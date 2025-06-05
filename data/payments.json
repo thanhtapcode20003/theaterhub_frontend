@@ -1,0 +1,82 @@
+[
+  {
+    "payment_id": 1,
+    "ticket_id": 1,
+    "amount": 75.0,
+    "method": "credit_card",
+    "status": "success",
+    "paid_at": "2024-03-01T10:35:00Z"
+  },
+  {
+    "payment_id": 2,
+    "ticket_id": 3,
+    "amount": 45.0,
+    "method": "paypal",
+    "status": "success",
+    "paid_at": "2024-03-03T09:50:00Z"
+  },
+  {
+    "payment_id": 3,
+    "ticket_id": 4,
+    "amount": 65.0,
+    "method": "bank_transfer",
+    "status": "success",
+    "paid_at": "2024-03-04T16:25:00Z"
+  },
+  {
+    "payment_id": 4,
+    "ticket_id": 7,
+    "amount": 80.0,
+    "method": "credit_card",
+    "status": "success",
+    "paid_at": "2024-03-07T15:05:00Z"
+  },
+  {
+    "payment_id": 5,
+    "ticket_id": 9,
+    "amount": 60.0,
+    "method": "debit_card",
+    "status": "success",
+    "paid_at": "2024-03-09T17:35:00Z"
+  },
+  {
+    "payment_id": 6,
+    "ticket_id": 2,
+    "amount": 75.0,
+    "method": "credit_card",
+    "status": "pending",
+    "paid_at": "2024-03-11T08:00:00Z"
+  },
+  {
+    "payment_id": 7,
+    "ticket_id": 5,
+    "amount": 55.0,
+    "method": "paypal",
+    "status": "pending",
+    "paid_at": "2024-03-11T10:30:00Z"
+  },
+  {
+    "payment_id": 8,
+    "ticket_id": 8,
+    "amount": 90.0,
+    "method": "bank_transfer",
+    "status": "pending",
+    "paid_at": "2024-03-11T12:45:00Z"
+  },
+  {
+    "payment_id": 9,
+    "ticket_id": 10,
+    "amount": 45.0,
+    "method": "credit_card",
+    "status": "failed",
+    "paid_at": "2024-03-11T14:20:00Z"
+  },
+  {
+    "payment_id": 10,
+    "ticket_id": 6,
+    "amount": 55.0,
+    "method": "refund",
+    "status": "success",
+    "paid_at": "2024-03-11T16:00:00Z"
+  }
+]

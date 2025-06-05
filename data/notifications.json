@@ -1,0 +1,82 @@
+[
+  {
+    "notification_id": 1,
+    "user_id": 1,
+    "title": "Booking Confirmation",
+    "message": "Your ticket for Romeo and Juliet has been confirmed. Show starts at 7:30 PM on April 15th.",
+    "is_read": true,
+    "created_at": "2024-03-01T10:36:00Z"
+  },
+  {
+    "notification_id": 2,
+    "user_id": 2,
+    "title": "Payment Reminder",
+    "message": "Please complete your payment for Romeo and Juliet within 24 hours to secure your seats.",
+    "is_read": false,
+    "created_at": "2024-03-02T14:20:00Z"
+  },
+  {
+    "notification_id": 3,
+    "user_id": 3,
+    "title": "Show Reminder",
+    "message": "Don't forget! Romeo and Juliet starts tomorrow at 7:30 PM. Enjoy the show!",
+    "is_read": true,
+    "created_at": "2024-03-14T18:00:00Z"
+  },
+  {
+    "notification_id": 4,
+    "user_id": 4,
+    "title": "New Show Available",
+    "message": "Tickets are now available for our upcoming production of Macbeth. Book early!",
+    "is_read": false,
+    "created_at": "2024-03-05T09:00:00Z"
+  },
+  {
+    "notification_id": 5,
+    "user_id": 5,
+    "title": "Payment Pending",
+    "message": "Your payment for Les Misérables is being processed. You'll receive confirmation shortly.",
+    "is_read": false,
+    "created_at": "2024-03-05T11:35:00Z"
+  },
+  {
+    "notification_id": 6,
+    "user_id": 6,
+    "title": "Booking Cancelled",
+    "message": "Your booking for Les Misérables has been cancelled as requested. Refund will be processed within 3-5 business days.",
+    "is_read": true,
+    "created_at": "2024-03-06T14:00:00Z"
+  },
+  {
+    "notification_id": 7,
+    "user_id": 7,
+    "title": "Premium Seat Upgrade",
+    "message": "Great news! You've been upgraded to a premium seat for The Phantom of the Opera at no extra cost.",
+    "is_read": true,
+    "created_at": "2024-03-07T15:10:00Z"
+  },
+  {
+    "notification_id": 8,
+    "user_id": 8,
+    "title": "Special Offer",
+    "message": "Enjoy 20% off your next booking! Use code THEATER20 when purchasing tickets.",
+    "is_read": false,
+    "created_at": "2024-03-08T12:20:00Z"
+  },
+  {
+    "notification_id": 9,
+    "user_id": 9,
+    "title": "Show Review Request",
+    "message": "How was Chicago? We'd love to hear your feedback about last night's performance.",
+    "is_read": false,
+    "created_at": "2024-03-10T10:00:00Z"
+  },
+  {
+    "notification_id": 10,
+    "user_id": 10,
+    "title": "Upcoming Shows",
+    "message": "Check out our exciting lineup for next month including A Midsummer Night's Dream and The Glass Menagerie!",
+    "is_read": true,
+    "created_at": "2024-03-10T15:00:00Z"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "room_id": 1,
+    "seat_type_code": "standard",
+    "seat_quantity": 150
+  },
+  {
+    "id": 2,
+    "room_id": 1,
+    "seat_type_code": "vip",
+    "seat_quantity": 30
+  },
+  {
+    "id": 3,
+    "room_id": 2,
+    "seat_type_code": "standard",
+    "seat_quantity": 80
+  },
+  {
+    "id": 4,
+    "room_id": 3,
+    "seat_type_code": "orchestra",
+    "seat_quantity": 120
+  },
+  {
+    "id": 5,
+    "room_id": 3,
+    "seat_type_code": "balcony",
+    "seat_quantity": 60
+  },
+  {
+    "id": 6,
+    "room_id": 4,
+    "seat_type_code": "premium",
+    "seat_quantity": 50
+  },
+  {
+    "id": 7,
+    "room_id": 5,
+    "seat_type_code": "standard",
+    "seat_quantity": 200
+  },
+  {
+    "id": 8,
+    "room_id": 5,
+    "seat_type_code": "box",
+    "seat_quantity": 20
+  },
+  {
+    "id": 9,
+    "room_id": 6,
+    "seat_type_code": "double",
+    "seat_quantity": 40
+  },
+  {
+    "id": 10,
+    "room_id": 7,
+    "seat_type_code": "mezzanine",
+    "seat_quantity": 90
+  }
+]

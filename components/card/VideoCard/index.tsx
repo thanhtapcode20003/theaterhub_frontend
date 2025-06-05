@@ -55,7 +55,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
         muted={isMuted}
         loop
         playsInline
-        className="w-full h-84 object-cover"
+        className="w-full h-86 object-cover"
         style={{ display: isPlaying ? "block" : "none" }}
       >
         <source src={videoSrc} type="video/mp4" />
@@ -68,8 +68,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
           src={posterSrc}
           alt={title}
           width={1200}
-          height={256}
-          className="w-full h-84 object-cover"
+          height={270}
+          className="w-full h-86 object-cover"
         />
       )}
 

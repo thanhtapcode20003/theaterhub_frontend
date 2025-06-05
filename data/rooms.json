@@ -1,0 +1,52 @@
+[
+  {
+    "room_id": 1,
+    "theater_id": 1,
+    "name": "Main Hall"
+  },
+  {
+    "room_id": 2,
+    "theater_id": 1,
+    "name": "Studio Theater"
+  },
+  {
+    "room_id": 3,
+    "theater_id": 2,
+    "name": "Royal Auditorium"
+  },
+  {
+    "room_id": 4,
+    "theater_id": 2,
+    "name": "Intimate Stage"
+  },
+  {
+    "room_id": 5,
+    "theater_id": 3,
+    "name": "Metropolitan Main"
+  },
+  {
+    "room_id": 6,
+    "theater_id": 3,
+    "name": "Black Box Theater"
+  },
+  {
+    "room_id": 7,
+    "theater_id": 4,
+    "name": "Classic Hall"
+  },
+  {
+    "room_id": 8,
+    "theater_id": 5,
+    "name": "Sunset Stage"
+  },
+  {
+    "room_id": 9,
+    "theater_id": 6,
+    "name": "Renaissance Chamber"
+  },
+  {
+    "room_id": 10,
+    "theater_id": 7,
+    "name": "Phoenix Main Stage"
+  }
+]

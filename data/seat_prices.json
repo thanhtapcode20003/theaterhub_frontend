@@ -1,0 +1,62 @@
+[
+  {
+    "seat_price_id": 1,
+    "showtime_id": 1,
+    "seat_type_code": "standard",
+    "price": 45000
+  },
+  {
+    "seat_price_id": 2,
+    "showtime_id": 1,
+    "seat_type_code": "vip",
+    "price": 75000
+  },
+  {
+    "seat_price_id": 3,
+    "showtime_id": 2,
+    "seat_type_code": "standard",
+    "price": 45000
+  },
+  {
+    "seat_price_id": 4,
+    "showtime_id": 3,
+    "seat_type_code": "orchestra",
+    "price": 65000
+  },
+  {
+    "seat_price_id": 5,
+    "showtime_id": 3,
+    "seat_type_code": "balcony",
+    "price": 40000
+  },
+  {
+    "seat_price_id": 6,
+    "showtime_id": 4,
+    "seat_type_code": "standard",
+    "price": 50000
+  },
+  {
+    "seat_price_id": 7,
+    "showtime_id": 5,
+    "seat_type_code": "standard",
+    "price": 55000
+  },
+  {
+    "seat_price_id": 8,
+    "showtime_id": 6,
+    "seat_type_code": "premium",
+    "price": 80000
+  },
+  {
+    "seat_price_id": 9,
+    "showtime_id": 7,
+    "seat_type_code": "double",
+    "price": 90000
+  },
+  {
+    "seat_price_id": 10,
+    "showtime_id": 8,
+    "seat_type_code": "mezzanine",
+    "price": 60000
+  }
+]

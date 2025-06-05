@@ -1,0 +1,62 @@
+[
+  {
+    "theater_id": 1,
+    "name": "Grand Opera House",
+    "location": "123 Broadway Street, Downtown City",
+    "description": "A historic theater venue with classic architecture and excellent acoustics, perfect for opera and musical performances."
+  },
+  {
+    "theater_id": 2,
+    "name": "Royal Theater",
+    "location": "456 Main Avenue, Cultural District",
+    "description": "An elegant theater featuring state-of-the-art technology and luxurious seating arrangements."
+  },
+  {
+    "theater_id": 3,
+    "name": "Metropolitan Playhouse",
+    "location": "789 Arts Boulevard, Theater Quarter",
+    "description": "A modern theater complex with multiple performance spaces and cutting-edge lighting systems."
+  },
+  {
+    "theater_id": 4,
+    "name": "Classic Drama Theater",
+    "location": "321 Heritage Lane, Old Town",
+    "description": "An intimate theater space specializing in classical drama and contemporary works."
+  },
+  {
+    "theater_id": 5,
+    "name": "Sunset Musical Theater",
+    "location": "654 Sunset Drive, West End",
+    "description": "A vibrant theater known for its spectacular musical productions and innovative staging."
+  },
+  {
+    "theater_id": 6,
+    "name": "Renaissance Theater",
+    "location": "987 Cultural Circle, Arts District",
+    "description": "A beautifully restored theater combining historical charm with modern amenities."
+  },
+  {
+    "theater_id": 7,
+    "name": "Phoenix Performing Arts Center",
+    "location": "147 Performance Plaza, Center City",
+    "description": "A contemporary theater complex featuring multiple stages and world-class facilities."
+  },
+  {
+    "theater_id": 8,
+    "name": "Golden Stage Theater",
+    "location": "258 Golden Street, Entertainment District",
+    "description": "A prestigious theater venue known for hosting award-winning productions and renowned performers."
+  },
+  {
+    "theater_id": 9,
+    "name": "Liberty Theater",
+    "location": "369 Liberty Square, Historic Quarter",
+    "description": "A charming neighborhood theater with a rich history and strong community connections."
+  },
+  {
+    "theater_id": 10,
+    "name": "Apollo Theater Complex",
+    "location": "741 Apollo Avenue, New Development",
+    "description": "A state-of-the-art theater facility with advanced technology and flexible performance spaces."
+  }
+]

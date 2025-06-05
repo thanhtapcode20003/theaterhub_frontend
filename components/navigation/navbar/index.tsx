@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { LuTicketCheck, LuUser, LuLogOut, LuSettings } from "react-icons/lu";
 import { useAuth } from "@/contexts/AuthContext";
+import OAuthCallback from "@/components/auth/OAuthCallback";
 
 // Dynamic menu configuration
 const getDropdownMenuItems = (userRole?: string) => [
@@ -77,6 +78,8 @@ const Navbar = () => {
 
   return (
     <nav className="flex w-full flex-col">
+      <OAuthCallback />
+
       {/* Top navigation bar */}
       <div className="flex justify-between items-center bg-black w-full p-3 px-6 md:px-30">
         <div className="flex justify-between items-center w-full max-w-7xl mx-auto">

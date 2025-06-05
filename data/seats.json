@@ -1,0 +1,72 @@
+[
+  {
+    "seat_id": 1,
+    "room_id": 1,
+    "seat_row": "A",
+    "seat_number": 1,
+    "seat_type_code": "vip"
+  },
+  {
+    "seat_id": 2,
+    "room_id": 1,
+    "seat_row": "A",
+    "seat_number": 2,
+    "seat_type_code": "vip"
+  },
+  {
+    "seat_id": 3,
+    "room_id": 1,
+    "seat_row": "B",
+    "seat_number": 1,
+    "seat_type_code": "standard"
+  },
+  {
+    "seat_id": 4,
+    "room_id": 1,
+    "seat_row": "B",
+    "seat_number": 2,
+    "seat_type_code": "standard"
+  },
+  {
+    "seat_id": 5,
+    "room_id": 2,
+    "seat_row": "A",
+    "seat_number": 1,
+    "seat_type_code": "standard"
+  },
+  {
+    "seat_id": 6,
+    "room_id": 3,
+    "seat_row": "O",
+    "seat_number": 1,
+    "seat_type_code": "orchestra"
+  },
+  {
+    "seat_id": 7,
+    "room_id": 3,
+    "seat_row": "B",
+    "seat_number": 1,
+    "seat_type_code": "balcony"
+  },
+  {
+    "seat_id": 8,
+    "room_id": 4,
+    "seat_row": "P",
+    "seat_number": 1,
+    "seat_type_code": "premium"
+  },
+  {
+    "seat_id": 9,
+    "room_id": 5,
+    "seat_row": "C",
+    "seat_number": 1,
+    "seat_type_code": "standard"
+  },
+  {
+    "seat_id": 10,
+    "room_id": 6,
+    "seat_row": "D",
+    "seat_number": 1,
+    "seat_type_code": "double"
+  }
+]

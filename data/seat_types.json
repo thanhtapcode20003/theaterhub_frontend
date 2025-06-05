@@ -1,0 +1,42 @@
+[
+  {
+    "seat_type_code": "standard",
+    "seat_type_name": "Standard Seat"
+  },
+  {
+    "seat_type_code": "vip",
+    "seat_type_name": "VIP Seat"
+  },
+  {
+    "seat_type_code": "double",
+    "seat_type_name": "Double Seat"
+  },
+  {
+    "seat_type_code": "premium",
+    "seat_type_name": "Premium Seat"
+  },
+  {
+    "seat_type_code": "balcony",
+    "seat_type_name": "Balcony Seat"
+  },
+  {
+    "seat_type_code": "orchestra",
+    "seat_type_name": "Orchestra Seat"
+  },
+  {
+    "seat_type_code": "mezzanine",
+    "seat_type_name": "Mezzanine Seat"
+  },
+  {
+    "seat_type_code": "box",
+    "seat_type_name": "Box Seat"
+  },
+  {
+    "seat_type_code": "wheelchair",
+    "seat_type_name": "Wheelchair Accessible"
+  },
+  {
+    "seat_type_code": "student",
+    "seat_type_name": "Student Discount Seat"
+  }
+]

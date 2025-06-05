@@ -18,3 +18,23 @@ export const getTimeStamp = (date: Date) => {
   if (hours < 24) return `${hours} hours ago`;
   return `${days} days ago`;
 };
+
+// Function to format date in Vietnamese format
+export const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+// Function to format VND currency with proper spacing
+export const formatVND = (amount: number) => {
+  return `${amount.toLocaleString("vi-VN")} đ`;
+};
+
+// Function to format VND with "Từ" prefix for pricing display
+export const formatPriceVND = (amount: number) => {
+  return `Từ ${formatVND(amount)}`;
+};
