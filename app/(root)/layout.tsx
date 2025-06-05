@@ -7,16 +7,20 @@ import Footer from "@/components/footer";
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <main className="realtive">
+    <main className="relative">
       <Navbar />
 
       <div className="flex">
         {/* Main content area */}
-        <section className="flex min-h-screen flex-1 flex-col pb-6 pt-6 max-md:pb-14 sm:px-14">
+        <section className="flex min-h-screen flex-1 flex-col pb-6 pt-6 max-md:pb-14 px-4 sm:px-14">
           <div className="mx-auto w-full max-w-7xl">{children}</div>
         </section>
       </div>
-      <Footer />
+
+      {/* Footer - hidden on mobile */}
+      <div className="hidden md:block">
+        <Footer />
+      </div>
     </main>
   );
 };

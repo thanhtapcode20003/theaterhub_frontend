@@ -5,8 +5,8 @@ import React from "react";
 const Footer = () => {
   return (
     <footer className="bg-dark-100 text-light-900 w-full">
-      <div className="mx-auto px-6 md:px-30 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-40">
+      <div className="mx-auto px-6 md:px-30 py-8 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-40">
           {/* Logo and Company Info */}
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center mb-4">

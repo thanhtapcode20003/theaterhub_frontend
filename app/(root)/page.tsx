@@ -49,7 +49,7 @@ const Home = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-0 px-4">
+    <div className="w-full mx-auto px-0 sm:px-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
         <VideoCard
           videoSrc="/videos/trailer1.mp4"
@@ -64,10 +64,12 @@ const Home = () => {
       </div>
 
       {/* Plays Carousel Section */}
-      <div className="mt-12">
+      <div className="mt-8 md:mt-12">
         {/* Section Title */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-4">Mới cập nhật</h2>
+        <div className="mb-4 md:mb-6 px-4 sm:px-0">
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
+            Mới cập nhật
+          </h2>
         </div>
 
         {/* Carousel */}
@@ -111,20 +113,23 @@ const Home = () => {
       </div>
 
       {/* Second Carousel Section - Upcoming Plays with Prices */}
-      <div className="mt-12">
+      <div className="mt-8 md:mt-12">
         {/* Section Title */}
-        <div className="mb-6">
+        <div className="mb-4 md:mb-6 px-4 sm:px-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <h2 className="text-2xl font-bold ">Các vở kịch gần nhất</h2>
+            <div className="flex items-center gap-4 md:gap-8">
+              <h2 className="text-xl md:text-2xl font-bold text-white">
+                Các vở kịch gần nhất
+              </h2>
             </div>
             <a
               href="#"
-              className="text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+              className="text-gray-400 hover:text-white transition-colors flex items-center gap-1 text-sm md:text-base"
             >
-              Xem thêm
+              <span className="hidden sm:inline">Xem thêm</span>
+              <span className="sm:hidden">Xem</span>
               <svg
-                className="w-4 h-4"
+                className="w-3 h-3 md:w-4 md:h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
