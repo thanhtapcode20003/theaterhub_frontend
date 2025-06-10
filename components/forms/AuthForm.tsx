@@ -255,23 +255,23 @@ const AuthForm = <T extends FieldValues>({
         )}
 
         {formType === "SIGN_IN" ? (
-          <p>
-            Don't have an account?{" "}
+          <p className="text-dark500">
+            Chưa có tài khoản?{" "}
             <Link
               href={ROUTES.SIGN_UP}
               className="paragraph-semibold primary-text-gradient"
             >
-              Sign up
+              Đăng ký
             </Link>
           </p>
         ) : (
-          <p>
-            Already have an account?{" "}
+          <p className="text-dark500">
+            Đã có tài khoản?{" "}
             <Link
               href={ROUTES.SIGN_IN}
               className="paragraph-semibold primary-text-gradient"
             >
-              Sign in
+              Đăng nhập
             </Link>
           </p>
         )}
