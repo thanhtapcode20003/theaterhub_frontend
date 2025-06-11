@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import VideoCard from "@/components/card/VideoCard";
 import {
   Carousel,
@@ -15,7 +15,23 @@ import seatPricesData from "@/data/seat_prices.json";
 import showtimesData from "@/data/showtimes.json";
 import { formatDate, formatPriceVND } from "@/lib/utils";
 
+import { getUsers } from "@/lib/services/userService";
+
 const Home = () => {
+  // Fetch and log users data
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const userData = await getUsers();
+        console.log("Users data:", userData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   // Function to get the lowest price for a play
   const getLowestPrice = (playId: number) => {
     const playShowtimes = showtimesData.filter(
