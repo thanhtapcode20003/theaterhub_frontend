@@ -1,3 +1,5 @@
+import { API_CONFIG, STORAGE_KEYS } from "./config";
+
 interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -8,9 +10,11 @@ export const fetchApi = async <T>(
   url: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> => {
-  const baseUrl = "http://localhost:8080/api";
+  const baseUrl = API_CONFIG.BASE_URL;
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
+      : null;
 
   const headers: HeadersInit = {
     "Content-Type": "application/json",

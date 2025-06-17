@@ -8,16 +8,16 @@ import React, {
   ReactNode,
   useRef,
 } from "react";
+import AuthService, { User } from "@/lib/services/authService";
 import { toast } from "react-toastify";
 
-export interface User {
-  user_id: number;
-  avatar: string;
-  name: string;
-  email: string;
-  role: string;
-  phone: string | null;
-}
+// Re-export User type for convenience
+export type { User };
+
+/**
+ * Optimized AuthContext that delegates storage operations to AuthService
+ * This eliminates code duplication and ensures consistent auth state management
+ */
 
 interface AuthContextType {
   user: User | null;
@@ -26,6 +26,13 @@ interface AuthContextType {
   login: (token: string, userData: User) => void;
   logout: () => void;
   refreshAuth: () => void;
+  // Additional helper methods from AuthService
+  isEmailVerified: () => boolean;
+  isAccountLocked: () => boolean;
+  getUserRole: () => "admin" | "staff" | "customer" | null;
+  isAdmin: () => boolean;
+  isStaff: () => boolean;
+  getUserId: () => number | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,18 +50,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuth = () => {
     if (typeof window === "undefined") return;
 
-    const token = localStorage.getItem("authToken");
-    const userStr = localStorage.getItem("user");
+    // Use AuthService methods instead of direct localStorage access
+    const token = AuthService.getToken();
+    const userData = AuthService.getUser();
 
-    if (token && userStr) {
-      try {
-        const userData = JSON.parse(userStr);
-        setUser(userData);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-        logout();
-      }
+    if (token && userData) {
+      setUser(userData);
+      setIsAuthenticated(true);
     } else {
       setUser(null);
       setIsAuthenticated(false);
@@ -72,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (typeof window === "undefined") return;
 
     // Check if user is already logged in with the same token
-    const existingToken = localStorage.getItem("authToken");
+    const existingToken = AuthService.getToken();
     if (existingToken === token && isAuthenticated) {
       console.log("User already logged in with this token, skipping...");
       return;
@@ -80,8 +82,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     loginInProgressRef.current = true;
 
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("user", JSON.stringify(userData));
+    // Use AuthService methods instead of direct localStorage access
+    AuthService.setToken(token);
+    AuthService.setUser(userData);
     setUser(userData);
     setIsAuthenticated(true);
 
@@ -105,8 +108,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     if (typeof window === "undefined") return;
 
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
+    // Use AuthService logout method instead of direct localStorage access
+    AuthService.logout();
     setUser(null);
     setIsAuthenticated(false);
     loginInProgressRef.current = false; // Reset flag on logout
@@ -123,7 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Listen for storage changes (auth state changes in other tabs)
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "authToken" || e.key === "user") {
+      if (e.key === "auth_token" || e.key === "user_data") {
         checkAuth();
       }
     };
@@ -139,6 +142,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     refreshAuth,
+    // Helper methods that delegate to AuthService
+    isEmailVerified: AuthService.isEmailVerified,
+    isAccountLocked: AuthService.isAccountLocked,
+    getUserRole: AuthService.getUserRole,
+    isAdmin: AuthService.isAdmin,
+    isStaff: AuthService.isStaff,
+    getUserId: AuthService.getUserId,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

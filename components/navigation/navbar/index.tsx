@@ -136,7 +136,7 @@ const Navbar = () => {
                 >
                   <div className="flex items-center mr-2">
                     <Image
-                      src={user.avatar}
+                      src={user.avatar || "/icons/default-avatar.png"}
                       alt={user.name}
                       width={32}
                       height={32}
