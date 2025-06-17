@@ -21,8 +21,8 @@ export const API_ENDPOINTS = {
     LOGIN: "/email-auth/login",
     VERIFY_EMAIL: "/email-auth/verify",
     RESEND_OTP: "/email-auth/resend",
-    LOGOUT: "/email-auth/logout",
-    REFRESH_TOKEN: "/auth/refresh",
+    // LOGOUT: "/email-auth/logout",
+    // REFRESH_TOKEN: "/auth/refresh",
   },
   // OAuth endpoints
   OAUTH: {

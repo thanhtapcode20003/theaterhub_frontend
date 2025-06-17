@@ -20,18 +20,18 @@ import { getUsers } from "@/lib/services/userService";
 
 const Home = () => {
   // Fetch and log users data
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const userData = await getUsers();
-        console.log("Users data:", userData);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const userData = await getUsers();
+  //       console.log("Users data:", userData);
+  //     } catch (error) {
+  //       console.error("Error fetching users:", error);
+  //     }
+  //   };
 
-    fetchUsers();
-  }, []);
+  //   fetchUsers();
+  // }, []);
 
   // Function to get the lowest price for a play
   const getLowestPrice = (playId: number) => {
