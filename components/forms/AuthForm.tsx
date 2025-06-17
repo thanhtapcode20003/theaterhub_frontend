@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import ROUTES from "@/constants/routes";
 import AuthService from "@/lib/services/authService";
 import { SignUpSchema, OTPVerificationSchema } from "@/lib/validations";
@@ -248,18 +249,16 @@ const AuthForm = <T extends FieldValues>({
                   {fieldName === "confirmPassword" && "Xác nhận mật khẩu"}
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    type={
-                      fieldName === "password" ||
-                      fieldName === "confirmPassword"
-                        ? "password"
-                        : fieldName === "email"
-                          ? "email"
-                          : "text"
-                    }
-                    {...field}
-                    className="paragraph-regular bg-white border-gray-300 text-gray-900 no-focus min-h-12 rounded-1.5 border"
-                  />
+                  {fieldName === "password" ||
+                  fieldName === "confirmPassword" ? (
+                    <PasswordInput {...field} />
+                  ) : (
+                    <Input
+                      type={fieldName === "email" ? "email" : "text"}
+                      {...field}
+                      className="paragraph-regular bg-white border-gray-300 text-gray-900 no-focus min-h-12 rounded-1.5 border"
+                    />
+                  )}
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -411,11 +410,15 @@ const AuthForm = <T extends FieldValues>({
                   {fieldName === "email" ? "Email" : "Mật khẩu"}
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    type={fieldName === "password" ? "password" : "email"}
-                    {...field}
-                    className="paragraph-regular bg-white border-gray-300 text-gray-900 no-focus min-h-12 rounded-1.5 border"
-                  />
+                  {fieldName === "password" ? (
+                    <PasswordInput {...field} />
+                  ) : (
+                    <Input
+                      type="email"
+                      {...field}
+                      className="paragraph-regular bg-white border-gray-300 text-gray-900 no-focus min-h-12 rounded-1.5 border"
+                    />
+                  )}
                 </FormControl>
                 <FormMessage />
               </FormItem>
