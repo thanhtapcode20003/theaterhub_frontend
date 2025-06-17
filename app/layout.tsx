@@ -50,7 +50,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
         <AuthProvider>{children}</AuthProvider>
         <ToastContainer
           position="top-right"
-          autoClose={10000}
+          autoClose={3000}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick={false}

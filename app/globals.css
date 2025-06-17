@@ -89,6 +89,10 @@ body {
 }
 
 @layer utilities {
+  .background-black_ticket_detail {
+    @apply bg-[#38383D];
+  }
+
   .background-light850_dark100 {
     @apply bg-light-850 dark:bg-dark-100;
   }
