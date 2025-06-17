@@ -1,51 +1,13 @@
 import { get, post } from "../api";
 import { API_CONFIG, API_ENDPOINTS, STORAGE_KEYS } from "../config";
-
-// Types based on the database schema
-export interface User {
-  user_id: number;
-  avatar?: string;
-  name: string;
-  email: string;
-  phone?: string;
-  role: "admin" | "staff" | "customer";
-  provider: "local" | "google";
-  email_verified: boolean;
-  is_locked: boolean;
-  created_at: string;
-}
-
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface ResendOTPRequest {
-  email: string;
-}
-
-export interface AuthResponse {
-  success: boolean;
-  message?: string;
-  data?: {
-    user?: User;
-    token?: string;
-  };
-  token?: string;
-  user?: User;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
+import {
+  User,
+  RegisterRequest,
+  LoginRequest,
+  ResendOTPRequest,
+  AuthResponse,
+  ApiResponse,
+} from "../../types";
 
 export class AuthService {
   private static readonly TOKEN_KEY = STORAGE_KEYS.AUTH_TOKEN;

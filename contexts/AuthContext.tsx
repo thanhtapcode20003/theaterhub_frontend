@@ -8,7 +8,8 @@ import React, {
   ReactNode,
   useRef,
 } from "react";
-import AuthService, { User } from "@/lib/services/authService";
+import AuthService from "@/lib/services/authService";
+import { User, AuthContextType } from "@/types";
 import { toast } from "react-toastify";
 
 // Re-export User type for convenience
@@ -18,22 +19,6 @@ export type { User };
  * Optimized AuthContext that delegates storage operations to AuthService
  * This eliminates code duplication and ensures consistent auth state management
  */
-
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  login: (token: string, userData: User) => void;
-  logout: () => void;
-  refreshAuth: () => void;
-  // Additional helper methods from AuthService
-  isEmailVerified: () => boolean;
-  isAccountLocked: () => boolean;
-  getUserRole: () => "admin" | "staff" | "customer" | null;
-  isAdmin: () => boolean;
-  isStaff: () => boolean;
-  getUserId: () => number | null;
-}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
