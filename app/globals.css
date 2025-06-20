@@ -78,7 +78,7 @@ body {
   --shadow-dark-200: 2px 0px 20px 0px rgba(39, 36, 36, 0.04);
 
   /* Background Images */
-  --bg-auth: url("/images/auth-form_bg.png");
+  --bg-auth: url("/images/bg_authForm.jpg");
 
   /* Screens */
   --breakpoint-xs: 420px;

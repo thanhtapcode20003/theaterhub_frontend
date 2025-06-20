@@ -54,7 +54,23 @@ export function AppSidebar() {
       className="sidebar-gradient border-r border-sidebar-border"
     >
       <SidebarHeader className="border-b border-sidebar-border/30 bg-sidebar-red-gradient">
-        <h1 className="text-2xl font-bold text-white p-4">Admin</h1>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className="text-white hover:sidebar-hover-gradient transition-all duration-200 my-2 rounded-lg"
+            >
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg sidebar-red-gradient text-white shadow-lg">
+                <Crown className="size-4 text-yellow-400" />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-bold text-white text-2xl">
+                  Admin
+                </span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -62,12 +78,12 @@ export function AppSidebar() {
             <h2 className="text-red-400">Menu</h2>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1 px-2">
+            <SidebarMenu className="space-y-1">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    className="text-white hover:sidebar-hover-gradient hover:text-white active:sidebar-active-gradient transition-all duration-200 rounded-lg mx-2"
+                    className="text-white hover:sidebar-hover-gradient hover:text-white active:sidebar-active-gradient transition-all duration-200 rounded-lg"
                   >
                     <a href={item.url} className="flex items-center gap-3 p-3">
                       <item.icon className="h-5 w-5 text-red-400" />
@@ -87,10 +103,10 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:sidebar-active-gradient hover:sidebar-hover-gradient text-white transition-all duration-200 mx-2 my-2 rounded-lg"
+                  className="data-[state=open]:sidebar-active-gradient hover:sidebar-hover-gradient text-white transition-all duration-200 my-2 rounded-lg "
                 >
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg sidebar-red-gradient text-white shadow-lg">
-                    <User className="size-4" />
+                    <User className="size-4 " />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold text-white">
