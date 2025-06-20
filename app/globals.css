@@ -374,6 +374,25 @@ body {
     );
   }
 
+  /* Sidebar Menu Button Active State */
+  .sidebar-menu-button-active {
+    background: linear-gradient(
+      135deg,
+      rgba(220, 38, 38, 0.2) 0%,
+      rgba(185, 28, 28, 0.3) 100%
+    );
+    /* border-left: 3px solid #dc2626; */
+    @apply shadow-lg;
+  }
+
+  .sidebar-menu-button-active:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(220, 38, 38, 0.25) 0%,
+      rgba(185, 28, 28, 0.35) 100%
+    );
+  }
+
   .sidebar-menu-button-lg {
     @apply text-white transition-all duration-200 my-2 rounded-lg;
     background: transparent;
@@ -408,7 +427,7 @@ body {
 
   /* Sidebar Trigger Enhanced */
   .sidebar-trigger-enhanced {
-    @apply m-4 h-10 w-10 bg-red-600 hover:bg-red-700 text-white border-red-700 shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105;
+    @apply h-10 w-10 bg-red-600 hover:bg-red-700 text-white border border-red-700 shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 rounded-lg;
   }
 
   /* Dropdown Menu Items */

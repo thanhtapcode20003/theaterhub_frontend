@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ChevronUp,
   Users,
@@ -10,7 +12,9 @@ import {
   IdCard,
   Sparkles,
   ChartSpline,
+  Calendar,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -45,9 +49,16 @@ const items = [
     url: "/admin/users",
     icon: Users,
   },
+  {
+    title: "Events",
+    url: "/admin/events",
+    icon: Calendar,
+  },
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
+
   return (
     <Sidebar
       collapsible="icon"
@@ -76,16 +87,37 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="sidebar-menu-layout">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="sidebar-menu-button">
-                    <a href={item.url} className="flex items-center gap-3 p-3">
-                      <item.icon className="h-5 w-5 text-red-400" />
-                      <span className="font-medium">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const isActive = pathname === item.url;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={`sidebar-menu-button ${
+                        isActive ? "sidebar-menu-button-active" : ""
+                      }`}
+                    >
+                      <a
+                        href={item.url}
+                        className="flex items-center gap-3 p-3"
+                      >
+                        <item.icon
+                          className={`h-5 w-5 ${
+                            isActive ? "text-red-300" : "text-red-400"
+                          }`}
+                        />
+                        <span
+                          className={`font-medium ${
+                            isActive ? "text-white" : ""
+                          }`}
+                        >
+                          {item.title}
+                        </span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
