@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ChevronUp,
   Users,
@@ -14,7 +12,6 @@ import {
   ChartSpline,
   Calendar,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -36,29 +33,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Menu items.
-const items = [
-  {
-    title: "Dashboard",
-    url: "/admin",
-    icon: ChartSpline,
-  },
-  {
-    title: "Users",
-    url: "/admin/users",
-    icon: Users,
-  },
-  {
-    title: "Events",
-    url: "/admin/events",
-    icon: Calendar,
-  },
-];
+import NavLinks from "./NavLinks";
 
 export function AppSidebar() {
-  const pathname = usePathname();
-
   return (
     <Sidebar
       collapsible="icon"
@@ -86,39 +63,7 @@ export function AppSidebar() {
             <h2 className="text-red-400">Menu</h2>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="sidebar-menu-layout">
-              {items.map((item) => {
-                const isActive = pathname === item.url;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      className={`sidebar-menu-button ${
-                        isActive ? "sidebar-menu-button-active" : ""
-                      }`}
-                    >
-                      <a
-                        href={item.url}
-                        className="flex items-center gap-3 p-3"
-                      >
-                        <item.icon
-                          className={`h-5 w-5 ${
-                            isActive ? "text-red-300" : "text-red-400"
-                          }`}
-                        />
-                        <span
-                          className={`font-medium ${
-                            isActive ? "text-white" : ""
-                          }`}
-                        >
-                          {item.title}
-                        </span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
+            <NavLinks />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
