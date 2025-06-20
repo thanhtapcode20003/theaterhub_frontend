@@ -361,6 +361,89 @@ body {
     );
   }
 
+  .sidebar-menu-button {
+    @apply text-white hover:text-white transition-all duration-200 rounded-lg;
+    background: transparent;
+  }
+
+  .sidebar-menu-button:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(220, 38, 38, 0.1) 0%,
+      rgba(185, 28, 28, 0.15) 100%
+    );
+  }
+
+  .sidebar-menu-button-lg {
+    @apply text-white transition-all duration-200 my-2 rounded-lg;
+    background: transparent;
+  }
+
+  .sidebar-menu-button-lg:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(220, 38, 38, 0.1) 0%,
+      rgba(185, 28, 28, 0.15) 100%
+    );
+  }
+
+  .sidebar-menu-button-lg[data-state="open"] {
+    background: linear-gradient(
+      135deg,
+      rgba(220, 38, 38, 0.2) 0%,
+      rgba(185, 28, 28, 0.25) 100%
+    );
+  }
+
+  /* Sidebar Icon Container */
+  .sidebar-icon-container {
+    @apply flex aspect-square size-8 items-center justify-center rounded-lg text-white shadow-lg;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+  }
+
+  /* Sidebar User Text Container */
+  .sidebar-user-text {
+    @apply grid flex-1 text-left text-sm leading-tight;
+  }
+
+  /* Sidebar Trigger Enhanced */
+  .sidebar-trigger-enhanced {
+    @apply m-4 h-10 w-10 bg-red-600 hover:bg-red-700 text-white border-red-700 shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105;
+  }
+
+  /* Dropdown Menu Items */
+  .dropdown-item {
+    @apply text-white hover:bg-red-600/20 hover:text-white focus:bg-red-600/20 focus:text-white;
+  }
+
+  .dropdown-item-danger {
+    @apply text-red-400 hover:bg-red-600/20 hover:text-red-300 focus:bg-red-600/20 focus:text-red-300;
+  }
+
+  /* Sidebar Layout Containers */
+  .sidebar-header-container {
+    @apply border-b border-sidebar-border/30;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+  }
+
+  .sidebar-footer-container {
+    @apply border-t border-sidebar-border/30 bg-gradient-to-r from-black/50 to-dark-300/50;
+  }
+
+  /* Sidebar Group & Menu */
+  .sidebar-group-label {
+    @apply text-red-400 font-semibold tracking-wide uppercase text-xs px-4 py-3;
+  }
+
+  .sidebar-menu-layout {
+    @apply space-y-1;
+  }
+
+  /* Dropdown Menu Container */
+  .dropdown-menu-container {
+    @apply w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-black border border-red-900/30 shadow-xl;
+  }
+
   .flex-center {
     @apply flex justify-center items-center;
   }
