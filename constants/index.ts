@@ -1,4 +1,4 @@
-import { Calendar, ChartSpline, Users } from "lucide-react";
+import { Calendar, ChartSpline, Users, Play } from "lucide-react";
 
 export const sidebarLinks = [
   {
@@ -15,5 +15,10 @@ export const sidebarLinks = [
     title: "Events",
     url: "/admin/events",
     icon: Calendar,
+  },
+  {
+    title: "Loading Demo",
+    url: "/admin/loading-demo",
+    icon: Play,
   },
 ];

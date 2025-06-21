@@ -9,6 +9,7 @@ import { ReactNode } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LoadingProvider } from "@/contexts/LoadingContext";
 
 const inter = localFont({
   src: "./fonts/InterVF.ttf",
@@ -47,7 +48,9 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
       <body
         className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <LoadingProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </LoadingProvider>
         <ToastContainer
           position="top-right"
           autoClose={3000}
