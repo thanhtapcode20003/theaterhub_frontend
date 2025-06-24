@@ -309,7 +309,7 @@ const AuthForm = <T extends FieldValues>({
                 <Input
                   {...field}
                   maxLength={6}
-                  placeholder="000000"
+                  placeholder="_ _ _ _ _ _"
                   className="paragraph-regular bg-white border-gray-300 text-gray-900 no-focus min-h-12 rounded-1.5 border text-center text-lg tracking-widest font-mono"
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, ""); // Only allow digits

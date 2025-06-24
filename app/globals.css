@@ -513,6 +513,332 @@ body {
     background-size: cover;
     background-position: center;
   }
+
+  /* Red Gradient Utilities */
+  .bg-red-gradient {
+    background: linear-gradient(to right, #dc2626, #b91c1c);
+  }
+
+  .bg-red-gradient-hover:hover {
+    background: linear-gradient(to right, #b91c1c, #991b1b);
+  }
+
+  .bg-red-gradient-soft {
+    background: linear-gradient(to right, #ef4444, #dc2626);
+  }
+
+  .bg-red-gradient-soft-hover:hover {
+    background: linear-gradient(to right, #dc2626, #b91c1c);
+  }
+
+  .bg-red-gradient-light {
+    background: linear-gradient(
+      to bottom right,
+      rgba(220, 38, 38, 0.2),
+      rgba(185, 28, 28, 0.2)
+    );
+  }
+
+  .border-red-gradient {
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .text-red-gradient {
+    background: linear-gradient(to right, #ef4444, #dc2626);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .shadow-red-glow {
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .shadow-red-glow:hover {
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(220, 38, 38, 0.1);
+  }
+
+  /* Card & Container Utilities */
+  .glass-card {
+    background: linear-gradient(
+      to bottom right,
+      rgba(39, 39, 42, 0.5),
+      rgba(39, 39, 42, 0.3)
+    );
+    backdrop-filter: blur(12px);
+    @apply border border-zinc-700/50 rounded-2xl;
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-300;
+  }
+
+  .glass-card-hover:hover {
+    transform: scale(1.05);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  .admin-page-bg {
+    background-color: #09090b;
+    @apply min-h-screen relative overflow-hidden;
+  }
+
+  .admin-bg-effects {
+    background: linear-gradient(to bottom right, #18181b, #09090b, #000000);
+    @apply absolute inset-0;
+  }
+
+  .admin-bg-radial {
+    background: radial-gradient(
+      ellipse at top right,
+      rgba(127, 29, 29, 0.1),
+      transparent,
+      transparent
+    );
+    @apply absolute inset-0 pointer-events-none;
+  }
+
+  .admin-header-icon {
+    @apply p-3 rounded-xl shadow-lg;
+  }
+
+  .admin-header-title {
+    background: linear-gradient(to right, #ffffff, #f3f4f6, #d1d5db);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    @apply text-4xl font-bold;
+  }
+
+  .admin-header-subtitle {
+    @apply text-gray-400 text-lg;
+  }
+
+  .admin-header-line {
+    @apply h-1 w-24 rounded-full;
+  }
+
+  /* Button Utilities */
+  .btn-red-primary {
+    background: linear-gradient(to right, #dc2626, #b91c1c);
+    @apply flex items-center gap-2 px-6 py-3 text-white rounded-xl transition-all duration-200;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .btn-red-primary:hover {
+    background: linear-gradient(to right, #b91c1c, #991b1b);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(220, 38, 38, 0.1);
+  }
+
+  .btn-red-soft {
+    background: linear-gradient(to right, #ef4444, #dc2626);
+    @apply flex items-center gap-2 px-6 py-3 text-white rounded-xl transition-all duration-200;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .btn-red-soft:hover {
+    background: linear-gradient(to right, #dc2626, #b91c1c);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(220, 38, 38, 0.1);
+  }
+
+  .btn-glass {
+    background-color: rgba(39, 39, 42, 0.5);
+    @apply flex items-center gap-2 px-4 py-3 border border-zinc-700/50 rounded-xl text-gray-300 transition-colors;
+  }
+
+  .btn-glass:hover {
+    background-color: rgba(39, 39, 42, 0.7);
+  }
+
+  /* Input Utilities */
+  .input-glass {
+    background-color: rgba(39, 39, 42, 0.5);
+    @apply border border-zinc-700/50 rounded-xl text-white placeholder-gray-400;
+  }
+
+  .input-glass:focus {
+    outline: none;
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+  }
+
+  /* Table Utilities */
+  .table-glass {
+    background: linear-gradient(
+      to bottom right,
+      rgba(39, 39, 42, 0.5),
+      rgba(39, 39, 42, 0.3)
+    );
+    backdrop-filter: blur(12px);
+    @apply border border-zinc-700/50 rounded-2xl overflow-hidden;
+  }
+
+  .table-header {
+    background-color: rgba(39, 39, 42, 0.5);
+    @apply border-b border-zinc-700/50;
+  }
+
+  .table-row-hover {
+    @apply transition-colors;
+  }
+
+  .table-row-hover:hover {
+    background-color: rgba(39, 39, 42, 0.3);
+  }
+
+  /* Status Badge Utilities */
+  .badge-admin {
+    background-color: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+    @apply px-3 py-1 rounded-full text-xs font-medium border text-red-400;
+  }
+
+  .badge-active {
+    background-color: rgba(34, 197, 94, 0.2);
+    border-color: rgba(34, 197, 94, 0.3);
+    @apply px-3 py-1 rounded-full text-xs font-medium border text-green-400;
+  }
+
+  .badge-inactive {
+    background-color: rgba(107, 114, 128, 0.2);
+    border-color: rgba(107, 114, 128, 0.3);
+    @apply px-3 py-1 rounded-full text-xs font-medium border text-gray-400;
+  }
+
+  .badge-moderator {
+    background-color: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+    @apply px-3 py-1 rounded-full text-xs font-medium border text-blue-400;
+  }
+
+  .badge-customer {
+    background-color: rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.3);
+    @apply px-3 py-1 rounded-full text-xs font-medium border text-purple-400;
+  }
+
+  /* Action Button Utilities */
+  .action-btn-edit {
+    @apply p-2 text-gray-400 rounded-lg transition-colors;
+  }
+
+  .action-btn-edit:hover {
+    color: #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+  }
+
+  .action-btn-delete {
+    @apply p-2 text-gray-400 rounded-lg transition-colors;
+  }
+
+  .action-btn-delete:hover {
+    color: #f87171;
+    background-color: rgba(248, 113, 113, 0.1);
+  }
+
+  .action-btn-more {
+    @apply p-2 text-gray-400 rounded-lg transition-colors;
+  }
+
+  .action-btn-more:hover {
+    color: #d1d5db;
+    background-color: rgba(156, 163, 175, 0.1);
+  }
+
+  /* Avatar Utilities */
+  .avatar-red {
+    background: linear-gradient(to right, #dc2626, #b91c1c);
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold;
+  }
+
+  .avatar-blue {
+    background: linear-gradient(to bottom right, #2563eb, #1d4ed8);
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold;
+  }
+
+  .avatar-green {
+    background: linear-gradient(to bottom right, #16a34a, #15803d);
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold;
+  }
+
+  /* Icon Container Utilities */
+  .icon-container-red {
+    background: linear-gradient(
+      to bottom right,
+      rgba(220, 38, 38, 0.2),
+      rgba(185, 28, 28, 0.2)
+    );
+    border-color: rgba(239, 68, 68, 0.3);
+    @apply p-3 rounded-xl border;
+  }
+
+  .icon-container-blue {
+    background: linear-gradient(
+      to bottom right,
+      rgba(37, 99, 235, 0.2),
+      rgba(29, 78, 216, 0.2)
+    );
+    border-color: rgba(59, 130, 246, 0.3);
+    @apply p-3 rounded-xl border;
+  }
+
+  .icon-container-green {
+    background: linear-gradient(
+      to bottom right,
+      rgba(22, 163, 74, 0.2),
+      rgba(21, 128, 61, 0.2)
+    );
+    border-color: rgba(34, 197, 94, 0.3);
+    @apply p-3 rounded-xl border;
+  }
+
+  .icon-container-purple {
+    background: linear-gradient(
+      to bottom right,
+      rgba(147, 51, 234, 0.2),
+      rgba(126, 34, 206, 0.2)
+    );
+    border-color: rgba(168, 85, 247, 0.3);
+    @apply p-3 rounded-xl border;
+  }
+
+  /* Text Color Utilities */
+  .text-red-primary {
+    @apply text-red-400;
+  }
+
+  .text-red-soft {
+    @apply text-red-300;
+  }
+
+  .text-trend-positive {
+    @apply text-green-400;
+  }
+
+  .text-trend-negative {
+    @apply text-red-400;
+  }
+
+  .text-trend-neutral {
+    @apply text-yellow-400;
+  }
 }
 
 .custom-scrollbar::-webkit-scrollbar {
