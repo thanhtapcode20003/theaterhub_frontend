@@ -12,9 +12,11 @@ import {
   Mail,
   Phone,
   Calendar,
+  RefreshCw,
 } from "lucide-react";
 import { useLoading, useAsyncOperation } from "@/contexts/LoadingContext";
 import { CardLoading, TableLoading } from "@/components/ui/loading";
+import { getUsers } from "@/lib/services/userService";
 
 const Users = () => {
   const { showLoading, hideLoading } = useLoading();
@@ -90,29 +92,50 @@ const Users = () => {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case "Admin":
+      case "admin":
         return "badge-admin";
-      case "Moderator":
+      case "staff":
         return "badge-moderator";
-      case "Customer":
+      case "customer":
         return "badge-customer";
       default:
         return "badge-inactive";
     }
   };
 
-  // Simulate data loading
+  // Load users from API
   useEffect(() => {
     const loadData = async () => {
-      // Simulate API calls
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setUsers(sampleUsers);
-      setIsPageLoading(false);
+      try {
+        setIsPageLoading(true);
+        setIsCardsLoading(true);
 
-      // Simulate loading stats cards
-      setTimeout(() => {
+        // Get users from API
+        const apiUsers = (await getUsers()) as any;
+        console.log("API Users:", apiUsers);
+
+        if (apiUsers && apiUsers.users && apiUsers.users.length > 0) {
+          // Use API data
+          setUsers(apiUsers.users);
+        } else {
+          // Fallback to sample data if API returns empty
+          console.log("API returned empty, using sample data");
+          setUsers(sampleUsers);
+        }
+
+        setIsPageLoading(false);
+
+        // Load stats cards after a short delay
+        setTimeout(() => {
+          setIsCardsLoading(false);
+        }, 500);
+      } catch (error) {
+        console.error("Error loading users:", error);
+        // Fallback to sample data on error
+        setUsers(sampleUsers);
+        setIsPageLoading(false);
         setIsCardsLoading(false);
-      }, 500);
+      }
     };
 
     loadData();
@@ -127,12 +150,25 @@ const Users = () => {
     }, "Adding new user...");
   };
 
-  const handleRefreshData = () => {
-    showLoading("Refreshing user data...");
-    setTimeout(() => {
-      hideLoading();
-    }, 1500);
+  const handleRefreshData = async () => {
+    await executeWithLoading(async () => {
+      try {
+        const apiUsers = (await getUsers()) as any;
+        console.log("Refreshed API Users:", apiUsers);
+
+        if (apiUsers && apiUsers.users && apiUsers.users.length > 0) {
+          setUsers(apiUsers.users);
+        } else {
+          setUsers(sampleUsers);
+        }
+      } catch (error) {
+        console.error("Error refreshing users:", error);
+        setUsers(sampleUsers);
+      }
+    }, "Refreshing user data...");
   };
+
+  console.log(users);
 
   return (
     <div className="admin-page-bg">
@@ -169,9 +205,11 @@ const Users = () => {
                     <p className="text-gray-400 text-sm font-medium">
                       Total Users
                     </p>
-                    <p className="text-3xl font-bold text-white">1,234</p>
+                    <p className="text-3xl font-bold text-white">
+                      {users.length}
+                    </p>
                     <p className="text-trend-positive text-sm font-medium">
-                      +12 this week
+                      Live data
                     </p>
                   </div>
                   <div className="icon-container-blue">
@@ -186,9 +224,24 @@ const Users = () => {
                     <p className="text-gray-400 text-sm font-medium">
                       Active Users
                     </p>
-                    <p className="text-3xl font-bold text-white">987</p>
+                    <p className="text-3xl font-bold text-white">
+                      {
+                        users.filter(
+                          (user) => (user.status || "Active") === "Active"
+                        ).length
+                      }
+                    </p>
                     <p className="text-trend-positive text-sm font-medium">
-                      80% online
+                      {users.length > 0
+                        ? Math.round(
+                            (users.filter(
+                              (user) => (user.status || "Active") === "Active"
+                            ).length /
+                              users.length) *
+                              100
+                          )
+                        : 0}
+                      % active
                     </p>
                   </div>
                   <div className="icon-container-green">
@@ -201,11 +254,26 @@ const Users = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-400 text-sm font-medium">
-                      New Signups
+                      Customer Users
                     </p>
-                    <p className="text-3xl font-bold text-white">45</p>
-                    <p className="text-trend-negative text-sm font-medium">
-                      -5% from last week
+                    <p className="text-3xl font-bold text-white">
+                      {
+                        users.filter(
+                          (user) => (user.role || "customer") === "customer"
+                        ).length
+                      }
+                    </p>
+                    <p className="text-trend-positive text-sm font-medium">
+                      {users.length > 0
+                        ? Math.round(
+                            (users.filter(
+                              (user) => (user.role || "customer") === "customer"
+                            ).length /
+                              users.length) *
+                              100
+                          )
+                        : 0}
+                      % customers
                     </p>
                   </div>
                   <div className="icon-container-purple">
@@ -220,9 +288,15 @@ const Users = () => {
                     <p className="text-gray-400 text-sm font-medium">
                       Admin Users
                     </p>
-                    <p className="text-3xl font-bold text-white">12</p>
+                    <p className="text-3xl font-bold text-white">
+                      {users.filter((user) => user.role === "admin").length}
+                    </p>
                     <p className="text-trend-neutral text-sm font-medium">
-                      3 roles
+                      {
+                        new Set(users.map((user) => user.role || "customer"))
+                          .size
+                      }{" "}
+                      roles
                     </p>
                   </div>
                   <div className="icon-container-red">
@@ -248,6 +322,10 @@ const Users = () => {
             <button className="btn-glass">
               <Filter className="h-4 w-4" />
               Filters
+            </button>
+            <button onClick={handleRefreshData} className="btn-glass">
+              <RefreshCw className="h-4 w-4" />
+              Refresh
             </button>
           </div>
           <button onClick={handleAddUser} className="btn-red-primary">
@@ -286,62 +364,99 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-700/50">
-                  {users.map((user, index) => (
-                    <tr
-                      key={user.id}
-                      className="table-row-hover"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          <div className="avatar-red">
-                            {user.name
-                              .split(" ")
-                              .map((n: string) => n[0])
-                              .join("")}
+                  {users.map((user, index) => {
+                    // Handle both API data and sample data formats
+                    const userName = user.userName || user.name;
+                    const userEmail = user.email;
+                    const userRole = user.role || "Customer";
+                    const userStatus = user.status || "Active";
+                    const userJoinDate = user.joinDate || "N/A";
+                    const userLastLogin = user.lastLogin || "N/A";
+                    const userId = user.id;
+
+                    return (
+                      <tr
+                        key={userId}
+                        className="table-row-hover"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-3">
+                            {user.avatar && user.avatar !== null ? (
+                              <img
+                                src={user.avatar}
+                                alt={userName}
+                                className="w-10 h-10 rounded-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src =
+                                    "/icons/default-avatar.png";
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src="/icons/default-avatar.png"
+                                alt={userName}
+                                className="w-10 h-10 rounded-full object-cover"
+                              />
+                            )}
+                            <div>
+                              <p className="font-semibold text-white">
+                                {userName}
+                              </p>
+                              <p className="text-sm text-gray-400 flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {userEmail}
+                              </p>
+                              {user.phoneNumber && (
+                                <p className="text-sm text-gray-400 flex items-center gap-1">
+                                  <Phone className="h-3 w-3" />
+                                  {user.phoneNumber}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-semibold text-white">
-                              {user.name}
-                            </p>
-                            <p className="text-sm text-gray-400 flex items-center gap-1">
-                              <Mail className="h-3 w-3" />
-                              {user.email}
-                            </p>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className={getRoleColor(userRole)}>
+                            {userRole}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className={getStatusColor(userStatus)}>
+                            {userStatus}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-gray-300">
+                          {userJoinDate}
+                        </td>
+                        <td className="py-4 px-6 text-gray-300">
+                          {userLastLogin}
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            <button
+                              className="action-btn-edit"
+                              title="Edit user"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              className="action-btn-delete"
+                              title="Delete user"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                            <button
+                              className="action-btn-more"
+                              title="More options"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </button>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className={getRoleColor(user.role)}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className={getStatusColor(user.status)}>
-                          {user.status}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6 text-gray-300">
-                        {user.joinDate}
-                      </td>
-                      <td className="py-4 px-6 text-gray-300">
-                        {user.lastLogin}
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          <button className="action-btn-edit">
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button className="action-btn-delete">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                          <button className="action-btn-more">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -350,7 +465,9 @@ const Users = () => {
 
         {/* Pagination */}
         <div className="flex items-center justify-between">
-          <p className="text-gray-400">Showing 1 to 5 of 1,234 results</p>
+          <p className="text-gray-400">
+            Showing 1 to {users.length} of {users.length} results
+          </p>
           <div className="flex items-center gap-2">
             <button className="px-4 py-2 bg-zinc-800/50 border border-zinc-700/50 rounded-lg text-gray-300 hover:bg-zinc-700/50 transition-colors">
               Previous
