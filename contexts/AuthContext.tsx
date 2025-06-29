@@ -128,12 +128,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     refreshAuth,
     // Helper methods that delegate to AuthService
-    isEmailVerified: AuthService.isEmailVerified,
-    isAccountLocked: AuthService.isAccountLocked,
-    getUserRole: AuthService.getUserRole,
-    isAdmin: AuthService.isAdmin,
-    isStaff: AuthService.isStaff,
-    getUserId: AuthService.getUserId,
+    isEmailVerified: () => AuthService.isEmailVerified(),
+    isAccountLocked: () => AuthService.isAccountLocked(),
+    getUserRole: () => AuthService.getUserRole(),
+    isAdmin: () => AuthService.isAdmin(),
+    isStaff: () => AuthService.isStaff(),
+    getUserId: () => AuthService.getUserId(),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
