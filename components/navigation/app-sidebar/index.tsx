@@ -4,17 +4,11 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   ChevronUp,
-  Users,
-  CreditCard,
-  ShieldUser,
   Bell,
   User,
   Crown,
+  Users,
   LogOut,
-  IdCard,
-  Sparkles,
-  ChartSpline,
-  Calendar,
   Home,
 } from "lucide-react";
 
@@ -43,7 +37,8 @@ import ROUTES from "@/constants/routes";
 
 export function AppSidebar() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, getUserRole, user } = useAuth();
+  const userRole = getUserRole();
 
   const handleBackToHome = () => {
     router.push(ROUTES.HOME);
@@ -54,12 +49,35 @@ export function AppSidebar() {
     router.push(ROUTES.HOME);
   };
 
+  // Get role-specific UI elements
+  const getRoleConfig = (role?: string | null) => {
+    switch (role) {
+      case "admin":
+        return {
+          title: "Admin",
+          icon: Crown,
+        };
+      case "staff":
+        return {
+          title: "Staff",
+          icon: Users,
+        };
+      default:
+        return {
+          title: "Panel",
+          icon: User,
+        };
+    }
+  };
+
+  const roleConfig = getRoleConfig(userRole);
+
   return (
     <Sidebar
       collapsible="icon"
       className="sidebar-gradient border-r border-sidebar-border"
     >
-      <SidebarHeader className="border-b border-sidebar-border/30 bg-sidebar-red-gradient">
+      <SidebarHeader className="border-b border-sidebar-border/30 text-yellow-400 bg-sidebar-red-gradient">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" className="sidebar-menu-button-lg">
@@ -68,7 +86,7 @@ export function AppSidebar() {
               </div>
               <div className="sidebar-user-text">
                 <span className="truncate font-bold text-white text-2xl">
-                  Admin
+                  {roleConfig.title}
                 </span>
               </div>
             </SidebarMenuButton>
@@ -96,10 +114,10 @@ export function AppSidebar() {
                   </div>
                   <div className="sidebar-user-text">
                     <span className="truncate font-semibold text-white">
-                      Admin User
+                      {user?.name || "User"}
                     </span>
                     <span className="truncate text-xs text-gray-300">
-                      admin@theaterhub.com
+                      {user?.email || "user@theaterhub.com"}
                     </span>
                   </div>
                   <ChevronUp className="ml-auto size-4 text-red-400" />

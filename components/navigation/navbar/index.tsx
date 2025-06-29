@@ -44,9 +44,9 @@ const getDropdownMenuItems = (userRole?: string) => [
     visible: true,
   },
   {
-    href: "/admin",
+    href: userRole === "admin" || userRole === "staff" ? `/${userRole}` : "/",
     icon: Settings,
-    label: "Admin Panel",
+    label: userRole === "admin" ? "Admin Panel" : "Staff Panel",
     visible: userRole === "admin" || userRole === "staff",
   },
 ];

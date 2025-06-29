@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAsyncOperation } from "@/contexts/LoadingContext";
 import { getUsers } from "@/lib/services/userService";
-import { User } from "@/app/admin/users/columns";
+import { User } from "@/app/[role]/users/columns";
 
 export const useUsers = () => {
   const { executeWithLoading } = useAsyncOperation();

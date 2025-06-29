@@ -38,3 +38,25 @@ export const formatVND = (amount: number) => {
 export const formatPriceVND = (amount: number) => {
   return `Từ ${formatVND(amount)}`;
 };
+
+/**
+ * Get the dashboard route based on user role
+ * Uses dynamic [role] routing structure
+ */
+export function getDashboardRoute(userRole?: string | null): string {
+  switch (userRole) {
+    case "admin":
+    case "staff":
+      return `/${userRole}`;
+    default:
+      return "/";
+  }
+}
+
+/**
+ * Get role-specific route
+ */
+export function getRoleRoute(userRole: string, page: string = ""): string {
+  const basePath = `/${userRole}`;
+  return page ? `${basePath}/${page}` : basePath;
+}

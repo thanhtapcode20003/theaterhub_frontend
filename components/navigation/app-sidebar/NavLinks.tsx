@@ -6,13 +6,19 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import React from "react";
 
-import { sidebarLinks } from "@/constants";
+import { getSidebarLinks } from "@/constants";
 
 const NavLinks = () => {
   const pathname = usePathname();
+  const { getUserRole } = useAuth();
+  const userRole = getUserRole();
+
+  // Get dynamic sidebar links based on user role
+  const sidebarLinks = getSidebarLinks(userRole || undefined);
 
   return (
     <SidebarMenu className="sidebar-menu-layout">

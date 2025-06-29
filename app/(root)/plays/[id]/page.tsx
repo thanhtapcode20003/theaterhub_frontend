@@ -12,13 +12,14 @@ import { formatDate, formatVND } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 interface PlayDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-const PlayDetailPage = ({ params }: PlayDetailPageProps) => {
-  const playId = parseInt(params.id);
+const PlayDetailPage = async ({ params }: PlayDetailPageProps) => {
+  const { id } = await params;
+  const playId = parseInt(id);
   const play = playsData.find((p) => p.play_id === playId);
 
   if (!play) {
