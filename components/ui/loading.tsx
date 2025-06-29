@@ -24,7 +24,7 @@ const Loading: React.FC<LoadingProps> = ({
   };
 
   const variantClasses = {
-    primary: "border-blue-500 border-t-transparent",
+    primary: "border-red-500 border-t-transparent",
     white: "border-white border-t-transparent",
     red: "border-red-500 border-t-transparent",
   };
