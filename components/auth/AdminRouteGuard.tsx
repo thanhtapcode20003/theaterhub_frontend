@@ -3,7 +3,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { PageLoading } from "@/components/ui/loading";
+import Loading from "@/components/ui/loading";
 import ROUTES from "@/constants/routes";
 
 interface AdminRouteGuardProps {
@@ -20,7 +20,7 @@ export default function AdminRouteGuard({ children }: AdminRouteGuardProps) {
 
     // If not authenticated, redirect to sign in
     if (!isAuthenticated) {
-      router.push(ROUTES.SIGN_IN);
+      router.push(ROUTES.HOME);
       return;
     }
 
@@ -33,12 +33,21 @@ export default function AdminRouteGuard({ children }: AdminRouteGuardProps) {
 
   // Show loading while checking auth
   if (loading) {
-    return <PageLoading text="Checking permissions..." />;
+    return (
+      <Loading
+        fullScreen
+        size="lg"
+        variant="primary"
+        text="Checking permissions..."
+      />
+    );
   }
 
   // Show loading if not authenticated or not authorized
   if (!isAuthenticated || (!isAdmin() && !isStaff())) {
-    return <PageLoading text="Redirecting..." />;
+    return (
+      <Loading fullScreen size="lg" variant="primary" text="Redirecting..." />
+    );
   }
 
   // If all checks pass, render the protected content

@@ -2,43 +2,57 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
-import { LuTicketCheck, LuUser, LuLogOut, LuSettings } from "react-icons/lu";
+import React from "react";
+import {
+  Ticket,
+  User,
+  LogOut,
+  Settings,
+  ChevronDown,
+  Plus,
+  Search,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import OAuthCallback from "@/components/auth/OAuthCallback";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 // Dynamic menu configuration
 const getDropdownMenuItems = (userRole?: string) => [
   {
     href: "/tickets",
-    icon: LuTicketCheck,
+    icon: Ticket,
     label: "Vé đã mua",
     visible: true,
   },
   {
     href: "/profile",
-    icon: LuUser,
+    icon: User,
     label: "Sự kiện của tôi",
     visible: true,
   },
   {
     href: "/account",
-    icon: LuSettings,
+    icon: Settings,
     label: "Tài khoản của tôi",
     visible: true,
   },
-  // Add more items based on user role if needed
-  // {
-  //   href: "/admin",
-  //   icon: LuSettings,
-  //   label: "Admin Panel",
-  //   visible: userRole === "admin",
-  // },
+  {
+    href: "/admin",
+    icon: Settings,
+    label: "Admin Panel",
+    visible: userRole === "admin" || userRole === "staff",
+  },
 ];
 
 const Navbar = () => {
   const { user, isAuthenticated, loading, logout } = useAuth();
-  const [showDropdown, setShowDropdown] = useState(false);
 
   // Get dynamic menu items based on user role
   const dropdownMenuItems = getDropdownMenuItems(user?.role);
@@ -104,36 +118,50 @@ const Navbar = () => {
           </Link>
 
           {/* Search bar */}
-          <div className="hidden lg:flex items-center rounded-md bg-white overflow-hidden">
-            <input
-              type="text"
-              placeholder="Bạn tìm gì hôm nay?"
-              className="p-2 px-4 outline-none placeholder"
-            />
-            <button className="bg-white px-4 py-2 text-dark400">
+          <div className="hidden lg:flex items-center bg-white rounded-full overflow-hidden shadow-sm border border-gray-200 max-w-md flex-1 mx-8">
+            <div className="flex items-center flex-1">
+              <Search className="w-5 h-5 text-gray-400 ml-4" />
+              <input
+                type="text"
+                placeholder="Bạn tìm gì hôm nay?"
+                className="flex-1 px-3 py-3 outline-none text-gray-900 placeholder-gray-500 bg-transparent"
+              />
+            </div>
+            <Button
+              className="bg-white hover:bg-white text-gray-700 hover:text-black outline-none border-none"
+              size="sm"
+            >
               Tìm kiếm
-            </button>
+            </Button>
           </div>
 
           {/* Right navigation buttons */}
           <div className="flex items-center gap-4 lg:gap-12">
             {isAuthenticated && (
-              <Link
-                href="/tickets"
-                className="hidden md:flex items-center text-white"
-              >
-                <LuTicketCheck className="w-6 h-6 mr-1" />
-                <span className="base-medium text-white">Vé đã mua</span>
-              </Link>
+              <>
+                <Link
+                  href="/tickets"
+                  className="hidden md:flex items-center text-white"
+                >
+                  <Ticket className="w-6 h-6 mr-1" />
+                  <span className="base-medium text-white">Vé đã mua</span>
+                </Link>
+
+                {/* Create Event Button */}
+                <Link
+                  href="/create-event"
+                  className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full hover:bg-gray-100 transition-colors font-medium"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="text-sm">Tạo sự kiện</span>
+                </Link>
+              </>
             )}
 
             {/* Authentication section */}
             {isAuthenticated && user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center text-white hover:text-gray-300 cursor-pointer"
-                >
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center text-white hover:text-gray-300 cursor-pointer outline-none">
                   <div className="flex items-center mr-2">
                     <Image
                       src={user.avatar || "/icons/default-avatar.png"}
@@ -142,49 +170,62 @@ const Navbar = () => {
                       height={32}
                       className="rounded-full mr-2"
                     />
-                    <span className="base-medium">{user.name}</span>
+                    <span className="base-medium">Tài khoản</span>
                   </div>
-                  <span className="small-regular">▼</span>
-                </button>
+                  <ChevronDown className="w-4 h-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-60 bg-white rounded-md shadow-lg border border-gray-200"
+                  align="end"
+                  sideOffset={5}
+                >
+                  {/* User Info Header */}
+                  <div className="px-4 py-3 border-b border-gray-200">
+                    <p className="text-sm font-medium text-gray-900">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-gray-500 mb-2">{user.email}</p>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                        user.role === "admin"
+                          ? "bg-red-100 text-red-800 border border-red-200"
+                          : user.role === "staff"
+                            ? "bg-blue-100 text-blue-800 border border-blue-200"
+                            : "bg-green-100 text-green-800 border border-green-200"
+                      }`}
+                    >
+                      {user.role}
+                    </span>
+                  </div>
 
-                {showDropdown && (
-                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-md shadow-light100 py-1 z-50">
-                    <div className="px-4 py-2 border-b border-gray-200">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user.name}
-                      </p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
-                      <p className="text-xs text-gray-400 capitalize">
-                        {user.role}
-                      </p>
-                    </div>
-                    {visibleMenuItems.map((item, index) => {
-                      const IconComponent = item.icon;
-                      return (
+                  {/* Menu Items */}
+                  {visibleMenuItems.map((item, index) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <DropdownMenuItem key={index} className="cursor-pointer">
                         <Link
-                          key={index}
                           href={item.href}
-                          className="flex items-center px-4 py-2 text-dark400 hover:bg-gray-100"
-                          onClick={() => setShowDropdown(false)}
+                          className="flex items-center w-full px-2 py-1"
                         >
                           <IconComponent className="w-4 h-4 mr-2" />
                           <span className="body-medium">{item.label}</span>
                         </Link>
-                      );
-                    })}
-                    <button
-                      onClick={() => {
-                        logout();
-                        setShowDropdown(false);
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-dark400 hover:bg-gray-100 cursor-pointer"
-                    >
-                      <LuLogOut className="w-4 h-4 mr-2" />
-                      <span className="body-medium">Đăng xuất</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+                      </DropdownMenuItem>
+                    );
+                  })}
+
+                  <DropdownMenuSeparator />
+
+                  {/* Logout */}
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    <span className="body-medium">Đăng xuất</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <div className="flex items-center text-white">
                 <Link href="/sign-in" className="hover:text-gray-300">

@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   ChevronUp,
   Users,
@@ -11,6 +15,7 @@ import {
   Sparkles,
   ChartSpline,
   Calendar,
+  Home,
 } from "lucide-react";
 
 import {
@@ -34,8 +39,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import NavLinks from "./NavLinks";
+import ROUTES from "@/constants/routes";
 
 export function AppSidebar() {
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleBackToHome = () => {
+    router.push(ROUTES.HOME);
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push(ROUTES.HOME);
+  };
+
   return (
     <Sidebar
       collapsible="icon"
@@ -94,23 +112,25 @@ export function AppSidebar() {
                 sideOffset={4}
               >
                 <DropdownMenuItem className="dropdown-item">
-                  <Sparkles className="mr-2 h-4 w-4 text-red-400" />
-                  Upgrade to Pro
-                </DropdownMenuItem>
-                <DropdownMenuItem className="dropdown-item">
                   <User className="mr-2 h-4 w-4 text-red-400" />
                   Account
-                </DropdownMenuItem>
-                <DropdownMenuItem className="dropdown-item">
-                  <CreditCard className="mr-2 h-4 w-4 text-red-400" />
-                  Billing
                 </DropdownMenuItem>
                 <DropdownMenuItem className="dropdown-item">
                   <Bell className="mr-2 h-4 w-4 text-red-400" />
                   Notifications
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="dropdown-item"
+                  onClick={handleBackToHome}
+                >
+                  <Home className="mr-2 h-4 w-4 text-red-400" />
+                  Back to Home
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-red-900/30" />
-                <DropdownMenuItem className="dropdown-item-danger">
+                <DropdownMenuItem
+                  className="dropdown-item-danger"
+                  onClick={handleLogout}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
