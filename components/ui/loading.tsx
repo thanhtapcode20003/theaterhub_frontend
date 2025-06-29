@@ -73,16 +73,16 @@ export const PageLoading: React.FC<{ text?: string }> = ({
     <div className="relative">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-transparent to-transparent" />
 
       <div className="relative z-10 flex flex-col items-center justify-center gap-6 p-8">
         <div className="relative">
           {/* Outer Ring */}
-          <div className="w-20 h-20 border-4 border-blue-500/20 rounded-full animate-pulse" />
+          <div className="w-20 h-20 border-4 border-red-500/20 rounded-full animate-pulse" />
           {/* Inner Spinner */}
-          <div className="absolute inset-2 w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="absolute inset-2 w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin" />
           {/* Center Dot */}
-          <div className="absolute inset-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 rounded-full animate-pulse" />
+          <div className="absolute inset-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full animate-pulse" />
         </div>
         <div className="text-center">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-2">
