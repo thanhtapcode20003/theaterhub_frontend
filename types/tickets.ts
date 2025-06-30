@@ -1,5 +1,6 @@
-import { User } from "./auth";
-import { Showtime, Seat, TicketType } from "./theater";
+import type { User } from "./users";
+import type { Showtime, TicketType } from "./showtimes";
+import type { Seat } from "./seats";
 
 // Ticket Types
 export interface Ticket {

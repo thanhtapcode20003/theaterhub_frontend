@@ -42,6 +42,23 @@ export const API_ENDPOINTS = {
     UPDATE: "/events",
     DELETE: "/events",
   },
+  // Organizers endpoints
+  ORGANIZERS: {
+    LIST: "/organizers",
+    CREATE: "/organizers",
+    DETAIL: "/organizers",
+    UPDATE: "/organizers",
+    DELETE: "/organizers",
+  },
+  // Event Categories endpoints
+  EVENT_CATEGORIES: {
+    LIST: "/event-categories",
+    CREATE: "/event-categories",
+    DETAIL: "/event-categories",
+    UPDATE: "/event-categories",
+    DELETE: "/event-categories",
+    BY_SLUG: "/event-categories/slug",
+  },
   // Tickets endpoints
   TICKETS: {
     LIST: "/tickets",
@@ -49,11 +66,22 @@ export const API_ENDPOINTS = {
     DETAIL: "/tickets",
     CANCEL: "/tickets",
   },
-  // Theaters endpoints
-  THEATERS: {
-    LIST: "/theaters",
-    DETAIL: "/theaters",
-    ROOMS: "/theaters/{id}/rooms",
+  // Locations endpoints
+  LOCATIONS: {
+    LIST: "/locations",
+    CREATE: "/locations",
+    DETAIL: "/locations",
+    UPDATE: "/locations",
+    DELETE: "/locations",
+    SEATS: "/locations/{id}/seats",
+  },
+  // Showtimes endpoints
+  SHOWTIMES: {
+    LIST: "/showtimes",
+    CREATE: "/showtimes",
+    DETAIL: "/showtimes",
+    UPDATE: "/showtimes",
+    DELETE: "/showtimes",
   },
 } as const;
 

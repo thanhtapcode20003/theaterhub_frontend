@@ -1,17 +1,22 @@
 // Main Types Export File
 // This file re-exports all types for easy importing
 
-// Authentication Types
-export * from "./auth";
+// User and Authentication Types
+export * from "./users";
 
 // Common/Shared Types (export first to avoid conflicts)
 export * from "./common";
 
-// Theater, Room, Seat, and Showtime Types
-export * from "./theater";
+// Location, Seat, Showtime, and Theater-related Types (separate files)
+export * from "./locations";
+export * from "./seats";
+export * from "./showtimes";
+export * from "./theater"; // For backward compatibility
 
-// Event Types
+// Event-related Types
 export * from "./events";
+export * from "./organizers";
+export * from "./categories";
 
 // Ticket and Payment Types
 export * from "./tickets";
