@@ -14,6 +14,22 @@ const nextConfig: NextConfig = {
         hostname: "ticketbox.vn",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname:
+          "storage.googleapis.com/theaterhub-storage.firebasestorage.app",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "theaterhub-storage.firebasestorage.app",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        port: "",
+      },
     ],
   },
 };

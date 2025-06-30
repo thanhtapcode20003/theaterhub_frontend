@@ -16,8 +16,11 @@ export const fetchApi = async <T>(
       ? localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
       : null;
 
+  // Smart Content-Type handling: don't set Content-Type for FormData
+  const isFormData = options.body instanceof FormData;
+
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
+    ...(!isFormData && { "Content-Type": "application/json" }),
     ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
@@ -44,9 +47,24 @@ export const fetchApi = async <T>(
 };
 
 export const get = <T>(url: string) => fetchApi<T>(url, { method: "GET" });
+
 export const post = <T>(url: string, body: any) =>
-  fetchApi<T>(url, { method: "POST", body: JSON.stringify(body) });
-export const put = <T>(url: string, body: any) =>
-  fetchApi<T>(url, { method: "PUT", body: JSON.stringify(body) });
+  fetchApi<T>(url, {
+    method: "POST",
+    body: body instanceof FormData ? body : JSON.stringify(body),
+  });
+
+// export const put = <T>(url: string, body: any) =>
+//   fetchApi<T>(url, {
+//     method: "PUT",
+//     body: body instanceof FormData ? body : JSON.stringify(body),
+//   });
+
+export const patch = <T>(url: string, body: any) =>
+  fetchApi<T>(url, {
+    method: "PATCH",
+    body: body instanceof FormData ? body : JSON.stringify(body),
+  });
+
 export const remove = <T>(url: string) =>
   fetchApi<T>(url, { method: "DELETE" });

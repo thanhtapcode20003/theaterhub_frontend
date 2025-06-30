@@ -30,6 +30,11 @@ export const API_ENDPOINTS = {
   },
   // User endpoints
   USERS: {
+    LIST: "/users",
+    CREATE: "/users",
+    DETAIL: "/users",
+    UPDATE: "/users",
+    DELETE: "/users",
     PROFILE: "/users/profile",
     UPDATE_PROFILE: "/users/profile",
     CHANGE_PASSWORD: "/users/change-password",
@@ -37,9 +42,11 @@ export const API_ENDPOINTS = {
   // Events endpoints
   EVENTS: {
     LIST: "/events",
+    LIST_PUBLIC: "/public/events",
     CREATE: "/events",
     DETAIL: "/events",
     UPDATE: "/events",
+    UPDATE_DESCRIPTION: "/events",
     DELETE: "/events",
   },
   // Organizers endpoints

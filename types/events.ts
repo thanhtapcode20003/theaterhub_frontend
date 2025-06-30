@@ -36,6 +36,18 @@ export interface CreateEventRequest {
   category_id?: number;
 }
 
+// Form Data Create Event Request (for file uploads)
+export interface CreateEventFormRequest {
+  title: string;
+  event_type: "general" | "zoned" | "seated";
+  organizer_id: number;
+  category_id: number;
+  custom_location?: string;
+  description?: EventDescriptionContent[];
+  poster?: File;
+  description_images?: File[];
+}
+
 export interface UpdateEventRequest {
   title?: string;
   description?: EventDescriptionContent[];

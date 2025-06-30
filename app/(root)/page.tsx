@@ -12,12 +12,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { formatDate, formatPriceVND } from "@/lib/utils";
-import {
-  getPublicEvents,
-  getLowestPrice,
-  getNearestShowtime,
-  Event,
-} from "@/lib/services/eventService";
+import { getPublicEvents } from "@/lib/services/eventService";
+import { Event } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -43,6 +40,19 @@ const Home = () => {
     fetchEvents();
   }, []);
 
+  // Event Card Skeleton Component
+  const EventCardSkeleton = () => (
+    <div className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+      <div className="relative rounded-lg overflow-hidden shadow-lg">
+        <Skeleton className="w-full aspect-video" />
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <Skeleton className="h-4 w-3/4 mb-2" />
+          <Skeleton className="h-3 w-1/2" />
+        </div>
+      </div>
+    </div>
+  );
+
   // Loading state
   if (loading) {
     return (
@@ -59,8 +69,76 @@ const Home = () => {
             title="Trailer 2"
           />
         </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-white">Loading events...</div>
+
+        {/* First Events Carousel Skeleton */}
+        <div className="mt-8 md:mt-12">
+          <div className="mb-4 md:mb-6 px-4 sm:px-0">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
+              Dành cho bạn
+            </h2>
+          </div>
+          <Carousel className="w-full">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <EventCardSkeleton key={`skeleton-1-${index}`} />
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </Carousel>
+        </div>
+
+        {/* Second Events Carousel Skeleton */}
+        <div className="mt-8 md:mt-12">
+          <div className="mb-4 md:mb-6 px-4 sm:px-0">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl md:text-2xl font-bold text-white">
+                Sự kiện sắp diễn ra
+              </h2>
+              <div className="text-gray-400 flex items-center gap-1 text-sm md:text-base">
+                <span className="hidden sm:inline">Xem thêm</span>
+                <span className="sm:hidden">Xem</span>
+                <svg
+                  className="w-3 h-3 md:w-4 md:h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <Carousel className="w-full">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={`skeleton-2-${index}`}
+                  className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
+                >
+                  <div className="cursor-pointer">
+                    <div className="rounded-lg overflow-hidden shadow-lg">
+                      <Skeleton className="w-full aspect-video" />
+                    </div>
+                    <div className="p-2">
+                      <Skeleton className="h-5 w-4/5 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-2 " />
+                      <Skeleton className="h-4 w-1/3 mb-1 " />
+                      <Skeleton className="h-3 w-3/4 mb-1" />
+                      <Skeleton className="h-3 w-2/3" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2 top-[40%]" />
+            <CarouselNext className="right-2 top-[40%]" />
+          </Carousel>
         </div>
       </div>
     );
@@ -89,6 +167,8 @@ const Home = () => {
     );
   }
 
+  console.log(events);
+
   return (
     <div className="w-full mx-auto px-0 sm:px-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
@@ -109,7 +189,7 @@ const Home = () => {
         {/* Section Title */}
         <div className="mb-4 md:mb-6 px-4 sm:px-0">
           <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
-            Sự kiện mới cập nhật
+            Dành cho bạn
           </h2>
         </div>
 
@@ -131,18 +211,18 @@ const Home = () => {
                   <Link href={`/events/${event.event_id}`}>
                     <div className="relative rounded-lg overflow-hidden shadow-lg cursor-pointer">
                       <Image
-                        src={event.poster_url}
+                        src={event.poster_url || ""}
                         alt={event.title}
-                        width={300}
-                        height={420}
-                        className="w-full h-80 object-cover"
+                        width={1920}
+                        height={1080}
+                        className="w-full aspect-video object-cover"
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                         <h3 className="text-white font-semibold text-sm line-clamp-2">
                           {event.title}
                         </h3>
                         <p className="text-white/80 text-xs mt-1">
-                          {event.category.category_name}
+                          {event.category?.category_name}
                         </p>
                       </div>
                     </div>
@@ -203,9 +283,6 @@ const Home = () => {
           >
             <CarouselContent className="-ml-2 md:-ml-4">
               {events.map((event) => {
-                const lowestPrice = getLowestPrice(event);
-                const nearestShowtime = getNearestShowtime(event);
-
                 return (
                   <CarouselItem
                     key={`price-${event.event_id}`}
@@ -215,11 +292,11 @@ const Home = () => {
                       <div className="cursor-pointer">
                         <div className="rounded-lg overflow-hidden shadow-lg">
                           <Image
-                            src={event.poster_url}
+                            src={event.poster_url || ""}
                             alt={event.title}
-                            width={300}
-                            height={240}
-                            className="w-full h-70 object-cover"
+                            width={1920}
+                            height={1080}
+                            className="w-full aspect-video object-cover"
                           />
                         </div>
                         <div className="p-2">
@@ -227,14 +304,14 @@ const Home = () => {
                             {event.title}
                           </h3>
                           <p className="text-gray-400 text-sm mb-2">
-                            {event.category.category_name}
+                            {event.category?.category_name}
                           </p>
-                          {lowestPrice && (
+                          {event.showtimes && event.showtimes.length > 0 && (
                             <p className="text-red-500 font-bold text-md mb-1">
-                              {formatPriceVND(lowestPrice)}
+                              Từ {formatPriceVND(200000)}
                             </p>
                           )}
-                          {nearestShowtime && (
+                          {event.showtimes && event.showtimes[0] && (
                             <div className="flex items-center text-gray-400 text-xs">
                               <svg
                                 className="w-3 h-3 mr-1"
@@ -249,10 +326,10 @@ const Home = () => {
                                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"
                                 />
                               </svg>
-                              {formatDate(nearestShowtime.start_time)}
+                              {formatDate(event.showtimes[0].start_time)}
                             </div>
                           )}
-                          {nearestShowtime && (
+                          {event.showtimes && event.showtimes[0] && (
                             <div className="flex items-center text-gray-400 text-xs mt-1">
                               <svg
                                 className="w-3 h-3 mr-1"
@@ -273,7 +350,7 @@ const Home = () => {
                                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                                 />
                               </svg>
-                              {nearestShowtime.location_name}
+                              Location Available
                             </div>
                           )}
                         </div>
