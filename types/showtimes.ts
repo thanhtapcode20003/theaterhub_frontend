@@ -3,7 +3,7 @@ export interface Showtime {
   showtime_id: number;
   event_id: number;
   location_id: number;
-  // location_name?: string;
+  location_name?: string;
   start_time: string; // DATETIME
   location?: import("./locations").Location;
   seat_prices?: SeatPrice[];
@@ -15,7 +15,7 @@ export interface SeatPrice {
   seat_price_id: number;
   showtime_id: number;
   seat_type_code: string;
-  price: number; // DECIMAL(10,2)
+  price: string; // DECIMAL(10,2)
   showtime?: Showtime;
   seat_type?: import("./seats").SeatType;
 }

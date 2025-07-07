@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import Link from "next/link";
-import { formatDate, formatPriceVND } from "@/lib/utils";
+import { formatDate, getFormattedLowestPrice } from "@/lib/utils";
 import { getPublicEvents } from "@/lib/services/eventService";
 import { Event } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -169,6 +169,25 @@ const Home = () => {
 
   console.log(events);
 
+  // Example of how the money formatting works with your showtime data:
+  // const exampleShowtime = {
+  //   "showtime_id": 16,
+  //   "location_id": 13,
+  //   "location_name": "Rạp Hưng Đạo - Nhà Hát Cải Lương Trần Hữu Trang",
+  //   "start_time": "2025-08-12T03:00:00+07:00",
+  //   "ticket_types": [],
+  //   "seat_prices": [
+  //     { "seat_type_code": "vip", "price": "400000.00" },      // → 400.000 đ
+  //     { "seat_type_code": "standard", "price": "99000.00" },  // → 99.000 đ
+  //     { "seat_type_code": "double", "price": "149000.00" }    // → 149.000 đ
+  //   ]
+  // };
+  //
+  // Usage examples:
+  // getFormattedLowestPrice(exampleShowtime.seat_prices) → "99.000 đ"
+  // getFormattedSeatPrice(exampleShowtime.seat_prices, "vip") → "400.000 đ"
+  // formatSeatPrices(exampleShowtime.seat_prices) → adds formattedPrice field to each
+
   return (
     <div className="w-full mx-auto px-0 sm:px-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
@@ -206,7 +225,7 @@ const Home = () => {
               {events.map((event) => (
                 <CarouselItem
                   key={event.event_id}
-                  className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                  className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
                 >
                   <Link href={`/events/${event.event_id}`}>
                     <div className="relative rounded-lg overflow-hidden shadow-lg cursor-pointer">
@@ -217,14 +236,14 @@ const Home = () => {
                         height={1080}
                         className="w-full aspect-video object-cover"
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                      {/* <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                         <h3 className="text-white font-semibold text-sm line-clamp-2">
                           {event.title}
                         </h3>
                         <p className="text-white/80 text-xs mt-1">
                           {event.category?.category_name}
                         </p>
-                      </div>
+                      </div> */}
                     </div>
                   </Link>
                 </CarouselItem>
@@ -299,37 +318,44 @@ const Home = () => {
                             className="w-full aspect-video object-cover"
                           />
                         </div>
-                        <div className="p-2">
-                          <h3 className="text-white font-semibold text-lg mb-1 line-clamp-2">
+                        <div className="p-2 flex flex-col">
+                          <h3 className="text-white font-semibold text-sm mb-2 line-clamp-2 leading-tight h-8">
                             {event.title}
                           </h3>
-                          <p className="text-gray-400 text-sm mb-2">
+                          {/* <p className="text-gray-400 text-sm mb-2">
                             {event.category?.category_name}
-                          </p>
-                          {event.showtimes && event.showtimes.length > 0 && (
-                            <p className="text-red-500 font-bold text-md mb-1">
-                              Từ {formatPriceVND(200000)}
-                            </p>
-                          )}
-                          {event.showtimes && event.showtimes[0] && (
-                            <div className="flex items-center text-gray-400 text-xs">
-                              <svg
-                                className="w-3 h-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"
-                                />
-                              </svg>
-                              {formatDate(event.showtimes[0].start_time)}
-                            </div>
-                          )}
-                          {event.showtimes && event.showtimes[0] && (
+                          </p> */}
+                          <div className="mt-auto">
+                            {event.showtimes &&
+                              event.showtimes.length > 0 &&
+                              event.showtimes[0].seat_prices && (
+                                <p className="text-red-500 font-bold text-md mb-1">
+                                  Từ{" "}
+                                  {getFormattedLowestPrice(
+                                    event.showtimes[0].seat_prices
+                                  )}
+                                </p>
+                              )}
+                            {event.showtimes && event.showtimes[0] && (
+                              <div className="flex items-center text-white text-sm">
+                                <svg
+                                  className="w-3 h-3 mr-1"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"
+                                  />
+                                </svg>
+                                {formatDate(event.showtimes[0].start_time)}
+                              </div>
+                            )}
+                          </div>
+                          {/* {event.showtimes && event.showtimes[0] && (
                             <div className="flex items-center text-gray-400 text-xs mt-1">
                               <svg
                                 className="w-3 h-3 mr-1"
@@ -350,9 +376,9 @@ const Home = () => {
                                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                                 />
                               </svg>
-                              Location Available
+                              {event.showtimes[0].location_name}
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </Link>
