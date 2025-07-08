@@ -15,11 +15,17 @@ export const getEvents = async (): Promise<Event[]> => {
 };
 
 export const getPublicEventById = async (id: number): Promise<Event | null> => {
-  const response = await get<Event>(
+  const response = await get<{ success: boolean; event: Event }>(
     `${API_ENDPOINTS.EVENTS.LIST_PUBLIC}/${id}`
   );
-  return response.success ? response.data || null : null;
+  return response.success && response.data ? response.data.event || null : null;
 };
+// export const getPublicEventById = async (id: number): Promise<Event | null> => {
+//   const response = await get<Event>(
+//     `${API_ENDPOINTS.EVENTS.LIST_PUBLIC}/${id}`
+//   );
+//   return response.success ? response.data || null : null;
+// };
 
 export const getEventById = async (id: number): Promise<Event | null> => {
   const response = await get<Event>(`${API_ENDPOINTS.EVENTS.DETAIL}/${id}`);

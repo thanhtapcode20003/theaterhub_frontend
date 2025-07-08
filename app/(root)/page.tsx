@@ -15,6 +15,7 @@ import { formatDate, getFormattedLowestPrice } from "@/lib/utils";
 import { getPublicEvents } from "@/lib/services/eventService";
 import { Event } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronRight, Calendar } from "lucide-react";
 
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -45,10 +46,6 @@ const Home = () => {
     <div className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
       <div className="relative rounded-lg overflow-hidden shadow-lg">
         <Skeleton className="w-full aspect-video" />
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <Skeleton className="h-4 w-3/4 mb-2" />
-          <Skeleton className="h-3 w-1/2" />
-        </div>
       </div>
     </div>
   );
@@ -98,19 +95,7 @@ const Home = () => {
               <div className="text-gray-400 flex items-center gap-1 text-sm md:text-base">
                 <span className="hidden sm:inline">Xem thêm</span>
                 <span className="sm:hidden">Xem</span>
-                <svg
-                  className="w-3 h-3 md:w-4 md:h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
               </div>
             </div>
           </div>
@@ -125,12 +110,9 @@ const Home = () => {
                     <div className="rounded-lg overflow-hidden shadow-lg">
                       <Skeleton className="w-full aspect-video" />
                     </div>
-                    <div className="p-2">
-                      <Skeleton className="h-5 w-4/5 mb-2" />
+                    <div className="p-2 mt-5">
+                      <Skeleton className="h-5 w-3/5 mb-2" />
                       <Skeleton className="h-4 w-1/2 mb-2 " />
-                      <Skeleton className="h-4 w-1/3 mb-1 " />
-                      <Skeleton className="h-3 w-3/4 mb-1" />
-                      <Skeleton className="h-3 w-2/3" />
                     </div>
                   </div>
                 </div>
@@ -168,25 +150,6 @@ const Home = () => {
   }
 
   console.log(events);
-
-  // Example of how the money formatting works with your showtime data:
-  // const exampleShowtime = {
-  //   "showtime_id": 16,
-  //   "location_id": 13,
-  //   "location_name": "Rạp Hưng Đạo - Nhà Hát Cải Lương Trần Hữu Trang",
-  //   "start_time": "2025-08-12T03:00:00+07:00",
-  //   "ticket_types": [],
-  //   "seat_prices": [
-  //     { "seat_type_code": "vip", "price": "400000.00" },      // → 400.000 đ
-  //     { "seat_type_code": "standard", "price": "99000.00" },  // → 99.000 đ
-  //     { "seat_type_code": "double", "price": "149000.00" }    // → 149.000 đ
-  //   ]
-  // };
-  //
-  // Usage examples:
-  // getFormattedLowestPrice(exampleShowtime.seat_prices) → "99.000 đ"
-  // getFormattedSeatPrice(exampleShowtime.seat_prices, "vip") → "400.000 đ"
-  // formatSeatPrices(exampleShowtime.seat_prices) → adds formattedPrice field to each
 
   return (
     <div className="w-full mx-auto px-0 sm:px-4">
@@ -236,14 +199,6 @@ const Home = () => {
                         height={1080}
                         className="w-full aspect-video object-cover"
                       />
-                      {/* <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                        <h3 className="text-white font-semibold text-sm line-clamp-2">
-                          {event.title}
-                        </h3>
-                        <p className="text-white/80 text-xs mt-1">
-                          {event.category?.category_name}
-                        </p>
-                      </div> */}
                     </div>
                   </Link>
                 </CarouselItem>
@@ -275,19 +230,7 @@ const Home = () => {
             >
               <span className="hidden sm:inline">Xem thêm</span>
               <span className="sm:hidden">Xem</span>
-              <svg
-                className="w-3 h-3 md:w-4 md:h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
             </Link>
           </div>
         </div>
@@ -338,47 +281,11 @@ const Home = () => {
                               )}
                             {event.showtimes && event.showtimes[0] && (
                               <div className="flex items-center text-white text-sm">
-                                <svg
-                                  className="w-3 h-3 mr-1"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"
-                                  />
-                                </svg>
+                                <Calendar className="w-3 h-3 mr-1" />
                                 {formatDate(event.showtimes[0].start_time)}
                               </div>
                             )}
                           </div>
-                          {/* {event.showtimes && event.showtimes[0] && (
-                            <div className="flex items-center text-gray-400 text-xs mt-1">
-                              <svg
-                                className="w-3 h-3 mr-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                              </svg>
-                              {event.showtimes[0].location_name}
-                            </div>
-                          )} */}
                         </div>
                       </div>
                     </Link>

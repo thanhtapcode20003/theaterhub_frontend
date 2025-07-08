@@ -46,15 +46,29 @@ export const formatVND = (amount: number | string) => {
 };
 
 // Helper function to get the lowest price from seat prices
-export const getLowestSeatPrice = (seatPrices: SeatPrice[]): number => {
-  if (!seatPrices || seatPrices.length === 0) return 0;
+export const getLowestSeatPrice = (
+  seatPrices: SeatPrice[] | Record<string, string>
+): number => {
+  if (!seatPrices) return 0;
 
-  const prices = seatPrices.map((sp) => parseFloat(sp.price));
-  return Math.min(...prices);
+  let prices: number[] = [];
+
+  if (Array.isArray(seatPrices)) {
+    // Handle array format
+    if (seatPrices.length === 0) return 0;
+    prices = seatPrices.map((sp) => parseFloat(sp.price));
+  } else {
+    // Handle object format like { double: "280000.00", standard: "250000.00", vip: "500000.00" }
+    prices = Object.values(seatPrices).map((price) => parseFloat(price));
+  }
+
+  return prices.length > 0 ? Math.min(...prices) : 0;
 };
 
 // Helper function to get formatted lowest price
-export const getFormattedLowestPrice = (seatPrices: SeatPrice[]): string => {
+export const getFormattedLowestPrice = (
+  seatPrices: SeatPrice[] | Record<string, string>
+): string => {
   const lowestPrice = getLowestSeatPrice(seatPrices);
   return formatVND(lowestPrice);
 };
