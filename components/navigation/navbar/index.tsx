@@ -165,7 +165,7 @@ const Navbar = () => {
                   <div className="flex items-center mr-2">
                     <Image
                       src={user.avatar || "/icons/default-avatar.png"}
-                      alt={user.name}
+                      alt={user.name || "null"}
                       width={32}
                       height={32}
                       className="rounded-full mr-2"

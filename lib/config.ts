@@ -84,12 +84,37 @@ export const API_ENDPOINTS = {
   },
   // Showtimes endpoints
   SHOWTIMES: {
+    LIST_PUBLIC_GENERAL_TICKET_TYPES: (id: number) =>
+      `/public/events/${id}/general-ticket-types`,
+    LIST_PUBLIC_ZONED_TICKET_TYPES: (id: number) =>
+      `/public/events/${id}/zoned-ticket-types`,
     LIST: "/showtimes",
     CREATE: "/showtimes",
     DETAIL: "/showtimes",
     UPDATE: "/showtimes",
     DELETE: "/showtimes",
   },
+} as const;
+
+// App Routes Configuration
+export const APP_ROUTES = {
+  // Public routes
+  HOME: "/",
+  EVENTS: "/events",
+  EVENT_DETAIL: (id: number) => `/events/${id}`,
+  EVENT_BOOKING: (eventId: number, showtimeId: number) =>
+    `/events/${eventId}/booking/${showtimeId}`,
+
+  // Auth routes
+  SIGN_IN: "/sign-in",
+  SIGN_UP: "/sign-up",
+
+  // Role-based routes
+  ADMIN_DASHBOARD: "/admin",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_EVENTS: "/admin/events",
+  STAFF_DASHBOARD: "/staff",
+  STAFF_EVENTS: "/staff/events",
 } as const;
 
 // App Configuration
@@ -111,6 +136,7 @@ export default {
   API_CONFIG,
   STORAGE_KEYS,
   API_ENDPOINTS,
+  APP_ROUTES,
   APP_CONFIG,
   isDevelopment,
   isProduction,

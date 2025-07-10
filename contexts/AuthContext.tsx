@@ -35,6 +35,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuth = () => {
     if (typeof window === "undefined") return;
 
+    // Clean up old duplicate localStorage entries
+    // AuthService.cleanupOldStorage();
+
     // Use AuthService methods instead of direct localStorage access
     const token = AuthService.getToken();
     const userData = AuthService.getUser();

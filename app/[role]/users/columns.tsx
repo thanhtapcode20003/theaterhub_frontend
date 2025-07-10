@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 export type User = {
   user_id: number;
@@ -57,6 +58,31 @@ const getStatusColor = (isLocked: boolean) => {
 
 export const columns: ColumnDef<User>[] = [
   {
+    accessorKey: "user_id",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-gray-300 hover:text-white hover:bg-zinc-600/60 p-0 h-auto font-semibold transition-colors"
+        >
+          ID
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const userId = row.getValue("user_id") as number;
+      return (
+        <div className="flex items-center justify-center">
+          <span className="text-gray-300 font-mono text-sm font-bold">
+            {userId}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => {
       return (
@@ -74,9 +100,11 @@ export const columns: ColumnDef<User>[] = [
       const user = row.original;
       return (
         <div className="flex items-center gap-3">
-          <img
+          <Image
             src={user.avatar || "/icons/default-avatar.png"}
             alt={user.name}
+            width={40}
+            height={40}
             className="w-10 h-10 rounded-full object-cover"
             onError={(e) => {
               e.currentTarget.src = "/icons/default-avatar.png";

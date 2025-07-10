@@ -239,6 +239,30 @@ export class AuthService {
   }
 
   /**
+   * Clean up old/duplicate localStorage entries (runs only once)
+   * Call this to remove legacy storage keys
+   */
+  static cleanupOldStorage(): void {
+    if (typeof window !== "undefined") {
+      // Check if cleanup has already been performed
+      const cleanupKey = "storage_cleanup_v1";
+      if (localStorage.getItem(cleanupKey)) {
+        return; // Already cleaned up
+      }
+
+      // Remove old duplicate keys that might exist
+      const oldKeys = ["authToken", "user"];
+      oldKeys.forEach((key) => {
+        localStorage.removeItem(key);
+      });
+
+      // Mark cleanup as completed
+      localStorage.setItem(cleanupKey, "true");
+      console.log("🧹 Cleaned up old localStorage entries:", oldKeys);
+    }
+  }
+
+  /**
    * Refresh user data (call this after profile updates)
    */
   static async refreshUser(): Promise<User | null> {

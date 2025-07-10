@@ -54,11 +54,11 @@ export const post = <T>(url: string, body: any) =>
     body: body instanceof FormData ? body : JSON.stringify(body),
   });
 
-// export const put = <T>(url: string, body: any) =>
-//   fetchApi<T>(url, {
-//     method: "PUT",
-//     body: body instanceof FormData ? body : JSON.stringify(body),
-//   });
+export const put = <T>(url: string, body: any) =>
+  fetchApi<T>(url, {
+    method: "PUT",
+    body: body instanceof FormData ? body : JSON.stringify(body),
+  });
 
 export const patch = <T>(url: string, body: any) =>
   fetchApi<T>(url, {

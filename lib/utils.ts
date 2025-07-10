@@ -30,13 +30,29 @@ export const formatDate = (dateString: string): string => {
 
 export const formatDateTime = (dateString: string): string => {
   const date = parseDate(dateString);
-  return date.toLocaleString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+
+  // Get time part (HH:mm)
+  const time = date.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   });
+
+  // Get date part (dd tháng MM, yyyy)
+  const datePart = date.toLocaleDateString("vi-VN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return `${time}, ${datePart}`;
+};
+
+export const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
 };
 
 export const formatVND = (amount: number | string) => {
