@@ -94,6 +94,11 @@ export const API_ENDPOINTS = {
     UPDATE: "/showtimes",
     DELETE: "/showtimes",
   },
+  // Showtimes endpoints
+  PAYMENT: {
+    CREATE_GENERAL_BOOKING: "/bookings/general",
+    CREATE_PAYMENT: "/payments/create-link",
+  },
 } as const;
 
 // App Routes Configuration

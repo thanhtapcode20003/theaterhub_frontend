@@ -99,25 +99,47 @@ const BookingPage = () => {
       return;
     }
 
-    // Add some visual feedback
-    const button = document.querySelector(".checkout-btn") as HTMLButtonElement;
-    if (button) {
-      button.textContent = "Đang xử lý...";
-      button.disabled = true;
+    const selectedTicket = getSelectedShowtimeTicket();
+    const selectedShowtime = ticketData?.showtimes.find(
+      (showtime: Showtime) => showtime.showtime_id === showtimeId
+    );
+
+    if (!selectedTicket || !selectedShowtime) {
+      alert("Không thể tải thông tin vé. Vui lòng thử lại!");
+      return;
     }
 
-    // Simulate processing
-    setTimeout(() => {
-      alert(
-        `Đã chọn ${Object.values(quantities).reduce((sum, qty) => sum + qty, 0)} vé với tổng tiền ${formatCurrency(calculateTotal())}`
-      );
+    // Prepare ticket data for payment page
+    const tickets = Object.entries(quantities)
+      .filter(([_, qty]) => qty > 0)
+      .map(([ticketTypeId, qty]) => ({
+        typeId: parseInt(ticketTypeId),
+        typeName: selectedTicket.type_name || "Vé thường",
+        quantity: qty,
+        price: parseFloat(selectedTicket.price),
+      }));
 
-      // Reset button
-      if (button) {
-        button.textContent = `Tiếp tục - ${formatCurrency(calculateTotal())}`;
-        button.disabled = false;
-      }
-    }, 1500);
+    const totalQuantity = Object.values(quantities).reduce(
+      (sum, qty) => sum + qty,
+      0
+    );
+    const totalAmount = calculateTotal();
+
+    // Prepare URL parameters
+    const params = new URLSearchParams({
+      eventName: eventName,
+      showtime: selectedShowtime.start_time,
+      location: selectedShowtime.location_name,
+      address: selectedShowtime.location_address,
+      totalAmount: totalAmount.toString(),
+      totalQuantity: totalQuantity.toString(),
+      tickets: encodeURIComponent(JSON.stringify(tickets)),
+    });
+
+    // Navigate to payment page
+    router.push(
+      `${APP_ROUTES.EVENT_BOOKING(eventId, showtimeId)}/payment?${params.toString()}`
+    );
   };
 
   // Calculate total
