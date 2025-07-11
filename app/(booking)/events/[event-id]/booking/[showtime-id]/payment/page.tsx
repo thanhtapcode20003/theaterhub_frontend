@@ -8,6 +8,7 @@ import {
   MapPin,
   CheckCircle,
   AlertCircle,
+  Loader2Icon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import Loading from "@/components/ui/loading";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { processPayment } from "@/lib/services/paymentService";
-import Image from "next/image";
+import { showToast } from "@/components/ui/toast";
 import VietQR_logo from "@/public/logo/VietQR_logo.png";
 
 interface BookingData {
@@ -47,6 +48,8 @@ const Payment = () => {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("vietqr");
+  const buttonPaymentClass =
+    "primary-gradient paragraph-semibold min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900 transition-all duration-300 hover:opacity-90 active:scale-[0.98]";
 
   // Extract booking data from URL params
   useEffect(() => {
@@ -108,9 +111,11 @@ const Payment = () => {
       window.location.href = checkoutUrl;
     } catch (error) {
       console.error("Payment process error:", error);
-      alert(
-        `Lỗi thanh toán: ${error instanceof Error ? error.message : "Vui lòng thử lại"}`
-      );
+      showToast({
+        type: "error",
+        title: "Lỗi thanh toán",
+        message: error instanceof Error ? error.message : "Vui lòng thử lại",
+      });
     } finally {
       setProcessing(false);
     }
@@ -267,11 +272,13 @@ const Payment = () => {
             <div className="space-y-2 mb-6">
               <div className="flex justify-between text-sm text-gray-700">
                 <span>Tổng số vé:</span>
-                <span>{bookingData.totalQuantity} vé</span>
+                <span className="font-bold text-base">
+                  {bookingData.totalQuantity} vé
+                </span>
               </div>
               <div className="flex justify-between font-semibold text-lg">
                 <span className="text-gray-800">Tổng cộng:</span>
-                <span className="text-red-600">
+                <span className="text-red-500 font-extrabold text-xl">
                   {formatCurrency(bookingData.totalAmount)}
                 </span>
               </div>
@@ -281,18 +288,17 @@ const Payment = () => {
             <Button
               onClick={handlePayment}
               disabled={processing}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3"
+              className={buttonPaymentClass}
             >
               {processing ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <Loader2Icon className="animate-spin" />
                   Đang xử lý...
                 </>
               ) : (
-                <>
-                  <CheckCircle className="h-4 w-4 mr-2" />
+                <span>
                   Thanh toán {formatCurrency(bookingData.totalAmount)}
-                </>
+                </span>
               )}
             </Button>
 

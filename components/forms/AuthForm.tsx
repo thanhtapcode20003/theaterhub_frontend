@@ -24,10 +24,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { showToast } from "@/components/ui/toast";
 import ROUTES from "@/constants/routes";
 import AuthService from "@/lib/services/authService";
 import { SignUpSchema, OTPVerificationSchema } from "@/lib/validations";
 import { RegisterRequest, AuthResponse } from "@/types";
+import { Loader2 } from "lucide-react";
 
 interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T>;
@@ -75,34 +77,6 @@ const AuthForm = <T extends FieldValues>({
     return () => clearInterval(interval);
   }, [resendTimer]);
 
-  // Show toast notifications
-  const showToast = (
-    type: "success" | "error" | "info",
-    title: string,
-    message?: string
-  ) => {
-    const content = (
-      <div>
-        <div
-          className={`font-semibold mb-1 ${
-            type === "success"
-              ? "text-green-800"
-              : type === "error"
-                ? "text-red-800"
-                : "text-blue-800"
-          }`}
-        >
-          {title}
-        </div>
-        {message && <div className="text-sm text-gray-600">{message}</div>}
-      </div>
-    );
-
-    if (type === "success") toast.success(content);
-    else if (type === "error") toast.error(content);
-    else toast.info(content);
-  };
-
   // Handle registration form submission
   const handleRegistrationSubmit: SubmitHandler<T> = async (data) => {
     try {
@@ -110,11 +84,11 @@ const AuthForm = <T extends FieldValues>({
         // Handle sign in
         const result = await onSubmit(data);
         if (result.success) {
-          showToast(
-            "success",
-            "Đăng nhập thành công!",
-            "Chào mừng bạn quay trở lại"
-          );
+          showToast({
+            type: "success",
+            title: "Đăng nhập thành công!",
+            message: "Chào mừng bạn quay trở lại",
+          });
         }
         return;
       }
@@ -127,27 +101,27 @@ const AuthForm = <T extends FieldValues>({
       const response: AuthResponse = await AuthService.register(registerData);
 
       if (response.success) {
-        showToast(
-          "success",
-          "Đăng ký thành công!",
-          `Mã OTP đã được gửi đến ${registerData.email}`
-        );
+        showToast({
+          type: "success",
+          title: "Đăng ký thành công!",
+          message: `Mã OTP đã được gửi đến ${registerData.email}`,
+        });
         setSignUpStep("otp_verification");
         setResendTimer(60); // Start 60-second countdown
       } else {
-        showToast(
-          "error",
-          "Đăng ký thất bại",
-          response.message || "Có lỗi xảy ra khi đăng ký"
-        );
+        showToast({
+          type: "error",
+          title: "Đăng ký thất bại",
+          message: response.message || "Có lỗi xảy ra khi đăng ký",
+        });
       }
     } catch (error: any) {
       console.error("Registration failed:", error);
-      showToast(
-        "error",
-        "Đăng ký thất bại",
-        error.message || "Có lỗi xảy ra, vui lòng thử lại"
-      );
+      showToast({
+        type: "error",
+        title: "Đăng ký thất bại",
+        message: error.message || "Có lỗi xảy ra, vui lòng thử lại",
+      });
     }
   };
 
@@ -161,11 +135,11 @@ const AuthForm = <T extends FieldValues>({
       );
 
       if (response.success) {
-        showToast(
-          "success",
-          "Xác thực thành công!",
-          "Tài khoản của bạn đã được kích hoạt"
-        );
+        showToast({
+          type: "success",
+          title: "Xác thực thành công!",
+          message: "Tài khoản của bạn đã được kích hoạt",
+        });
         setSignUpStep("completed");
 
         // Auto redirect to sign in after 2 seconds
@@ -173,19 +147,19 @@ const AuthForm = <T extends FieldValues>({
           window.location.href = ROUTES.SIGN_IN;
         }, 2000);
       } else {
-        showToast(
-          "error",
-          "Xác thực thất bại",
-          response.message || "Mã OTP không hợp lệ hoặc đã hết hạn"
-        );
+        showToast({
+          type: "error",
+          title: "Xác thực thất bại",
+          message: response.message || "Mã OTP không hợp lệ hoặc đã hết hạn",
+        });
       }
     } catch (error: any) {
       console.error("OTP verification failed:", error);
-      showToast(
-        "error",
-        "Xác thực thất bại",
-        error.message || "Có lỗi xảy ra khi xác thực"
-      );
+      showToast({
+        type: "error",
+        title: "Xác thực thất bại",
+        message: error.message || "Có lỗi xảy ra khi xác thực",
+      });
     }
   };
 
@@ -200,28 +174,28 @@ const AuthForm = <T extends FieldValues>({
       });
 
       if (response.success) {
-        showToast(
-          "success",
-          "Gửi lại mã OTP thành công!",
-          `Mã OTP mới đã được gửi đến ${registrationData.email}`
-        );
+        showToast({
+          type: "success",
+          title: "Gửi lại mã OTP thành công!",
+          message: `Mã OTP mới đã được gửi đến ${registrationData.email}`,
+        });
         setResendTimer(60); // Reset countdown
         setOtpCode(""); // Clear current OTP input
         otpForm.reset(); // Reset OTP form
       } else {
-        showToast(
-          "error",
-          "Gửi lại mã OTP thất bại",
-          response.message || "Không thể gửi lại mã OTP"
-        );
+        showToast({
+          type: "error",
+          title: "Gửi lại mã OTP thất bại",
+          message: response.message || "Không thể gửi lại mã OTP",
+        });
       }
     } catch (error: any) {
       console.error("Resend OTP failed:", error);
-      showToast(
-        "error",
-        "Gửi lại mã OTP thất bại",
-        error.message || "Có lỗi xảy ra khi gửi lại mã OTP"
-      );
+      showToast({
+        type: "error",
+        title: "Gửi lại mã OTP thất bại",
+        message: error.message || "Có lỗi xảy ra khi gửi lại mã OTP",
+      });
     } finally {
       setIsResending(false);
     }
@@ -271,7 +245,14 @@ const AuthForm = <T extends FieldValues>({
           disabled={form.formState.isSubmitting}
           className="primary-gradient paragraph-medium min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900 cursor-pointer transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
         >
-          {form.formState.isSubmitting ? "Đang xử lý..." : "Đăng ký"}
+          {form.formState.isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin mr-2" />
+              Đang xử lý...
+            </>
+          ) : (
+            "Đăng ký"
+          )}
         </Button>
       </form>
     </Form>
@@ -328,7 +309,14 @@ const AuthForm = <T extends FieldValues>({
           disabled={otpForm.formState.isSubmitting || otpCode.length !== 6}
           className="primary-gradient paragraph-medium min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900 cursor-pointer transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
         >
-          {otpForm.formState.isSubmitting ? "Đang xác thực..." : "Xác thực"}
+          {otpForm.formState.isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin mr-2" />
+              Đang xác thực...
+            </>
+          ) : (
+            "Xác thực"
+          )}
         </Button>
 
         <div className="text-center space-y-2">
@@ -340,11 +328,16 @@ const AuthForm = <T extends FieldValues>({
             disabled={resendTimer > 0 || isResending}
             className="text-sm text-blue-600 hover:text-blue-800 p-0 h-auto font-normal"
           >
-            {isResending
-              ? "Đang gửi..."
-              : resendTimer > 0
-                ? `Gửi lại sau ${resendTimer}s`
-                : "Gửi lại mã OTP"}
+            {isResending ? (
+              <>
+                <Loader2 className="animate-spin mr-2" />
+                Đang gửi...
+              </>
+            ) : resendTimer > 0 ? (
+              `Gửi lại sau ${resendTimer}s`
+            ) : (
+              "Gửi lại mã OTP"
+            )}
           </Button>
         </div>
       </form>
@@ -431,7 +424,14 @@ const AuthForm = <T extends FieldValues>({
           disabled={form.formState.isSubmitting}
           className="primary-gradient paragraph-medium min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900 cursor-pointer transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
         >
-          {form.formState.isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+          {form.formState.isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin mr-2" />
+              "Đang đăng nhập..."
+            </>
+          ) : (
+            "Đăng nhập"
+          )}
         </Button>
       </form>
     </Form>

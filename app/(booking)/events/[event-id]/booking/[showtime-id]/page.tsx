@@ -10,8 +10,9 @@ import {
   Showtime,
 } from "@/lib/services/ticketTypeService";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CalendarDays, MapPin } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Loader2 } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
+import { showToast } from "@/components/ui/toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { APP_ROUTES } from "@/lib/config";
 
@@ -31,6 +32,7 @@ const BookingPage = () => {
   const eventId = parseInt(params["event-id"] as string);
   const showtimeId = parseInt(params["showtime-id"] as string);
   const eventName = searchParams.get("eventName") || "Event";
+  const [processing, setProcessing] = useState(false);
 
   const buttonCheckoutClass =
     "primary-gradient paragraph-semibold min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900 transition-all duration-300 hover:opacity-90 active:scale-[0.98]";
@@ -95,9 +97,15 @@ const BookingPage = () => {
   // Handle checkout
   const handleCheckout = () => {
     if (Object.values(quantities).every((q) => q === 0)) {
-      alert("Vui lòng chọn ít nhất một vé để tiếp tục!");
+      showToast({
+        type: "info",
+        title: "Chưa chọn vé",
+        message: "Vui lòng chọn ít nhất một vé để tiếp tục!",
+      });
       return;
     }
+
+    setProcessing(true);
 
     const selectedTicket = getSelectedShowtimeTicket();
     const selectedShowtime = ticketData?.showtimes.find(
@@ -105,7 +113,12 @@ const BookingPage = () => {
     );
 
     if (!selectedTicket || !selectedShowtime) {
-      alert("Không thể tải thông tin vé. Vui lòng thử lại!");
+      showToast({
+        type: "error",
+        title: "Lỗi tải thông tin",
+        message: "Không thể tải thông tin vé. Vui lòng thử lại!",
+      });
+      setProcessing(false);
       return;
     }
 
@@ -140,6 +153,9 @@ const BookingPage = () => {
     router.push(
       `${APP_ROUTES.EVENT_BOOKING(eventId, showtimeId)}/payment?${params.toString()}`
     );
+
+    // Reset processing state after navigation
+    setTimeout(() => setProcessing(false), 1000);
   };
 
   // Calculate total
@@ -424,11 +440,20 @@ const BookingPage = () => {
           <Button
             onClick={handleCheckout}
             className={buttonCheckoutClass}
-            disabled={Object.values(quantities).every((q) => q === 0)}
+            disabled={
+              Object.values(quantities).every((q) => q === 0) || processing
+            }
           >
-            {Object.values(quantities).every((q) => q === 0)
-              ? "Chọn vé để tiếp tục"
-              : `Đặt vé ngay - ${formatCurrency(calculateTotal())}`}
+            {processing ? (
+              <>
+                <Loader2 className="animate-spin mr-2" />
+                Đang xử lý...
+              </>
+            ) : Object.values(quantities).every((q) => q === 0) ? (
+              "Chọn vé để tiếp tục"
+            ) : (
+              `Đặt vé ngay - ${formatCurrency(calculateTotal())}`
+            )}
           </Button>
         </div>
       </div>
