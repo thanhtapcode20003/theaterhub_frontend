@@ -117,7 +117,9 @@ const Payment = () => {
         message: error instanceof Error ? error.message : "Vui lòng thử lại",
       });
     } finally {
-      setProcessing(false);
+      setTimeout(() => {
+        setProcessing(false);
+      }, 2000);
     }
   };
 

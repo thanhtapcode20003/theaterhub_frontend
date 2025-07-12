@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import VideoCard from "@/components/card/VideoCard";
 import {
   Carousel,
@@ -21,6 +22,27 @@ const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Check for payment parameters and redirect to result page
+  useEffect(() => {
+    const code = searchParams.get("code");
+    const id = searchParams.get("id");
+    const cancel = searchParams.get("cancel");
+    const status = searchParams.get("status");
+    const orderCode = searchParams.get("orderCode");
+
+    // If payment parameters are present, redirect to a generic result page
+    if (code && status && orderCode) {
+      // Since we don't have event_id and showtime_id from the URL,
+      // we'll redirect to a generic result page or create one
+      const currentUrl = new URL(window.location.href);
+      const resultUrl = `/payment/result${currentUrl.search}`;
+      router.replace(resultUrl);
+      return;
+    }
+  }, [searchParams, router]);
 
   // Fetch events data
   useEffect(() => {
