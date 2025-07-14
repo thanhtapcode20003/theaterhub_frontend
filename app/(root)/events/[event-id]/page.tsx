@@ -92,7 +92,7 @@ const EventPage = () => {
     return notFound();
   }
 
-  console.log(event.showtimes);
+  console.log(event);
 
   return (
     <div className="h-auto background-black_ticket_detail rounded-3xl">
@@ -148,11 +148,14 @@ const EventPage = () => {
               <span className="text-white text-xl font-medium">Giá từ</span>
               {event.showtimes &&
                 event.showtimes.length > 0 &&
-                event.showtimes[0].seat_prices && (
+                (event.showtimes[0].seat_prices ||
+                  event.showtimes[0].ticket_types) && (
                   <span className="text-red-500 text-2xl font-bold">
-                    {getFormattedLowestPrice(
-                      event.showtimes[0]?.seat_prices || {}
-                    )}
+                    {event.event_type === "seated"
+                      ? getFormattedLowestPrice(event.showtimes[0].seat_prices)
+                      : getFormattedLowestPrice(
+                          event.showtimes[0].ticket_types
+                        )}
                   </span>
                 )}
             </div>

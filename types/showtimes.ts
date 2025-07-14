@@ -25,7 +25,7 @@ export interface TicketType {
   ticket_type_id: number;
   showtime_id: number;
   type_name?: string; // nullable for general events
-  price: number; // DECIMAL(10,2)
+  price: string; // DECIMAL(10,2)
   quantity: number;
   showtime?: Showtime;
 }

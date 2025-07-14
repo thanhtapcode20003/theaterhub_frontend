@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+// import { useSearchParams, useRouter } from "next/navigation";
 import VideoCard from "@/components/card/VideoCard";
 import {
   Carousel,
@@ -22,27 +22,27 @@ const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  // const searchParams = useSearchParams();
+  // const router = useRouter();
 
   // Check for payment parameters and redirect to result page
-  useEffect(() => {
-    const code = searchParams.get("code");
-    const id = searchParams.get("id");
-    const cancel = searchParams.get("cancel");
-    const status = searchParams.get("status");
-    const orderCode = searchParams.get("orderCode");
+  // useEffect(() => {
+  //   const code = searchParams.get("code");
+  //   const id = searchParams.get("id");
+  //   const cancel = searchParams.get("cancel");
+  //   const status = searchParams.get("status");
+  //   const orderCode = searchParams.get("orderCode");
 
-    // If payment parameters are present, redirect to a generic result page
-    if (code && status && orderCode) {
-      // Since we don't have event_id and showtime_id from the URL,
-      // we'll redirect to a generic result page or create one
-      const currentUrl = new URL(window.location.href);
-      const resultUrl = `/payment/result${currentUrl.search}`;
-      router.replace(resultUrl);
-      return;
-    }
-  }, [searchParams, router]);
+  //   // If payment parameters are present, redirect to a generic result page
+  //   if (code && status && orderCode) {
+  //     // Since we don't have event_id and showtime_id from the URL,
+  //     // we'll redirect to a generic result page or create one
+  //     const currentUrl = new URL(window.location.href);
+  //     const resultUrl = `/payment/result${currentUrl.search}`;
+  //     router.replace(resultUrl);
+  //     return;
+  //   }
+  // }, [searchParams, router]);
 
   // Fetch events data
   useEffect(() => {
@@ -175,6 +175,7 @@ const Home = () => {
 
   return (
     <div className="w-full mx-auto px-0 sm:px-4">
+      {/* VideoCard */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
         <VideoCard
           videoSrc="/videos/trailer1.mp4"
@@ -188,7 +189,7 @@ const Home = () => {
         />
       </div>
 
-      {/* Events Carousel Section */}
+      {/* Dành cho bạn */}
       <div className="mt-8 md:mt-12">
         {/* Section Title */}
         <div className="mb-4 md:mb-6 px-4 sm:px-0">
@@ -236,9 +237,8 @@ const Home = () => {
         )}
       </div>
 
-      {/* Second Carousel Section - Upcoming Events with Prices */}
+      {/* Các events gần nhất */}
       <div className="mt-8 md:mt-12">
-        {/* Section Title */}
         <div className="mb-4 md:mb-6 px-4 sm:px-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 md:gap-8">
@@ -293,12 +293,17 @@ const Home = () => {
                           <div className="mt-auto">
                             {event.showtimes &&
                               event.showtimes.length > 0 &&
-                              event.showtimes[0].seat_prices && (
+                              (event.showtimes[0].seat_prices ||
+                                event.showtimes[0].ticket_types) && (
                                 <p className="text-red-500 font-bold text-md mb-1">
                                   Từ{" "}
-                                  {getFormattedLowestPrice(
-                                    event.showtimes[0].seat_prices
-                                  )}
+                                  {event.event_type === "seated"
+                                    ? getFormattedLowestPrice(
+                                        event.showtimes[0].seat_prices
+                                      )
+                                    : getFormattedLowestPrice(
+                                        event.showtimes[0].ticket_types
+                                      )}
                                 </p>
                               )}
                             {event.showtimes && event.showtimes[0] && (

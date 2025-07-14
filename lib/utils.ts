@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { Showtime, SeatPrice } from "@/types/showtimes";
+import type { Showtime, SeatPrice, TicketType } from "@/types/showtimes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,45 +65,45 @@ export const formatVND = (amount: number | string) => {
 export const getLowestSeatPrice = (
   seatPrices: SeatPrice[] | Record<string, string>
 ): number => {
-  if (!seatPrices) return 0;
+  if (!seatPrices || !Array.isArray(seatPrices) || seatPrices.length === 0)
+    return 0;
 
-  let prices: number[] = [];
-
-  if (Array.isArray(seatPrices)) {
-    // Handle array format
-    if (seatPrices.length === 0) return 0;
-    prices = seatPrices.map((sp) => parseFloat(sp.price));
-  } else {
-    // Handle object format like { double: "280000.00", standard: "250000.00", vip: "500000.00" }
-    prices = Object.values(seatPrices).map((price) => parseFloat(price));
-  }
+  const prices = seatPrices.map((sp) => parseFloat(String(sp.price)));
 
   return prices.length > 0 ? Math.min(...prices) : 0;
 };
 
-// Helper function to get formatted lowest price
+// Helper function to get the lowest price from ticket types
+export const getLowestTicketPrice = (
+  ticketTypes: TicketType[] | undefined
+): number => {
+  if (!ticketTypes || !Array.isArray(ticketTypes) || ticketTypes.length === 0)
+    return 0;
+
+  const prices = ticketTypes.map((tt) => parseFloat(String(tt.price)));
+  return prices.length > 0 ? Math.min(...prices) : 0;
+};
+
+// Helper function to get formatted lowest price - overloaded for different parameter types
 export const getFormattedLowestPrice = (
-  seatPrices: SeatPrice[] | Record<string, string>
+  data: SeatPrice[] | TicketType[] | undefined
 ): string => {
-  const lowestPrice = getLowestSeatPrice(seatPrices);
+  if (!data || !Array.isArray(data) || data.length === 0) return "0 đ";
+
+  let lowestPrice = 0;
+
+  // Check if it's SeatPrice array by checking if it has seat_type_code
+  if (data.length > 0 && "seat_type_code" in data[0]) {
+    lowestPrice = getLowestSeatPrice(data as SeatPrice[]);
+  } else if (
+    data.length > 0 &&
+    ("ticket_type_id" in data[0] || "type_name" in data[0])
+  ) {
+    // It's TicketType array
+    lowestPrice = getLowestTicketPrice(data as TicketType[]);
+  }
+
   return formatVND(lowestPrice);
-};
-
-// Helper function to format all seat prices
-export const formatSeatPrices = (seatPrices: SeatPrice[]) => {
-  return seatPrices.map((sp) => ({
-    ...sp,
-    formattedPrice: formatVND(sp.price),
-  }));
-};
-
-// Helper function to get formatted price for a specific seat type
-export const getFormattedSeatPrice = (
-  seatPrices: SeatPrice[],
-  seatType: string
-): string => {
-  const seatPrice = seatPrices.find((sp) => sp.seat_type_code === seatType);
-  return seatPrice ? formatVND(seatPrice.price) : "Không có thông tin giá";
 };
 
 // Helper function to get the nearest showtime
