@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import NavLinks from "./NavLinks";
 import ROUTES from "@/constants/routes";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -71,7 +72,7 @@ export function AppSidebar() {
   };
 
   const roleConfig = getRoleConfig(userRole);
-
+  console.log(user);
   return (
     <Sidebar
       collapsible="icon"
@@ -109,9 +110,10 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton size="lg" className="sidebar-menu-button-lg">
-                  <div className="sidebar-icon-container">
-                    <User className="size-4" />
-                  </div>
+                  <Avatar>
+                    <AvatarImage src={user?.avatar} />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
                   <div className="sidebar-user-text">
                     <span className="truncate font-semibold text-white">
                       {user?.name || "User"}
