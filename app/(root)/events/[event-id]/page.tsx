@@ -95,8 +95,8 @@ const EventPage = () => {
   console.log(event);
 
   return (
+    // Ticket Section
     <div className="h-auto background-black_ticket_detail rounded-3xl">
-      {/* Ticket Section */}
       <div className="flex">
         {/* Event Information */}
         <div className="flex-1 container mx-auto p-6 relative">
@@ -210,66 +210,9 @@ const EventPage = () => {
           </div>
         </div>
       </div>
-      {/* </div>
-
-    {/* Full Width Description Section */}
-      {/* <div className="w-screen bg-white text-black py-12">
-      <div className="container mx-auto px-6 max-w-4xl">
-        <h2 className="text-3xl font-bold mb-8 text-black">Giới thiệu</h2> */}
-
-      {/* Ticket Sale Information */}
-      {/* <div className="mb-6">
-          <p className="text-red-600 font-semibold mb-2">
-            *CÔNG BÁN VÉ ĐỢT 1 ĐÃ ĐÓNG LÚC 23:59, 03.06.2025
-          </p>
-          <p className="text-red-600 font-semibold mb-4">
-            **CÔNG BÁN VÉ ĐỢT 2 SẼ MỞ LÚC 10:30, 27.06.2025
-          </p>
-        </div> */}
-
-      {/* Event Description */}
-      {/* <div className="space-y-4">
-          {event?.description && event.description.length > 0 ? (
-            event.description.map((content, index) => (
-              <div key={index}>
-                {content.type === "text" ? (
-                  <p className="text-gray-800 leading-relaxed">{content.value}</p>
-                ) : content.type === "image" ? (
-                  <div className="my-6">
-                    <Image
-                      src={content.value}
-                      alt={`Description image ${index + 1}`}
-                      width={800}
-                      height={400}
-                      className="w-full h-auto rounded-lg shadow-lg"
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ))
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-bold text-black mb-3">
-                  SUPERFEST 2025 – CONCERT MÙA HÈ RỰC SÁNG
-                </h3>
-                <p className="text-gray-600 font-medium mb-3">
-                  20 nghệ sĩ, 1 concert, 1 mùa hè đáng nhớ!
-                </p>
-                <p className="text-gray-800 leading-relaxed mb-3">
-                  Mùa hè này, đại tiệc âm nhạc bùng nổ nhất chính thức trở lại tại Hạ Long với phiên bản nâng cấp chưa từng có – nơi ánh sáng, âm nhạc và cảm xúc cùng chạm đỉnh!
-                </p>
-                <p className="text-gray-800 leading-relaxed mb-3">
-                  SUPERFEST 2025 quy tụ 20 nghệ sĩ tài sắc vẹn toàn, mang đến những màn trình diễn độc nhất, lần đầu hội tụ trên một sân khấu rực cháy duy nhất trong năm.
-                </p>
-                <p className="text-gray-800 leading-relaxed">
-                  Đây không chỉ là một concert – mà là hành trình đánh thức thanh xuân, nơi bạn sẽ cháy hết mình, sống trọn cảm xúc và tạo nên những ký niệm rực sáng nhất mùa hè này!
-                </p>
-              </div>
-            </div>
-          )}
-        </div> */}
     </div>
+
+    // Showtime section
   );
 };
 

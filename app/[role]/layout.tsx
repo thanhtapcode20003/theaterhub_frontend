@@ -5,11 +5,14 @@ import { notFound } from "next/navigation";
 
 interface RoleLayoutProps {
   children: React.ReactNode;
-  params: { role: string };
+  params: Promise<{ role: string }>;
 }
 
-export default function RoleLayout({ children, params }: RoleLayoutProps) {
-  const { role } = params;
+export default async function RoleLayout({
+  children,
+  params,
+}: RoleLayoutProps) {
+  const { role } = await params;
 
   // Validate that the role is either admin or staff
   if (role !== "admin" && role !== "staff") {
