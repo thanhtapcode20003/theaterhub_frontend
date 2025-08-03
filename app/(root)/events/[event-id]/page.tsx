@@ -21,75 +21,36 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { EventDescriptionContent } from "@/types";
+import ExpandableDescription from "@/components/ui/ExpandableDescription";
 
-// Component for Description Section with expand/collapse functionality
 const DescriptionSection = ({
   description,
 }: {
   description: EventDescriptionContent[];
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const maxPreviewLength = 200; // Maximum characters to show in preview
-
-  // Combine all text content for preview calculation
-  const fullTextContent = description
+  // Combine all text content
+  const textContent = description
     .filter((item) => item.type === "text")
     .map((item) => item.value)
-    .join(" ");
+    .join("\n\n");
 
-  const shouldShowToggle = fullTextContent.length > maxPreviewLength;
-  const previewText =
-    shouldShowToggle && !isExpanded
-      ? fullTextContent.substring(0, maxPreviewLength) + "..."
-      : fullTextContent;
+  // Get image URLs
+  const imageUrls = description
+    .filter((item) => item.type === "image")
+    .map((item) => item.value);
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-4">Giới thiệu</h2>
-
       <div className="space-y-4">
-        {/* Text Content */}
-        {description
-          .filter((item) => item.type === "text")
-          .map((item, index) => (
-            <div key={index} className="text-gray-300 leading-relaxed">
-              {shouldShowToggle && !isExpanded ? (
-                <p>{previewText}</p>
-              ) : (
-                <p>{item.value}</p>
-              )}
-            </div>
-          ))}
-
-        {/* Image Content - Only show when expanded or if no text overflow */}
-        {(isExpanded || !shouldShowToggle) &&
-          description
-            .filter((item) => item.type === "image")
-            .map((item, index) => (
-              <div key={index} className="my-4">
-                <Image
-                  src={item.value}
-                  alt={`Description image ${index + 1}`}
-                  width={800}
-                  height={400}
-                  className="w-full h-auto rounded-lg object-cover"
-                />
-              </div>
-            ))}
-
-        {/* Toggle Button */}
-        {shouldShowToggle && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 text-red-500 hover:text-red-400 transition-colors duration-200 font-medium mt-4"
-          >
-            <span>{isExpanded ? "Thu gọn" : "Xem thêm"}</span>
-            {isExpanded ? (
-              <FaChevronUp className="w-4 h-4" />
-            ) : (
-              <FaChevronDown className="w-4 h-4" />
-            )}
-          </button>
+        {/* Text and Image Content with ExpandableDescription */}
+        {(textContent || imageUrls.length > 0) && (
+          <div className="text-gray-300 leading-relaxed">
+            <ExpandableDescription
+              content={textContent}
+              images={imageUrls}
+              maxHeight="150px"
+            />
+          </div>
         )}
       </div>
     </div>
@@ -393,7 +354,7 @@ const EventPage = () => {
       {/* Description Section */}
       {event.description && event.description.length > 0 && (
         <div className="mt-10">
-          <div className="background-black_ticket_detail rounded-lg p-6">
+          <div className="background-black_ticket_detail rounded-lg">
             <DescriptionSection description={event.description} />
           </div>
         </div>
