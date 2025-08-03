@@ -13,6 +13,89 @@ import { getPublicEventById } from "@/lib/services/eventService";
 import { Event } from "@/types";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaCalendar } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { EventDescriptionContent } from "@/types";
+
+// Component for Description Section with expand/collapse functionality
+const DescriptionSection = ({
+  description,
+}: {
+  description: EventDescriptionContent[];
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const maxPreviewLength = 200; // Maximum characters to show in preview
+
+  // Combine all text content for preview calculation
+  const fullTextContent = description
+    .filter((item) => item.type === "text")
+    .map((item) => item.value)
+    .join(" ");
+
+  const shouldShowToggle = fullTextContent.length > maxPreviewLength;
+  const previewText =
+    shouldShowToggle && !isExpanded
+      ? fullTextContent.substring(0, maxPreviewLength) + "..."
+      : fullTextContent;
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-white mb-4">Giới thiệu</h2>
+
+      <div className="space-y-4">
+        {/* Text Content */}
+        {description
+          .filter((item) => item.type === "text")
+          .map((item, index) => (
+            <div key={index} className="text-gray-300 leading-relaxed">
+              {shouldShowToggle && !isExpanded ? (
+                <p>{previewText}</p>
+              ) : (
+                <p>{item.value}</p>
+              )}
+            </div>
+          ))}
+
+        {/* Image Content - Only show when expanded or if no text overflow */}
+        {(isExpanded || !shouldShowToggle) &&
+          description
+            .filter((item) => item.type === "image")
+            .map((item, index) => (
+              <div key={index} className="my-4">
+                <Image
+                  src={item.value}
+                  alt={`Description image ${index + 1}`}
+                  width={800}
+                  height={400}
+                  className="w-full h-auto rounded-lg object-cover"
+                />
+              </div>
+            ))}
+
+        {/* Toggle Button */}
+        {shouldShowToggle && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 text-red-500 hover:text-red-400 transition-colors duration-200 font-medium mt-4"
+          >
+            <span>{isExpanded ? "Thu gọn" : "Xem thêm"}</span>
+            {isExpanded ? (
+              <FaChevronUp className="w-4 h-4" />
+            ) : (
+              <FaChevronDown className="w-4 h-4" />
+            )}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const EventPage = () => {
   const params = useParams();
   const eventId = params["event-id"] as string;
@@ -95,124 +178,227 @@ const EventPage = () => {
   console.log(event);
 
   return (
-    // Ticket Section
-    <div className="h-auto background-black_ticket_detail rounded-3xl">
-      <div className="flex">
-        {/* Event Information */}
-        <div className="flex-1 container mx-auto p-6 relative">
-          {/* Event Details - Top Section */}
-          <div>
-            {/* title */}
-            <h1 className="text-xl font-bold text-white mb-6 leading-tight">
-              {event.title}
-            </h1>
-            {/* Date & Time Section */}
-            <div className="flex items-center mb-4">
-              <div className="mr-4">
-                <FaCalendar className="w-6 h-6 text-white transition-all duration-200 hover:text-red-400 hover:scale-110" />
-              </div>
-              <div>
-                {event.showtimes && event.showtimes.length > 0 && (
-                  <p className="text-red-500 font-semibold text-sm">
-                    {formatDateTime(event.showtimes[0].start_time)}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Location Section */}
-            <div className="flex items-center mb-6">
-              <div className="mr-4 mt-1">
-                <FaMapMarkerAlt className="w-6 h-6 text-white transition-all duration-200 hover:text-red-400 hover:scale-110" />
-              </div>
-              {event.showtimes &&
-                event.showtimes.length > 0 &&
-                event.showtimes[0].location_name && (
-                  <div>
+    <>
+      {/* Ticket Section */}
+      <div className="h-auto background-black_ticket_detail rounded-3xl">
+        <div className="flex">
+          {/* Event Information */}
+          <div className="flex-1 container mx-auto p-6 relative">
+            {/* Event Details - Top Section */}
+            <div>
+              {/* title */}
+              <h1 className="text-xl font-bold text-white mb-6 leading-tight">
+                {event.title}
+              </h1>
+              {/* Date & Time Section */}
+              <div className="flex items-center mb-4">
+                <div className="mr-4">
+                  <FaCalendar className="w-6 h-6 text-white transition-all duration-200 hover:text-red-400 hover:scale-110" />
+                </div>
+                <div>
+                  {event.showtimes && event.showtimes.length > 0 && (
                     <p className="text-red-500 font-semibold text-sm">
-                      {event.showtimes[0].location_name}
+                      {formatDateTime(event.showtimes[0].start_time)}
                     </p>
-                    {event.custom_location && (
-                      <p className="text-gray-300 text-sm mt-1">
-                        {event.custom_location}
+                  )}
+                </div>
+              </div>
+
+              {/* Location Section */}
+              <div className="flex items-center mb-6">
+                <div className="mr-4 mt-1">
+                  <FaMapMarkerAlt className="w-6 h-6 text-white transition-all duration-200 hover:text-red-400 hover:scale-110" />
+                </div>
+                {event.showtimes &&
+                  event.showtimes.length > 0 &&
+                  event.showtimes[0].location_name && (
+                    <div>
+                      <p className="text-red-500 font-semibold text-sm">
+                        {event.showtimes[0].location_name}
                       </p>
-                    )}
-                  </div>
-                )}
+                      {event.custom_location && (
+                        <p className="text-gray-300 text-sm mt-1">
+                          {event.custom_location}
+                        </p>
+                      )}
+                    </div>
+                  )}
+              </div>
+            </div>
+
+            {/* Price Section - Fixed Bottom */}
+            <div className="absolute bottom-6 left-6 right-6 border-t border-gray-600 pt-6">
+              <div className="flex justify-between items-center">
+                <span className="text-white text-xl font-medium">Giá từ</span>
+                {event.showtimes &&
+                  event.showtimes.length > 0 &&
+                  (event.showtimes[0].seat_prices ||
+                    event.showtimes[0].ticket_types) && (
+                    <span className="text-red-500 text-2xl font-bold">
+                      {event.event_type === "seated"
+                        ? getFormattedLowestPrice(
+                            event.showtimes[0].seat_prices
+                          )
+                        : getFormattedLowestPrice(
+                            event.showtimes[0].ticket_types
+                          )}
+                    </span>
+                  )}
+              </div>
+
+              {/* Book Button */}
+              {event.showtimes && (
+                <Link
+                  href={{
+                    pathname: APP_ROUTES.EVENT_BOOKING(
+                      parseInt(eventId),
+                      (() => {
+                        const now = new Date();
+                        const nearestShowtime = event.showtimes
+                          .filter(
+                            (showtime) => new Date(showtime.start_time) > now
+                          )
+                          .sort(
+                            (a, b) =>
+                              new Date(a.start_time).getTime() -
+                              new Date(b.start_time).getTime()
+                          )[0];
+                        return nearestShowtime
+                          ? nearestShowtime.showtime_id
+                          : event.showtimes[0].showtime_id;
+                      })()
+                    ),
+                    query: {
+                      eventName: event.title,
+                      eventId: event.event_id,
+                    },
+                  }}
+                >
+                  <Button className="w-full mt-6 primary-gradient py-3 text-lg font-semibold rounded-xl transition-all duration-400 ease-in-out transform hover:scale-105">
+                    Mua vé ngay
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
 
-          {/* Price Section - Fixed Bottom */}
-          <div className="absolute bottom-6 left-6 right-6 border-t border-gray-600 pt-6">
-            <div className="flex justify-between items-center">
-              <span className="text-white text-xl font-medium">Giá từ</span>
-              {event.showtimes &&
-                event.showtimes.length > 0 &&
-                (event.showtimes[0].seat_prices ||
-                  event.showtimes[0].ticket_types) && (
-                  <span className="text-red-500 text-2xl font-bold">
-                    {event.event_type === "seated"
-                      ? getFormattedLowestPrice(event.showtimes[0].seat_prices)
-                      : getFormattedLowestPrice(
-                          event.showtimes[0].ticket_types
-                        )}
-                  </span>
-                )}
+          {/* Poster */}
+          <div className="flex-2">
+            <div className="relative rounded-lg overflow-hidden shadow-2xl">
+              <Image
+                src={event.poster_url || ""}
+                alt={event.title}
+                width={900}
+                height={300}
+                className="w-full h-auto object-cover"
+                priority
+              />
             </div>
-
-            {/* Book Button */}
-            {event.showtimes && (
-              <Link
-                href={{
-                  pathname: APP_ROUTES.EVENT_BOOKING(
-                    parseInt(eventId),
-                    (() => {
-                      const now = new Date();
-                      const nearestShowtime = event.showtimes
-                        .filter(
-                          (showtime) => new Date(showtime.start_time) > now
-                        )
-                        .sort(
-                          (a, b) =>
-                            new Date(a.start_time).getTime() -
-                            new Date(b.start_time).getTime()
-                        )[0];
-                      return nearestShowtime
-                        ? nearestShowtime.showtime_id
-                        : event.showtimes[0].showtime_id;
-                    })()
-                  ),
-                  query: {
-                    eventName: event.title,
-                    eventId: event.event_id,
-                  },
-                }}
-              >
-                <Button className="w-full mt-6 primary-gradient py-3 text-lg font-semibold rounded-xl transition-all duration-400 ease-in-out transform hover:scale-105">
-                  Mua vé ngay
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* Poster */}
-        <div className="flex-2">
-          <div className="relative rounded-lg overflow-hidden shadow-2xl">
-            <Image
-              src={event.poster_url || ""}
-              alt={event.title}
-              width={900}
-              height={300}
-              className="w-full h-auto object-cover"
-              priority
-            />
           </div>
         </div>
       </div>
-    </div>
 
-    // Showtime section
+      {/* Showtime Section */}
+      {event.showtimes && event.showtimes.length > 0 && (
+        <div className="mt-10">
+          <div className="background-black_ticket_detail rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-white mb-4">Thông tin vé</h2>
+
+            <Accordion type="single" collapsible className="w-full">
+              {event.showtimes.map((showtime) => (
+                <AccordionItem
+                  key={showtime.showtime_id}
+                  value={`showtime-${showtime.showtime_id}`}
+                  className="border-none"
+                >
+                  <div className="flex justify-between items-center w-full border-b border-gray-600 py-4">
+                    <AccordionTrigger className="hover:no-underline flex-1 justify-start">
+                      <div className="text-white font-medium">
+                        {formatDateTime(showtime.start_time)}
+                      </div>
+                    </AccordionTrigger>
+                    <Link
+                      href={{
+                        pathname: APP_ROUTES.EVENT_BOOKING(
+                          parseInt(eventId),
+                          showtime.showtime_id
+                        ),
+                        query: {
+                          eventName: event.title,
+                          eventId: event.event_id,
+                        },
+                      }}
+                      className="ml-4"
+                    >
+                      <Button className="primary-gradient px-6 py-2 text-sm font-semibold rounded-lg transition-all duration-300 hover:scale-105">
+                        Mua vé ngay
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <AccordionContent>
+                    <div className="pt-2 ">
+                      {/* Ticket Types */}
+                      {showtime.ticket_types &&
+                        showtime.ticket_types.length > 0 && (
+                          <div className="space-y-2">
+                            {showtime.ticket_types.map((ticketType) => (
+                              <div
+                                key={ticketType.ticket_type_id}
+                                className="background-black_showtime_item flex justify-between items-center py-2 px-4 rounded-lg"
+                              >
+                                <span className="text-gray-300 text-lg">
+                                  {ticketType.type_name || "Vé"}
+                                </span>
+                                <span className="text-red-500 font-semibold text-lg">
+                                  {getFormattedLowestPrice([ticketType])}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                      {/* Seat Prices */}
+                      {showtime.seat_prices &&
+                        showtime.seat_prices.length > 0 && (
+                          <div className="space-y-2">
+                            {showtime.seat_prices.map((seatPrice, index) => (
+                              <div
+                                key={index}
+                                className={`flex justify-between items-center py-2 px-4 rounded-lg ${
+                                  index % 2 === 0
+                                    ? "bg-[#2E2F32]"
+                                    : "bg-[#2D2F31]"
+                                }`}
+                              >
+                                <div className="text-gray-300">
+                                  {`Hạng ${index + 1}`}
+                                </div>
+                                <div className="text-red-400 font-semibold">
+                                  {getFormattedLowestPrice([seatPrice])}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+      )}
+
+      {/* Description Section */}
+      {event.description && event.description.length > 0 && (
+        <div className="mt-10">
+          <div className="background-black_ticket_detail rounded-lg p-6">
+            <DescriptionSection description={event.description} />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

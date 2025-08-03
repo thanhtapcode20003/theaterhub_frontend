@@ -97,6 +97,14 @@ body {
     @apply bg-[#27272A];
   }
 
+  .background-black_showtime_detail_2 {
+    @apply bg-[#262629];
+  }
+
+  .background-black_showtime_item {
+    @apply bg-[#2E2F32];
+  }
+
   .background-light850_dark100 {
     @apply bg-light-850 dark:bg-dark-100;
   }
