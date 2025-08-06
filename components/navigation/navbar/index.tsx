@@ -149,7 +149,7 @@ const Navbar = () => {
 
                 {/* Create Event Button */}
                 <Link
-                  href="/create-event"
+                  href="/staff/events"
                   className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full hover:bg-gray-100 transition-colors font-medium"
                 >
                   <Plus className="w-4 h-4" />

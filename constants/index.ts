@@ -29,7 +29,7 @@ export const getSidebarLinks = (userRole?: string) => {
           icon: ChartSpline,
         },
         {
-          title: "My Events",
+          title: "Events",
           url: "/staff/events",
           icon: Calendar,
         },
