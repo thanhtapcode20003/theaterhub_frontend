@@ -75,12 +75,12 @@ export const API_ENDPOINTS = {
   },
   // Locations endpoints
   LOCATIONS: {
-    LIST: "/locations",
-    CREATE: "/locations",
-    DETAIL: "/locations",
-    UPDATE: "/locations",
-    DELETE: "/locations",
-    SEATS: "/locations/{id}/seats",
+    LIST: "/location",
+    CREATE: "/location",
+    DETAIL: "/location",
+    UPDATE: "/location",
+    DELETE: "/location",
+    SEATS: "/location/{id}/seats",
   },
   // Showtimes endpoints
   SHOWTIMES: {

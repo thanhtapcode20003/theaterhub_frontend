@@ -36,6 +36,10 @@ import { CreateEventSchema } from "@/lib/validations";
 import { Organizer } from "@/types/organizers";
 import { EventCategory } from "@/types/categories";
 import { Upload, X, Plus, Loader2 } from "lucide-react";
+import {
+  createLocation,
+  type CreateLocationRequest,
+} from "@/lib/services/locationService";
 
 const steps = [
   "Tạo sự kiện",
@@ -64,6 +68,12 @@ const EventsPage = () => {
   const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [categories, setCategories] = useState<EventCategory[]>([]);
   const [createdEventId, setCreatedEventId] = useState<number | null>(null);
+  const [locationData, setLocationData] = useState<CreateLocationRequest>({
+    name: "",
+    location: "",
+    description: "",
+    map_url: "",
+  });
   const [fileState, setFileState] = useState<FileState>({
     poster: null,
     description_image: null,
@@ -139,7 +149,7 @@ const EventsPage = () => {
       if (typeof result === "string") {
         throw new Error(result);
       }
-
+      console.log(result);
       // Store the created event ID for later steps
       setCreatedEventId(result.event.id);
 
@@ -161,6 +171,59 @@ const EventsPage = () => {
           error instanceof Error
             ? error.message
             : "Có lỗi xảy ra khi tạo sự kiện",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle step 2 - Create location
+  const handleCreateLocation = async () => {
+    // Validate location data
+    if (
+      !locationData.name ||
+      !locationData.location ||
+      !locationData.description ||
+      !locationData.map_url
+    ) {
+      showToast({
+        type: "error",
+        title: "Thiếu thông tin",
+        message: "Vui lòng điền đầy đủ thông tin địa điểm.",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      console.log(locationData);
+
+      const result = await createLocation({
+        ...locationData,
+      });
+
+      if (typeof result === "string") {
+        throw new Error(result);
+      }
+
+      showToast({
+        type: "success",
+        title: "Tạo địa điểm thành công!",
+        message:
+          "Địa điểm đã được tạo thành công. Tiếp tục để thiết lập thời gian.",
+      });
+
+      // Move to next step
+      setStep(2);
+    } catch (error) {
+      console.error("Failed to create location:", error);
+      showToast({
+        type: "error",
+        title: "Tạo địa điểm thất bại",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Có lỗi xảy ra khi tạo địa điểm",
       });
     } finally {
       setLoading(false);
@@ -190,6 +253,12 @@ const EventsPage = () => {
       poster: null,
       description_image: null,
     });
+    setLocationData({
+      name: "",
+      location: "",
+      description: "",
+      map_url: "",
+    });
     setCreatedEventId(null);
     setStep(0);
   };
@@ -217,6 +286,7 @@ const EventsPage = () => {
 
   const next = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const back = () => setStep((prev) => Math.max(prev - 1, 0));
+  console.log(createdEventId);
 
   return (
     <div className="min-h-screen bg-black p-6">
@@ -562,13 +632,85 @@ const EventsPage = () => {
             )}
 
             {step === 1 && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="text-zinc-300 mb-4">
                   Thiết lập địa điểm cho sự kiện ID: {createdEventId}
                 </div>
-                <Input placeholder="Tên địa điểm" />
-                <Input placeholder="Địa chỉ" />
-                <Input placeholder="Thông tin liên hệ" />
+
+                <div className="space-y-4">
+                  {/* Location Name */}
+                  <div className="flex w-full flex-col gap-2.5">
+                    <label className="paragraph-medium text-red-100">
+                      Tên địa điểm *
+                    </label>
+                    <Input
+                      value={locationData.name}
+                      onChange={(e) =>
+                        setLocationData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                      placeholder="Tên địa điểm"
+                      className="paragraph-regular bg-zinc-800 text-red-50 placeholder:text-zinc-400 no-focus min-h-12 rounded-1.5 border focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                    />
+                  </div>
+
+                  {/* Location Address */}
+                  <div className="flex w-full flex-col gap-2.5">
+                    <label className="paragraph-medium text-red-100">
+                      Địa chỉ *
+                    </label>
+                    <Input
+                      value={locationData.location}
+                      onChange={(e) =>
+                        setLocationData((prev) => ({
+                          ...prev,
+                          location: e.target.value,
+                        }))
+                      }
+                      placeholder="Địa chỉ đầy đủ"
+                      className="paragraph-regular bg-zinc-800 text-red-50 placeholder:text-zinc-400 no-focus min-h-12 rounded-1.5 border focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <div className="flex w-full flex-col gap-2.5">
+                    <label className="paragraph-medium text-red-100">
+                      Mô tả *
+                    </label>
+                    <Textarea
+                      value={locationData.description}
+                      onChange={(e) =>
+                        setLocationData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
+                      placeholder="Mô tả về địa điểm"
+                      rows={3}
+                      className="paragraph-regular bg-zinc-800 text-red-50 placeholder:text-zinc-400 no-focus rounded-1.5 border resize-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                    />
+                  </div>
+
+                  {/* Map URL */}
+                  <div className="flex w-full flex-col gap-2.5">
+                    <label className="paragraph-medium text-red-100">
+                      Liên kết Google Maps
+                    </label>
+                    <Input
+                      value={locationData.map_url}
+                      onChange={(e) =>
+                        setLocationData((prev) => ({
+                          ...prev,
+                          map_url: e.target.value,
+                        }))
+                      }
+                      placeholder="https://maps.app.goo.gl/..."
+                      className="paragraph-regular bg-zinc-800 text-red-50 placeholder:text-zinc-400 no-focus min-h-12 rounded-1.5 border focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                    />
+                  </div>
+                </div>
               </div>
             )}
             {step === 2 && (
@@ -605,26 +747,44 @@ const EventsPage = () => {
             >
               Quay lại
             </Button>
-            {step === 0 && (
-              <Button
-                variant="outline"
-                onClick={next}
-                className=" text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 bg-zinc-900"
-              >
-                Bỏ qua
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              onClick={next}
+              className=" text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 bg-zinc-900"
+            >
+              Bỏ qua
+            </Button>
           </div>
           {step < steps.length - 1 ? (
             <Button
-              onClick={step === 0 ? form.handleSubmit(handleCreateEvent) : next}
-              disabled={step === 0 ? !isStep1Valid || loading : false}
+              onClick={
+                step === 0
+                  ? form.handleSubmit(handleCreateEvent)
+                  : step === 1
+                    ? handleCreateLocation
+                    : next
+              }
+              disabled={
+                step === 0
+                  ? !isStep1Valid || loading
+                  : step === 1
+                    ? !locationData.name ||
+                      !locationData.location ||
+                      !locationData.description ||
+                      loading
+                    : false
+              }
               className="primary-gradient paragraph-medium min-h-12 px-6 font-inter text-white active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && step === 0 ? (
                 <>
                   <Loader2 className="animate-spin mr-2" />
                   Đang tạo...
+                </>
+              ) : loading && step === 1 ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" />
+                  Đang tạo địa điểm...
                 </>
               ) : step === 0 ? (
                 "Tạo sự kiện"
