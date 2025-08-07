@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,10 +38,11 @@ import { EventCategory } from "@/types/categories";
 import { Upload, X, Plus, Loader2 } from "lucide-react";
 
 const steps = [
-  "Thông tin sự kiện",
-  "Thời gian & Loại vé",
-  "Cài đặt",
-  "Thông tin thanh toán",
+  "Tạo sự kiện",
+  "Tạo địa điểm",
+  "Tạo thời gian",
+  "Tạo giá vé",
+  "Xác nhận",
 ];
 
 const EVENT_TYPES = [
@@ -62,6 +63,7 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(false);
   const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [categories, setCategories] = useState<EventCategory[]>([]);
+  const [createdEventId, setCreatedEventId] = useState<number | null>(null);
   const [fileState, setFileState] = useState<FileState>({
     poster: null,
     description_image: null,
@@ -70,6 +72,8 @@ const EventsPage = () => {
   // Form setup with Zod validation
   const form = useForm<EventFormData>({
     resolver: zodResolver(CreateEventSchema),
+    mode: "onBlur", // This will trigger validation when fields lose focus
+    reValidateMode: "onChange", // Re-validate on every change after first validation
     defaultValues: {
       title: "",
       event_type: "",
@@ -78,6 +82,9 @@ const EventsPage = () => {
       description: "",
     },
   });
+
+  // Watch form values to trigger re-renders for validation
+  const watchedValues = form.watch();
 
   // Load organizers and categories on mount
   useEffect(() => {
@@ -109,7 +116,8 @@ const EventsPage = () => {
     setFileState((prev) => ({ ...prev, [field]: files[0] || null }));
   };
 
-  const onSubmit = async (data: EventFormData) => {
+  // Handle step 1 - Create event
+  const handleCreateEvent = async (data: EventFormData) => {
     setLoading(true);
     try {
       // Format description
@@ -132,19 +140,18 @@ const EventsPage = () => {
         throw new Error(result);
       }
 
+      // Store the created event ID for later steps
+      setCreatedEventId(result.event.id);
+
       showToast({
         type: "success",
         title: "Tạo sự kiện thành công!",
-        message: "Sự kiện đã được tạo và đang chờ phê duyệt.",
+        message:
+          "Sự kiện đã được tạo thành công. Tiếp tục để thiết lập địa điểm và thời gian.",
       });
 
-      // Reset form and files
-      form.reset();
-      setFileState({
-        poster: null,
-        description_image: null,
-      });
-      setStep(0);
+      // Move to next step
+      setStep(1);
     } catch (error) {
       console.error("Failed to create event:", error);
       showToast({
@@ -160,6 +167,54 @@ const EventsPage = () => {
     }
   };
 
+  // Handle final submission (step 5)
+  const onSubmit = async () => {
+    if (!createdEventId) {
+      showToast({
+        type: "error",
+        title: "Lỗi",
+        message: "Không tìm thấy thông tin sự kiện.",
+      });
+      return;
+    }
+
+    showToast({
+      type: "success",
+      title: "Hoàn tất!",
+      message: `Sự kiện với ID ${createdEventId} đã được thiết lập hoàn tất.`,
+    });
+
+    // Reset everything for new event creation
+    form.reset();
+    setFileState({
+      poster: null,
+      description_image: null,
+    });
+    setCreatedEventId(null);
+    setStep(0);
+  };
+
+  // Check if step 1 is valid (all required fields filled)
+  const isStep1Valid = useMemo(() => {
+    const isValid =
+      watchedValues.title?.trim() !== "" &&
+      watchedValues.event_type !== "" &&
+      watchedValues.organizer_id !== "" &&
+      watchedValues.category_id !== "" &&
+      watchedValues.description?.trim() !== "" &&
+      fileState.poster !== null;
+    // description_image is optional
+
+    return isValid;
+  }, [
+    watchedValues.title,
+    watchedValues.event_type,
+    watchedValues.organizer_id,
+    watchedValues.category_id,
+    watchedValues.description,
+    fileState.poster,
+  ]);
+
   const next = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const back = () => setStep((prev) => Math.max(prev - 1, 0));
 
@@ -174,7 +229,7 @@ const EventsPage = () => {
                 className={cn(
                   "text-sm font-medium transition-colors",
                   i === step
-                    ? "text-red-400"
+                    ? "text-red-500"
                     : i < step
                       ? "text-red-300"
                       : "text-zinc-500"
@@ -190,17 +245,22 @@ const EventsPage = () => {
         </div>
 
         {/* Step Content */}
-        <Card className="min-h-[600px]   shadow-lg bg-zinc-900">
+        <Card className="min-h- shadow-lg bg-zinc-900">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-red-100">
               {steps[step]}
+              {createdEventId && step > 0 && (
+                <span className="text-sm text-zinc-400 ml-2">
+                  (Event ID: {createdEventId})
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-8 bg-zinc-900">
             {step === 0 && (
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit(handleCreateEvent)}
                   className="space-y-6"
                   noValidate
                 >
@@ -220,7 +280,7 @@ const EventsPage = () => {
                             className="paragraph-regular bg-zinc-800  text-red-50 placeholder:text-zinc-400 no-focus min-h-12 rounded-1.5 border focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-red-500 text-sm" />
                       </FormItem>
                     )}
                   />
@@ -258,7 +318,7 @@ const EventsPage = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage className="text-red-500 text-sm" />
                       </FormItem>
                     )}
                   />
@@ -296,7 +356,7 @@ const EventsPage = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage className="text-red-500 text-sm" />
                       </FormItem>
                     )}
                   />
@@ -334,7 +394,7 @@ const EventsPage = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage className="text-red-500 text-sm" />
                       </FormItem>
                     )}
                   />
@@ -351,16 +411,13 @@ const EventsPage = () => {
                         <FormControl>
                           <Textarea
                             {...field}
-                            placeholder="Nhập mô tả sự kiện... (mỗi dòng mới sẽ tạo một đoạn văn riêng)"
+                            placeholder="Nhập mô tả sự kiện... (Mỗi dòng mới sẽ tạo một đoạn văn riêng. Hình ảnh sẽ
+                          được thêm tự động.)"
                             rows={6}
                             className="paragraph-regular bg-zinc-800  text-red-50 placeholder:text-zinc-400 no-focus rounded-1.5 border resize-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
                           />
                         </FormControl>
-                        <p className="text-sm text-zinc-400">
-                          Mỗi dòng mới sẽ tạo một đoạn văn riêng. Hình ảnh sẽ
-                          được thêm tự động.
-                        </p>
-                        <FormMessage />
+                        <FormMessage className="text-red-500 text-sm" />
                       </FormItem>
                     )}
                   />
@@ -368,7 +425,7 @@ const EventsPage = () => {
                   {/* Poster Upload */}
                   <div className="space-y-2">
                     <label className="paragraph-medium text-red-100">
-                      Ảnh poster (1280x720)
+                      Ảnh poster (1280x720) *
                     </label>
                     <div className="border-2 border-dashed  rounded-lg p-6 bg-zinc-800">
                       <div className="text-center">
@@ -506,18 +563,32 @@ const EventsPage = () => {
 
             {step === 1 && (
               <div className="space-y-4">
-                <Input placeholder="Ngày diễn ra" />
-                <Input placeholder="Loại vé" />
+                <div className="text-zinc-300 mb-4">
+                  Thiết lập địa điểm cho sự kiện ID: {createdEventId}
+                </div>
+                <Input placeholder="Tên địa điểm" />
+                <Input placeholder="Địa chỉ" />
+                <Input placeholder="Thông tin liên hệ" />
               </div>
             )}
             {step === 2 && (
               <div className="space-y-4">
-                <Input placeholder="Cài đặt riêng tư" />
+                <div className="text-zinc-300 mb-4">
+                  Thiết lập thời gian cho sự kiện ID: {createdEventId}
+                </div>
+                <Input placeholder="Ngày bắt đầu" />
+                <Input placeholder="Thời gian bắt đầu" />
+                <Input placeholder="Thời gian kết thúc" />
               </div>
             )}
             {step === 3 && (
               <div className="space-y-4">
-                <Input placeholder="Phương thức thanh toán" />
+                <div className="text-zinc-300 mb-4">
+                  Cấu hình giá vé cho sự kiện ID: {createdEventId}
+                </div>
+                <Input placeholder="Loại vé 1" />
+                <Input placeholder="Giá vé 1" />
+                <Input placeholder="Số lượng vé" />
               </div>
             )}
           </CardContent>
@@ -525,35 +596,61 @@ const EventsPage = () => {
 
         {/* Navigation */}
         <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={back}
-            disabled={step === 0}
-            className=" text-red-200 hover:bg-red-900/30 hover:text-red-100 bg-zinc-900"
-          >
-            Quay lại
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={back}
+              disabled={step === 0}
+              className=" text-red-200 hover:bg-red-900/30 hover:text-red-100 bg-zinc-900"
+            >
+              Quay lại
+            </Button>
+            {step === 0 && (
+              <Button
+                variant="outline"
+                onClick={next}
+                className=" text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 bg-zinc-900"
+              >
+                Bỏ qua
+              </Button>
+            )}
+          </div>
           {step < steps.length - 1 ? (
             <Button
-              onClick={next}
-              disabled={step === 0 && !form.formState.isValid}
-              className="bg-red-600 hover:bg-red-700 paragraph-medium min-h-12 px-6 font-inter text-white cursor-pointer transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
+              onClick={step === 0 ? form.handleSubmit(handleCreateEvent) : next}
+              disabled={step === 0 ? !isStep1Valid || loading : false}
+              className="primary-gradient paragraph-medium min-h-12 px-6 font-inter text-white active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Tiếp tục
-            </Button>
-          ) : (
-            <Button
-              onClick={form.handleSubmit(onSubmit)}
-              disabled={loading || !form.formState.isValid}
-              className="bg-red-600 hover:bg-red-700 paragraph-medium min-h-12 px-6 font-inter text-white cursor-pointer transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
-            >
-              {loading ? (
+              {loading && step === 0 ? (
                 <>
                   <Loader2 className="animate-spin mr-2" />
                   Đang tạo...
                 </>
+              ) : step === 0 ? (
+                "Tạo sự kiện"
+              ) : step === 1 ? (
+                "Tạo địa điểm"
+              ) : step === 2 ? (
+                "Tạo thời gian"
+              ) : step === 3 ? (
+                "Tạo giá vé"
               ) : (
-                "Hoàn tất"
+                "Tiếp tục"
+              )}
+            </Button>
+          ) : (
+            <Button
+              onClick={onSubmit}
+              disabled={loading}
+              className="primary-gradient paragraph-medium min-h-12 px-6 font-inter text-white active:scale-[0.98]"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" />
+                  Đang xử lý...
+                </>
+              ) : (
+                "Xác nhận"
               )}
             </Button>
           )}
