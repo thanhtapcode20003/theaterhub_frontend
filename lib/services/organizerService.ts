@@ -10,8 +10,8 @@ import {
 
 // Get all organizers
 export const getOrganizers = async (): Promise<Organizer[]> => {
-  const response = await get<OrganizersResponse>(API_ENDPOINTS.ORGANIZERS.LIST);
-  return response.success && response.data ? response.data.data || [] : [];
+  const response = await get<Organizer[]>(API_ENDPOINTS.ORGANIZERS.LIST);
+  return response.success && response.data ? response.data : [];
 };
 
 // Get organizer by ID

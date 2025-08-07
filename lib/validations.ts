@@ -63,3 +63,33 @@ export const EmailVerificationSchema = z.object({
     .min(1, { message: "Email không được để trống." })
     .email({ message: "Vui lòng cung cấp địa chỉ email hợp lệ." }),
 });
+
+// Event Creation Schema
+export const CreateEventSchema = z.object({
+  title: z
+    .string()
+    .min(1, { message: "Tên sự kiện không được để trống." })
+    .max(200, { message: "Tên sự kiện không được vượt quá 200 ký tự." }),
+
+  event_type: z
+    .string()
+    .min(1, { message: "Vui lòng chọn loại sự kiện." })
+    .refine((val) => ["general", "zoned", "seated"].includes(val), {
+      message: "Loại sự kiện không hợp lệ.",
+    }),
+
+  organizer_id: z
+    .string()
+    .min(1, { message: "Vui lòng chọn nhà tổ chức." })
+    .regex(/^\d+$/, { message: "ID nhà tổ chức không hợp lệ." }),
+
+  category_id: z
+    .string()
+    .min(1, { message: "Vui lòng chọn danh mục." })
+    .regex(/^\d+$/, { message: "ID danh mục không hợp lệ." }),
+
+  description: z
+    .string()
+    .min(10, { message: "Mô tả phải có ít nhất 10 ký tự." })
+    .max(2000, { message: "Mô tả không được vượt quá 2000 ký tự." }),
+});
