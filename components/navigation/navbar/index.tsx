@@ -52,7 +52,8 @@ const getDropdownMenuItems = (userRole?: string) => [
 ];
 
 const Navbar = () => {
-  const { user, isAuthenticated, loading, logout } = useAuth();
+  const { user, isAuthenticated, loading, logout, getUserRole } = useAuth();
+  const userRole = getUserRole();
 
   // Get dynamic menu items based on user role
   const dropdownMenuItems = getDropdownMenuItems(user?.role);
@@ -137,24 +138,27 @@ const Navbar = () => {
 
           {/* Right navigation buttons */}
           <div className="flex items-center gap-4 lg:gap-12">
-            {isAuthenticated && (
+            {isAuthenticated && userRole && (
               <>
-                <Link
-                  href="/tickets"
-                  className="hidden md:flex items-center text-white"
-                >
-                  <Ticket className="w-6 h-6 mr-1" />
-                  <span className="base-medium text-white">Vé đã mua</span>
-                </Link>
-
+                {userRole === "customer" && (
+                  <Link
+                    href="/tickets"
+                    className="hidden md:flex items-center text-white"
+                  >
+                    <Ticket className="w-6 h-6 mr-1" />
+                    <span className="base-medium text-white">Vé đã mua</span>
+                  </Link>
+                )}
                 {/* Create Event Button */}
-                <Link
-                  href="/staff/events"
-                  className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full hover:bg-gray-100 transition-colors font-medium"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="text-sm">Tạo sự kiện</span>
-                </Link>
+                {userRole === "staff" && (
+                  <Link
+                    href="/staff/events"
+                    className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full hover:bg-gray-100 transition-colors font-medium"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="text-sm">Tạo sự kiện</span>
+                  </Link>
+                )}
               </>
             )}
 

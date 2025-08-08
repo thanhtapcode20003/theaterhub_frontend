@@ -40,6 +40,7 @@ import {
   createLocation,
   type CreateLocationRequest,
 } from "@/lib/services/locationService";
+import { createShowtime } from "@/lib/services/showtimeService";
 
 const steps = [
   "Tạo sự kiện",
@@ -67,7 +68,11 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(false);
   const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [categories, setCategories] = useState<EventCategory[]>([]);
-  const [createdEventId, setCreatedEventId] = useState<number | null>(null);
+  const [createdEventId, setCreatedEventId] = useState<number | null>(36);
+  const [createdEventTitle, setCreatedEventTitle] = useState<string | null>(
+    "Sự kiện test"
+  );
+  const [createdLocationId, setCreatedLocationId] = useState<number | null>(15);
   const [locationData, setLocationData] = useState<CreateLocationRequest>({
     name: "",
     location: "",
@@ -78,6 +83,17 @@ const EventsPage = () => {
     poster: null,
     description_image: null,
   });
+
+  // Showtime states
+  const [showtimeData, setShowtimeData] = useState({
+    location_id: 0,
+    start_time: "",
+  });
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedTime, setSelectedTime] = useState("");
+  const [createdShowtimeId, setCreatedShowtimeId] = useState<number | null>(
+    null
+  );
 
   // Form setup with Zod validation
   const form = useForm<EventFormData>({
@@ -151,7 +167,11 @@ const EventsPage = () => {
       }
       console.log(result);
       // Store the created event ID for later steps
-      setCreatedEventId(result.event.id);
+      if (typeof result === "object" && "event" in result) {
+        const event = result.event as any;
+        setCreatedEventId(event.id);
+        setCreatedEventTitle(event.title);
+      }
 
       showToast({
         type: "success",
@@ -171,6 +191,60 @@ const EventsPage = () => {
           error instanceof Error
             ? error.message
             : "Có lỗi xảy ra khi tạo sự kiện",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle step 3 - Create showtime
+  const handleCreateShowtime = async () => {
+    if (
+      !createdEventId ||
+      !createdLocationId ||
+      !selectedDate ||
+      !selectedTime
+    ) {
+      showToast({
+        type: "error",
+        title: "Lỗi!",
+        message: "Vui lòng chọn ngày và giờ cho suất diễn",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Format datetime for API
+      const formattedDate = selectedDate.toLocaleDateString("sv-SE"); // YYYY-MM-DD format
+      const startTime = `${formattedDate} ${selectedTime}:00`;
+
+      const result = await createShowtime(createdEventId, {
+        location_id: createdLocationId,
+        start_time: startTime,
+      });
+
+      console.log(result);
+
+      if (typeof result === "string") {
+        throw new Error(result);
+      }
+
+      setCreatedShowtimeId(result.id);
+
+      showToast({
+        type: "success",
+        title: "Tạo thời gian thành công!",
+        message: `Suất diễn đã được tạo cho ngày ${formattedDate} lúc ${selectedTime}`,
+      });
+
+      next();
+    } catch (error) {
+      console.error("Error creating showtime:", error);
+      showToast({
+        type: "error",
+        title: "Lỗi tạo thời gian!",
+        message: error instanceof Error ? error.message : "Đã xảy ra lỗi",
       });
     } finally {
       setLoading(false);
@@ -204,6 +278,10 @@ const EventsPage = () => {
 
       if (typeof result === "string") {
         throw new Error(result);
+      }
+      if (typeof result === "object" && "location" in result) {
+        const location = result.location as any;
+        setCreatedLocationId(location.location_id);
       }
 
       showToast({
@@ -321,7 +399,7 @@ const EventsPage = () => {
               {steps[step]}
               {createdEventId && step > 0 && (
                 <span className="text-sm text-zinc-400 ml-2">
-                  (Event ID: {createdEventId})
+                  (Event: {createdEventTitle})
                 </span>
               )}
             </CardTitle>
@@ -633,10 +711,6 @@ const EventsPage = () => {
 
             {step === 1 && (
               <div className="space-y-6">
-                <div className="text-zinc-300 mb-4">
-                  Thiết lập địa điểm cho sự kiện ID: {createdEventId}
-                </div>
-
                 <div className="space-y-4">
                   {/* Location Name */}
                   <div className="flex w-full flex-col gap-2.5">
@@ -714,13 +788,93 @@ const EventsPage = () => {
               </div>
             )}
             {step === 2 && (
-              <div className="space-y-4">
-                <div className="text-zinc-300 mb-4">
-                  Thiết lập thời gian cho sự kiện ID: {createdEventId}
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-red-100 mb-4">
+                    Chọn thời gian diễn ra sự kiện
+                  </h3>
+
+                  {/* Event and Location Info */}
+                  <div className="bg-zinc-800 p-4 rounded-lg border border-zinc-700">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-zinc-400">Sự kiện:</span>
+                        <span className="text-red-100 font-medium">
+                          {createdEventTitle}
+                        </span>
+                        <span className="text-zinc-500">
+                          (ID: {createdEventId})
+                        </span>
+                      </div>
+                      {createdLocationId && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-zinc-400">Địa điểm:</span>
+                          <span className="text-green-400">
+                            ✓ ID: {createdLocationId}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Date and Time Selection */}
+                  <div className="flex w-full flex-col gap-2.5">
+                    <label className="paragraph-medium text-red-100">
+                      Chọn ngày và giờ *
+                    </label>
+                    <Input
+                      type="datetime-local"
+                      value={
+                        selectedDate && selectedTime
+                          ? `${selectedDate.toLocaleDateString("sv-SE")}T${selectedTime}`
+                          : ""
+                      }
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          const [date, time] = e.target.value.split("T");
+                          setSelectedDate(new Date(date));
+                          setSelectedTime(time);
+                        } else {
+                          setSelectedDate(undefined);
+                          setSelectedTime("");
+                        }
+                      }}
+                      min={`${new Date().toLocaleDateString("sv-SE")}T00:00`}
+                      className="paragraph-regular bg-zinc-800 text-red-50 placeholder:text-zinc-400 no-focus min-h-12 rounded-1.5 border focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                    />
+                  </div>
+
+                  {/* Preview formatted datetime */}
+                  {selectedDate && selectedTime && (
+                    <div className="flex w-full flex-col gap-2.5">
+                      <label className="paragraph-medium text-red-100">
+                        Thời gian đã chọn
+                      </label>
+                      <div className="p-3 bg-zinc-700 rounded-lg border border-zinc-600">
+                        <p className="text-green-400 font-mono">
+                          {selectedDate.toLocaleDateString("sv-SE")}{" "}
+                          {selectedTime}:00
+                        </p>
+                        <p className="text-zinc-400 text-sm mt-1">
+                          {selectedDate.toLocaleDateString("vi-VN")} lúc{" "}
+                          {selectedTime}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Showtime ID Display */}
+                  {createdShowtimeId && (
+                    <div className="bg-green-900/20 border border-green-700 p-3 rounded-lg">
+                      <p className="text-green-400 font-medium">
+                        ✅ Đã tạo suất diễn thành công!
+                      </p>
+                      <p className="text-zinc-300 text-sm">
+                        Showtime ID: {createdShowtimeId}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <Input placeholder="Ngày bắt đầu" />
-                <Input placeholder="Thời gian bắt đầu" />
-                <Input placeholder="Thời gian kết thúc" />
               </div>
             )}
             {step === 3 && (
@@ -762,7 +916,9 @@ const EventsPage = () => {
                   ? form.handleSubmit(handleCreateEvent)
                   : step === 1
                     ? handleCreateLocation
-                    : next
+                    : step === 2
+                      ? handleCreateShowtime
+                      : next
               }
               disabled={
                 step === 0
@@ -772,7 +928,9 @@ const EventsPage = () => {
                       !locationData.location ||
                       !locationData.description ||
                       loading
-                    : false
+                    : step === 2
+                      ? !selectedDate || !selectedTime || loading
+                      : false
               }
               className="primary-gradient paragraph-medium min-h-12 px-6 font-inter text-white active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -785,6 +943,11 @@ const EventsPage = () => {
                 <>
                   <Loader2 className="animate-spin mr-2" />
                   Đang tạo địa điểm...
+                </>
+              ) : loading && step === 2 ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" />
+                  Đang tạo thời gian...
                 </>
               ) : step === 0 ? (
                 "Tạo sự kiện"
