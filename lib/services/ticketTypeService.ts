@@ -7,12 +7,37 @@ export interface Ticket {
   quantity: number;
 }
 
+export interface ZonedTicket {
+  ticket_type_id: number;
+  type_name: string;
+  price: string;
+  quantity: number;
+}
+
 export interface Showtime {
   showtime_id: number;
   start_time: string;
   location_name: string;
   location_address: string;
   tickets: Ticket[];
+}
+
+export interface ZonedShowtime {
+  showtime_id: number;
+  start_time: string;
+  location_name: string;
+  location_address: string;
+  ticket_types: ZonedTicket[];
+}
+
+export interface GeneralTicketTypesResponse {
+  event_id: string;
+  showtimes: Showtime[];
+}
+
+export interface ZonedTicketTypesResponse {
+  event_id: string;
+  showtimes: ZonedShowtime[];
 }
 
 export interface TicketTypesResponse {
@@ -22,9 +47,9 @@ export interface TicketTypesResponse {
 
 export const getPublicZonedTicketTypes = async (
   id: number
-): Promise<TicketTypesResponse | null> => {
+): Promise<ZonedTicketTypesResponse | null> => {
   try {
-    const response = await get<TicketTypesResponse>(
+    const response = await get<ZonedTicketTypesResponse>(
       API_ENDPOINTS.SHOWTIMES.LIST_PUBLIC_ZONED_TICKET_TYPES(id)
     );
     return response.success && response.data ? response.data : null;
@@ -36,9 +61,9 @@ export const getPublicZonedTicketTypes = async (
 
 export const getPublicGeneralTicketTypes = async (
   id: number
-): Promise<TicketTypesResponse | null> => {
+): Promise<GeneralTicketTypesResponse | null> => {
   try {
-    const response = await get<TicketTypesResponse>(
+    const response = await get<GeneralTicketTypesResponse>(
       API_ENDPOINTS.SHOWTIMES.LIST_PUBLIC_GENERAL_TICKET_TYPES(id)
     );
     return response.success && response.data ? response.data : null;

@@ -13,7 +13,6 @@ import { getPublicEventById } from "@/lib/services/eventService";
 import { Event } from "@/types";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaCalendar } from "react-icons/fa";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import {
   Accordion,
   AccordionContent,
@@ -232,6 +231,7 @@ const EventPage = () => {
                     query: {
                       eventName: event.title,
                       eventId: event.event_id,
+                      eventType: event.event_type,
                     },
                   }}
                 >
@@ -287,6 +287,7 @@ const EventPage = () => {
                         query: {
                           eventName: event.title,
                           eventId: event.event_id,
+                          eventType: event.event_type,
                         },
                       }}
                       className="ml-4"
