@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import QuantityBox from "@/components/ui/QuantityBox";
 import {
   getPublicGeneralTicketTypes,
   getPublicZonedTicketTypes,
+  getPublicSeatedTicketTypes,
   Ticket,
   ZonedTicket,
+  Seat,
   TicketTypesResponse,
   GeneralTicketTypesResponse,
   ZonedTicketTypesResponse,
+  SeatedTicketTypesResponse,
   Showtime,
   ZonedShowtime,
 } from "@/lib/services/ticketTypeService";
@@ -20,6 +23,7 @@ import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { showToast } from "@/components/ui/toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { APP_ROUTES } from "@/lib/config";
+import SeatPicker from "@/components/ui/SeatPicker";
 
 // Extended ticket type for display
 interface DisplayTicket extends Ticket {
@@ -38,7 +42,10 @@ interface DisplayZonedTicket extends ZonedTicket {
 }
 
 // Union type for all ticket display data
-type UnifiedTicketData = GeneralTicketTypesResponse | ZonedTicketTypesResponse;
+type UnifiedTicketData =
+  | GeneralTicketTypesResponse
+  | ZonedTicketTypesResponse
+  | SeatedTicketTypesResponse;
 type UnifiedShowtime = Showtime | ZonedShowtime;
 type UnifiedTicket = Ticket | ZonedTicket;
 
@@ -60,11 +67,15 @@ const BookingPage = () => {
   // State for API data
   const [ticketData, setTicketData] = useState<UnifiedTicketData | null>(null);
   const [isZonedEvent, setIsZonedEvent] = useState(false);
+  const [isSeatedEvent, setIsSeatedEvent] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // State for ticket quantities - dynamic based on API data
   const [quantities, setQuantities] = useState<Record<number, number>>({});
+
+  // State for selected seats (for seated events)
+  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
   // Fetch ticket data
   useEffect(() => {
@@ -76,9 +87,15 @@ const BookingPage = () => {
         // Determine which API to call based on event type
         if (eventType === "zoned") {
           setIsZonedEvent(true);
+          setIsSeatedEvent(false);
           data = await getPublicZonedTicketTypes(eventId);
+        } else if (eventType === "seated") {
+          setIsZonedEvent(false);
+          setIsSeatedEvent(true);
+          data = await getPublicSeatedTicketTypes(showtimeId);
         } else {
           setIsZonedEvent(false);
+          setIsSeatedEvent(false);
           data = await getPublicGeneralTicketTypes(eventId);
         }
 
@@ -86,30 +103,33 @@ const BookingPage = () => {
 
         if (data) {
           setTicketData(data);
-          // Initialize quantities for all ticket types
-          const initialQuantities: Record<number, number> = {};
 
-          if (eventType === "zoned" && "showtimes" in data) {
-            // Handle zoned events
-            (data as ZonedTicketTypesResponse).showtimes.forEach(
-              (showtime: ZonedShowtime) => {
-                showtime.ticket_types.forEach((ticket: ZonedTicket) => {
-                  initialQuantities[ticket.ticket_type_id] = 0;
-                });
-              }
-            );
-          } else if ("showtimes" in data) {
-            // Handle general events
-            (data as GeneralTicketTypesResponse).showtimes.forEach(
-              (showtime: Showtime) => {
-                showtime.tickets.forEach((ticket: Ticket) => {
-                  initialQuantities[ticket.ticket_type_id] = 0;
-                });
-              }
-            );
+          // Initialize quantities for all ticket types (not needed for seated events)
+          if (eventType !== "seated") {
+            const initialQuantities: Record<number, number> = {};
+
+            if (eventType === "zoned" && "showtimes" in data) {
+              // Handle zoned events
+              (data as ZonedTicketTypesResponse).showtimes.forEach(
+                (showtime: ZonedShowtime) => {
+                  showtime.ticket_types.forEach((ticket: ZonedTicket) => {
+                    initialQuantities[ticket.ticket_type_id] = 0;
+                  });
+                }
+              );
+            } else if ("showtimes" in data) {
+              // Handle general events
+              (data as GeneralTicketTypesResponse).showtimes.forEach(
+                (showtime: Showtime) => {
+                  showtime.tickets.forEach((ticket: Ticket) => {
+                    initialQuantities[ticket.ticket_type_id] = 0;
+                  });
+                }
+              );
+            }
+
+            setQuantities(initialQuantities);
           }
-
-          setQuantities(initialQuantities);
         } else {
           setError("Failed to load ticket data");
         }
@@ -124,7 +144,7 @@ const BookingPage = () => {
     if (eventId) {
       fetchTicketData();
     }
-  }, [eventId, eventType]);
+  }, [eventId, showtimeId, eventType]);
 
   // Handle quantity changes
   const handleQuantityChange = (ticketTypeId: number, value: number) => {
@@ -134,6 +154,11 @@ const BookingPage = () => {
     }));
   };
 
+  // Handle seat selection for seated events
+  const handleSeatSelect = useCallback((seats: Seat[]) => {
+    setSelectedSeats(seats);
+  }, []);
+
   // Handle back navigation
   const handleGoBack = () => {
     router.push(APP_ROUTES.EVENT_DETAIL(eventId));
@@ -141,17 +166,73 @@ const BookingPage = () => {
 
   // Handle checkout
   const handleCheckout = () => {
-    if (Object.values(quantities).every((q) => q === 0)) {
+    // Check if any tickets/seats are selected
+    const hasSelection =
+      eventType === "seated"
+        ? selectedSeats.length > 0
+        : Object.values(quantities).some((q) => q > 0);
+
+    if (!hasSelection) {
       showToast({
         type: "info",
         title: "Chưa chọn vé",
-        message: "Vui lòng chọn ít nhất một vé để tiếp tục!",
+        message:
+          eventType === "seated"
+            ? "Vui lòng chọn ít nhất một ghế để tiếp tục!"
+            : "Vui lòng chọn ít nhất một vé để tiếp tục!",
       });
       return;
     }
 
     setProcessing(true);
 
+    // For seated events, we don't need to get tickets and showtimes the same way
+    if (eventType === "seated") {
+      if (!selectedSeats.length) {
+        showToast({
+          type: "error",
+          title: "Lỗi tải thông tin",
+          message: "Không thể tải thông tin ghế. Vui lòng thử lại!",
+        });
+        setProcessing(false);
+        return;
+      }
+
+      // Prepare seat data for payment page
+      const tickets = selectedSeats.map((seat) => ({
+        seatId: seat.seat_id,
+        seatRow: seat.seat_row,
+        seatNumber: seat.seat_number,
+        typeName: seat.seat_type_name,
+        price: parseFloat(seat.price),
+      }));
+
+      const totalAmount = selectedSeats.reduce(
+        (sum, seat) => sum + parseFloat(seat.price),
+        0
+      );
+
+      // Prepare URL parameters for seated events
+      const params = new URLSearchParams({
+        eventName: eventName,
+        showtimeId: showtimeId.toString(),
+        totalAmount: totalAmount.toString(),
+        totalQuantity: selectedSeats.length.toString(),
+        seats: encodeURIComponent(JSON.stringify(tickets)),
+        eventType: "seated",
+      });
+
+      // Navigate to payment page
+      router.push(
+        `${APP_ROUTES.EVENT_BOOKING(eventId, showtimeId)}/payment?${params.toString()}`
+      );
+
+      // Reset processing state after navigation
+      setTimeout(() => setProcessing(false), 1000);
+      return;
+    }
+
+    // Handle general and zoned events
     const selectedTickets = getSelectedShowtimeTickets();
     const selectedShowtime =
       eventType === "zoned"
@@ -218,6 +299,13 @@ const BookingPage = () => {
 
   // Calculate total
   const calculateTotal = () => {
+    if (eventType === "seated") {
+      return selectedSeats.reduce(
+        (total, seat) => total + parseFloat(seat.price),
+        0
+      );
+    }
+
     if (!ticketData) return 0;
 
     const tickets = getSelectedShowtimeTickets();
@@ -385,16 +473,25 @@ const BookingPage = () => {
     );
   }
 
-  // Get the selected showtime tickets for display
-  const selectedTickets = getSelectedShowtimeTickets();
+  // Get the selected showtime tickets for display (not needed for seated events)
+  const selectedTickets =
+    eventType === "seated" ? [] : getSelectedShowtimeTickets();
   const selectedShowtime =
-    eventType === "zoned"
-      ? (ticketData as ZonedTicketTypesResponse)?.showtimes.find(
-          (showtime: ZonedShowtime) => showtime.showtime_id === showtimeId
-        )
-      : (ticketData as GeneralTicketTypesResponse)?.showtimes.find(
-          (showtime: Showtime) => showtime.showtime_id === showtimeId
-        );
+    eventType === "seated"
+      ? null
+      : eventType === "zoned"
+        ? (ticketData as ZonedTicketTypesResponse)?.showtimes.find(
+            (showtime: ZonedShowtime) => showtime.showtime_id === showtimeId
+          )
+        : (ticketData as GeneralTicketTypesResponse)?.showtimes.find(
+            (showtime: Showtime) => showtime.showtime_id === showtimeId
+          );
+
+  // Get seats for seated events
+  const seats =
+    eventType === "seated"
+      ? (ticketData as SeatedTicketTypesResponse)?.seats || []
+      : [];
 
   console.log(ticketData);
 
@@ -415,59 +512,77 @@ const BookingPage = () => {
           <div></div> {/* Spacer for center alignment */}
         </div>
 
-        {/* Ticket Types */}
-        <div className="space-y-4 px-40">
-          {/* Header Row */}
-          <div className="flex items-center justify-between ">
-            <h2 className="text-white text-lg font-semibold">Loại vé</h2>
-            <h2 className="text-white text-lg font-semibold">Số lượng</h2>
+        {/* Ticket Types or Seat Selection */}
+        {eventType === "seated" ? (
+          // Seat picker for seated events
+          <div className="px-8">
+            {seats.length > 0 ? (
+              <SeatPicker
+                seats={seats}
+                onSeatSelect={handleSeatSelect}
+                maxSeats={10}
+              />
+            ) : (
+              <div className="text-center text-gray-400 py-8">
+                Không tìm thấy thông tin ghế cho suất chiếu này
+              </div>
+            )}
           </div>
-          {selectedTickets.length > 0 ? (
-            selectedTickets.map((ticket) => (
-              <div
-                key={ticket.ticket_type_id}
-                className={`flex items-center justify-between py-6 px-6 border border-gray-600 rounded-lg transition-all duration-300 hover:border-red-primary ${
-                  ticket.quantity === 0 ? "opacity-60" : ""
-                } ${quantities[ticket.ticket_type_id] > 0 ? "border-red-primary bg-gray-900/30" : ""}`}
-              >
-                <div>
-                  <h3 className="text-red-primary text-xl font-bold">
-                    {"type_name" in ticket
-                      ? ticket.type_name
-                      : `${new Date((ticket as DisplayTicket).start_time).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`}
-                  </h3>
-                  <p className="text-white text-base">
-                    {formatCurrency(parseFloat(ticket.price))}
-                  </p>
-                  {ticket.quantity === 0 && (
-                    <p className="text-red-primary text-lg">Hết vé</p>
+        ) : (
+          // Regular ticket selection for general and zoned events
+          <div className="space-y-4 px-40">
+            {/* Header Row */}
+            <div className="flex items-center justify-between ">
+              <h2 className="text-white text-lg font-semibold">Loại vé</h2>
+              <h2 className="text-white text-lg font-semibold">Số lượng</h2>
+            </div>
+            {selectedTickets.length > 0 ? (
+              selectedTickets.map((ticket) => (
+                <div
+                  key={ticket.ticket_type_id}
+                  className={`flex items-center justify-between py-6 px-6 border border-gray-600 rounded-lg transition-all duration-300 hover:border-red-primary ${
+                    ticket.quantity === 0 ? "opacity-60" : ""
+                  } ${quantities[ticket.ticket_type_id] > 0 ? "border-red-primary bg-gray-900/30" : ""}`}
+                >
+                  <div>
+                    <h3 className="text-red-primary text-xl font-bold">
+                      {"type_name" in ticket
+                        ? ticket.type_name
+                        : `${new Date((ticket as DisplayTicket).start_time).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`}
+                    </h3>
+                    <p className="text-white text-base">
+                      {formatCurrency(parseFloat(ticket.price))}
+                    </p>
+                    {ticket.quantity === 0 && (
+                      <p className="text-red-primary text-lg">Hết vé</p>
+                    )}
+                  </div>
+
+                  {ticket.quantity > 0 ? (
+                    <div className="flex items-center space-x-3">
+                      <QuantityBox
+                        initialValue={quantities[ticket.ticket_type_id] || 0}
+                        onQuantityChange={(value) =>
+                          handleQuantityChange(ticket.ticket_type_id, value)
+                        }
+                        min={0}
+                        max={Math.min(ticket.quantity, 10)}
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <p className="text-red-primary text-lg">Hết vé</p>
+                    </div>
                   )}
                 </div>
-
-                {ticket.quantity > 0 ? (
-                  <div className="flex items-center space-x-3">
-                    <QuantityBox
-                      initialValue={quantities[ticket.ticket_type_id] || 0}
-                      onQuantityChange={(value) =>
-                        handleQuantityChange(ticket.ticket_type_id, value)
-                      }
-                      min={0}
-                      max={Math.min(ticket.quantity, 10)}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex items-center">
-                    <p className="text-red-primary text-lg">Hết vé</p>
-                  </div>
-                )}
+              ))
+            ) : (
+              <div className="text-center text-gray-400 py-8">
+                Không tìm thấy thông tin vé cho suất chiếu này
               </div>
-            ))
-          ) : (
-            <div className="text-center text-gray-400 py-8">
-              Không tìm thấy thông tin vé cho suất chiếu này
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right Section - Payment Summary (1/3 width) */}
@@ -476,25 +591,34 @@ const BookingPage = () => {
         <div className="mb-6">
           <h2 className="text-white font-bold text-lg mb-2">{eventName}</h2>
           <div className="space-y-2 text-sm text-gray-300">
-            <div className="flex items-center gap-3 mt-5">
-              <CalendarDays className="w-6 h-6 text-red-primary" />
-              <div>
-                <div className="text-white text-base font-semibold">
-                  {formatDateTime(selectedShowtime?.start_time || "")}
+            {eventType !== "seated" && selectedShowtime && (
+              <>
+                <div className="flex items-center gap-3 mt-5">
+                  <CalendarDays className="w-6 h-6 text-red-primary" />
+                  <div>
+                    <div className="text-white text-base font-semibold">
+                      {formatDateTime(selectedShowtime.start_time)}
+                    </div>
+                  </div>
                 </div>
+                <div className="flex items-center gap-3 mt-5">
+                  <MapPin className="w-8 h-8 text-red-primary" />
+                  <div className="">
+                    <div className="text-white text-base font-semibold">
+                      {selectedShowtime.location_name}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {selectedShowtime.location_address}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {eventType === "seated" && (
+              <div className="text-white text-base">
+                <p className="text-gray-400">Suất chiếu: {showtimeId}</p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 mt-5">
-              <MapPin className="w-8 h-8 text-red-primary" />
-              <div className="">
-                <div className="text-white text-base font-semibold">
-                  {selectedShowtime?.location_name}
-                </div>
-                <div className="text-xs text-gray-400">
-                  {selectedShowtime?.location_address}
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -504,31 +628,55 @@ const BookingPage = () => {
             Chi tiết đơn hàng
           </h3>
           <div className="space-y-3 ">
-            {selectedTickets.map((ticket) => {
-              const qty = quantities[ticket.ticket_type_id] || 0;
-              if (qty === 0) return null;
-
-              return (
-                <div
-                  key={ticket.ticket_type_id}
-                  className="flex justify-between"
-                >
-                  <span className="text-white text-lg font-bold">
-                    {"type_name" in ticket
-                      ? ticket.type_name
-                      : `${new Date((ticket as DisplayTicket).start_time).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`}{" "}
-                    x{qty}
-                  </span>
-                  <span className="text-red-500 text-lg font-bold">
-                    {formatCurrency(parseFloat(ticket.price) * qty)}
-                  </span>
+            {eventType === "seated" ? (
+              // Show selected seats for seated events
+              selectedSeats.length > 0 ? (
+                selectedSeats.map((seat) => (
+                  <div key={seat.seat_id} className="flex justify-between">
+                    <span className="text-white text-lg font-bold">
+                      Ghế {seat.seat_row}
+                      {seat.seat_number} ({seat.seat_type_name})
+                    </span>
+                    <span className="text-red-500 text-lg font-bold">
+                      {formatCurrency(parseFloat(seat.price))}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-gray-500 text-center py-4">
+                  Chưa chọn ghế nào
                 </div>
-              );
-            })}
-            {Object.values(quantities).every((q) => q === 0) && (
-              <div className="text-gray-500 text-center py-4">
-                Chưa chọn vé nào
-              </div>
+              )
+            ) : (
+              // Show selected tickets for general and zoned events
+              <>
+                {selectedTickets.map((ticket) => {
+                  const qty = quantities[ticket.ticket_type_id] || 0;
+                  if (qty === 0) return null;
+
+                  return (
+                    <div
+                      key={ticket.ticket_type_id}
+                      className="flex justify-between"
+                    >
+                      <span className="text-white text-lg font-bold">
+                        {"type_name" in ticket
+                          ? ticket.type_name
+                          : `${new Date((ticket as DisplayTicket).start_time).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`}{" "}
+                        x{qty}
+                      </span>
+                      <span className="text-red-500 text-lg font-bold">
+                        {formatCurrency(parseFloat(ticket.price) * qty)}
+                      </span>
+                    </div>
+                  );
+                })}
+                {Object.values(quantities).every((q) => q === 0) && (
+                  <div className="text-gray-500 text-center py-4">
+                    Chưa chọn vé nào
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -539,7 +687,9 @@ const BookingPage = () => {
             onClick={handleCheckout}
             className={buttonCheckoutClass}
             disabled={
-              Object.values(quantities).every((q) => q === 0) || processing
+              (eventType === "seated"
+                ? selectedSeats.length === 0
+                : Object.values(quantities).every((q) => q === 0)) || processing
             }
           >
             {processing ? (
@@ -547,8 +697,16 @@ const BookingPage = () => {
                 <Loader2 className="animate-spin mr-2" />
                 Đang xử lý...
               </>
-            ) : Object.values(quantities).every((q) => q === 0) ? (
-              "Chọn vé để tiếp tục"
+            ) : (
+                eventType === "seated"
+                  ? selectedSeats.length === 0
+                  : Object.values(quantities).every((q) => q === 0)
+              ) ? (
+              eventType === "seated" ? (
+                "Chọn ghế để tiếp tục"
+              ) : (
+                "Chọn vé để tiếp tục"
+              )
             ) : (
               `Đặt vé ngay - ${formatCurrency(calculateTotal())}`
             )}

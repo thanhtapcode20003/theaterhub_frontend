@@ -88,6 +88,8 @@ export const API_ENDPOINTS = {
       `/public/events/${id}/general-ticket-types`,
     LIST_PUBLIC_ZONED_TICKET_TYPES: (id: number) =>
       `/public/events/${id}/zoned-ticket-types`,
+    LIST_PUBLIC_SEATED_TICKET_TYPES: (id: number) =>
+      `/public/showtimes/${id}/seats`,
     LIST: "/showtimes",
     CREATE: "/showtimes",
     DETAIL: "/showtimes",

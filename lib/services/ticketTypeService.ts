@@ -14,6 +14,16 @@ export interface ZonedTicket {
   quantity: number;
 }
 
+export interface Seat {
+  seat_id: number;
+  seat_row: string;
+  seat_number: number;
+  seat_type_code: string;
+  seat_type_name: string;
+  price: string;
+  status: "available" | "booked" | "selected" | "disabled";
+}
+
 export interface Showtime {
   showtime_id: number;
   start_time: string;
@@ -38,6 +48,11 @@ export interface GeneralTicketTypesResponse {
 export interface ZonedTicketTypesResponse {
   event_id: string;
   showtimes: ZonedShowtime[];
+}
+
+export interface SeatedTicketTypesResponse {
+  success: boolean;
+  seats: Seat[];
 }
 
 export interface TicketTypesResponse {
@@ -69,6 +84,20 @@ export const getPublicGeneralTicketTypes = async (
     return response.success && response.data ? response.data : null;
   } catch (error) {
     console.error("Error fetching general ticket types:", error);
+    return null;
+  }
+};
+
+export const getPublicSeatedTicketTypes = async (
+  showtimeId: number
+): Promise<SeatedTicketTypesResponse | null> => {
+  try {
+    const response = await get<SeatedTicketTypesResponse>(
+      API_ENDPOINTS.SHOWTIMES.LIST_PUBLIC_SEATED_TICKET_TYPES(showtimeId)
+    );
+    return response.success && response.data ? response.data : null;
+  } catch (error) {
+    console.error("Error fetching seated ticket types:", error);
     return null;
   }
 };
