@@ -336,6 +336,88 @@ const Home = () => {
           </div>
         )}
       </div>
+
+      {/* Categories */}
+      <div className="mt-8 md:mt-12">
+        <div className="mb-4 md:mb-6 px-4 sm:px-0">
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
+            Danh mục sự kiện
+          </h2>
+        </div>
+        {sortedCategories.length > 0 ? (
+          <div>
+            {sortedCategories.map((category) => (
+              <div key={category} className="mb-8">
+                <div className="flex items-center justify-between px-4 sm:px-0">
+                  <h3 className="text-lg md:text-xl font-semibold text-white mb-4">
+                    {category}
+                  </h3>
+                  <Link
+                    href={`/categories/${categories.find((c) => c.category_name === category)?.slug}`}
+                    className="text-gray-400 hover:text-white transition-colors flex items-center gap-1 text-sm md:text-base"
+                  >
+                    <span className="hidden sm:inline">Xem thêm</span>
+                    <span className="sm:hidden">Xem</span>
+                    <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-4 sm:px-0">
+                  {groupedEvents[category].map((event) => (
+                    <Link
+                      key={`price-${event.event_id}`}
+                      href={`/events/${event.event_id}`}
+                    >
+                      <div className="cursor-pointer">
+                        <div className="rounded-lg overflow-hidden shadow-lg">
+                          <Image
+                            src={event.poster_url || ""}
+                            alt={event.title}
+                            width={1920}
+                            height={1080}
+                            className="w-full aspect-video object-cover"
+                          />
+                        </div>
+                        <div className="p-2 flex flex-col">
+                          <h4 className="text-white font-semibold text-sm mb-2 line-clamp-2 leading-tight h-8">
+                            {event.title}
+                          </h4>
+                          <div className="mt-auto">
+                            {event.showtimes &&
+                              event.showtimes.length > 0 &&
+                              (event.showtimes[0].seat_prices ||
+                                event.showtimes[0].ticket_types) && (
+                                <p className="text-red-500 font-bold text-md mb-1">
+                                  Từ{" "}
+                                  {event.event_type === "seated"
+                                    ? getFormattedLowestPrice(
+                                        event.showtimes[0].seat_prices
+                                      )
+                                    : getFormattedLowestPrice(
+                                        event.showtimes[0].ticket_types
+                                      )}
+                                </p>
+                              )}
+                            {event.showtimes && event.showtimes[0] && (
+                              <div className="flex items-center text-white text-sm">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                {formatDate(event.showtimes[0].start_time)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-400 py-8">
+            No categories available
+          </div>
+        )}
+      </div>
     </div>
   );
 };
