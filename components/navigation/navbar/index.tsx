@@ -66,8 +66,8 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getCategories();
-        setCategories(data.data);
+        const response = await getCategories();
+        setCategories(response.data || []);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }

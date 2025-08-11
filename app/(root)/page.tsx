@@ -35,12 +35,12 @@ const Home = () => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const [eventsData, categoriesData] = await Promise.all([
+        const [eventsData, categoriesResponse] = await Promise.all([
           getPublicEvents(),
           getCategories(),
         ]);
         setEvents(eventsData);
-        setCategories(categoriesData.data);
+        setCategories(categoriesResponse.data || []);
         setError(null);
       } catch (error) {
         console.error("Error fetching events:", error);
