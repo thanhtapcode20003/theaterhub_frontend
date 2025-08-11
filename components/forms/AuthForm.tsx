@@ -10,7 +10,7 @@ import {
   SubmitHandler,
   useForm,
 } from "react-hook-form";
-import { z, ZodType } from "zod";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,21 +30,21 @@ import { SignUpSchema, OTPVerificationSchema } from "@/lib/validations";
 import { RegisterRequest, AuthResponse } from "@/types";
 import { Loader2 } from "lucide-react";
 
-interface AuthFormProps<T extends FieldValues> {
-  schema: ZodType<T>;
-  defaultValues: T;
-  onSubmit: (data: T) => Promise<{ success: boolean }>;
+interface AuthFormProps {
+  schema: z.ZodSchema<any, any, any>;
+  defaultValues: any;
+  onSubmit: (data: any) => Promise<{ success: boolean }>;
   formType: "SIGN_IN" | "SIGN_UP";
 }
 
 type SignUpStep = "registration" | "otp_verification" | "completed";
 
-const AuthForm = <T extends FieldValues>({
+const AuthForm = ({
   schema,
   defaultValues,
   formType,
   onSubmit,
-}: AuthFormProps<T>) => {
+}: AuthFormProps) => {
   // Sign-up specific state
   const [signUpStep, setSignUpStep] = useState<SignUpStep>("registration");
   const [registrationData, setRegistrationData] =
@@ -56,7 +56,7 @@ const AuthForm = <T extends FieldValues>({
   // Form setup
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues as DefaultValues<T>,
+    defaultValues: defaultValues,
   });
 
   // OTP form for verification step
@@ -77,7 +77,7 @@ const AuthForm = <T extends FieldValues>({
   }, [resendTimer]);
 
   // Handle registration form submission
-  const handleRegistrationSubmit: SubmitHandler<T> = async (data) => {
+  const handleRegistrationSubmit: SubmitHandler<any> = async (data) => {
     try {
       if (formType === "SIGN_IN") {
         // Handle sign in
@@ -212,7 +212,7 @@ const AuthForm = <T extends FieldValues>({
           <FormField
             key={fieldName}
             control={form.control}
-            name={fieldName as Path<T>}
+            name={fieldName as Path<any>}
             render={({ field }) => (
               <FormItem className="flex w-full flex-col gap-2.5">
                 <FormLabel className="paragraph-medium text-gray-700">
@@ -395,7 +395,7 @@ const AuthForm = <T extends FieldValues>({
           <FormField
             key={fieldName}
             control={form.control}
-            name={fieldName as Path<T>}
+            name={fieldName as Path<any>}
             render={({ field }) => (
               <FormItem className="flex w-full flex-col gap-2.5">
                 <FormLabel className="paragraph-medium text-gray-700">
