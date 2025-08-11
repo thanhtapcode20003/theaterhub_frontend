@@ -12,45 +12,35 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import Link from "next/link";
-import { formatDate, getFormattedLowestPrice } from "@/lib/utils";
+import {
+  formatDate,
+  getEarliestTimeEvents,
+  getFormattedLowestPrice,
+} from "@/lib/utils";
 import { getPublicEvents } from "@/lib/services/eventService";
-import { Event } from "@/types";
+import { getCategories } from "@/lib/services/categoryService";
+
+import { Event, EventCategory } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight, Calendar } from "lucide-react";
 
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const [categories, setCategories] = useState<EventCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const searchParams = useSearchParams();
-  // const router = useRouter();
-
-  // Check for payment parameters and redirect to result page
-  // useEffect(() => {
-  //   const code = searchParams.get("code");
-  //   const id = searchParams.get("id");
-  //   const cancel = searchParams.get("cancel");
-  //   const status = searchParams.get("status");
-  //   const orderCode = searchParams.get("orderCode");
-
-  //   // If payment parameters are present, redirect to a generic result page
-  //   if (code && status && orderCode) {
-  //     // Since we don't have event_id and showtime_id from the URL,
-  //     // we'll redirect to a generic result page or create one
-  //     const currentUrl = new URL(window.location.href);
-  //     const resultUrl = `/payment/result${currentUrl.search}`;
-  //     router.replace(resultUrl);
-  //     return;
-  //   }
-  // }, [searchParams, router]);
 
   // Fetch events data
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const eventsData = await getPublicEvents();
+        const [eventsData, categoriesData] = await Promise.all([
+          getPublicEvents(),
+          getCategories(),
+        ]);
         setEvents(eventsData);
+        setCategories(categoriesData.data);
         setError(null);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -171,6 +161,25 @@ const Home = () => {
     );
   }
 
+  // Group events by category
+  const groupedEvents = events.reduce(
+    (acc, event) => {
+      const categoryName = event.category?.category_name || "Uncategorized";
+      if (!acc[categoryName]) {
+        acc[categoryName] = [];
+      }
+      acc[categoryName].push(event);
+      return acc;
+    },
+    {} as Record<string, Event[]>
+  );
+
+  // Sort categories alphabetically
+  const sortedCategories = categories
+    .filter((category) => groupedEvents[category.category_name]?.length > 0)
+    .sort((a, b) => a.category_name.localeCompare(b.category_name))
+    .map((category) => category.category_name);
+
   console.log(events);
 
   return (
@@ -188,7 +197,6 @@ const Home = () => {
           title="Trailer 2"
         />
       </div>
-
       {/* Dành cho bạn */}
       <div className="mt-8 md:mt-12">
         {/* Section Title */}
@@ -236,7 +244,6 @@ const Home = () => {
           </div>
         )}
       </div>
-
       {/* Các events gần nhất */}
       <div className="mt-8 md:mt-12">
         <div className="mb-4 md:mb-6 px-4 sm:px-0">
@@ -266,7 +273,7 @@ const Home = () => {
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {events.map((event) => {
+              {getEarliestTimeEvents(events).map((event) => {
                 return (
                   <CarouselItem
                     key={`price-${event.event_id}`}
@@ -320,8 +327,8 @@ const Home = () => {
                 );
               })}
             </CarouselContent>
-            <CarouselPrevious className="left-2 top-[40%]" />
-            <CarouselNext className="right-2 top-[40%]" />
+            <CarouselPrevious className="left-2 top-[32%]" />
+            <CarouselNext className="right-2 top-[32%]" />
           </Carousel>
         ) : (
           <div className="text-center text-gray-400 py-8">

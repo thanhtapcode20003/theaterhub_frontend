@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Ticket,
   User,
@@ -22,6 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { getCategories } from "@/lib/services/categoryService";
+import { EventCategory } from "@/types";
 
 // Dynamic menu configuration
 const getDropdownMenuItems = (userRole?: string) => [
@@ -58,6 +60,23 @@ const Navbar = () => {
   // Get dynamic menu items based on user role
   const dropdownMenuItems = getDropdownMenuItems(user?.role);
   const visibleMenuItems = dropdownMenuItems.filter((item) => item.visible);
+
+  const [categories, setCategories] = useState<EventCategory[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  console.log(categories);
 
   // Show loading state while checking authentication
   if (loading) {
@@ -249,38 +268,20 @@ const Navbar = () => {
       <div className="bg-black text-white w-full py-3 px-6 md:px-30">
         <div className="max-w-7xl mx-auto">
           <ul className="flex gap-6">
-            <li>
-              <Link
-                href="/music"
-                className="base-medium text-white hover:text-gray-300"
-              >
-                Nhạc sống
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/theatre"
-                className="base-medium text-white hover:text-gray-300"
-              >
-                Sân khấu & Nghệ thuật
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/sports"
-                className="base-medium text-white hover:text-gray-300"
-              >
-                Thể Thao
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/other"
-                className="base-medium text-white hover:text-gray-300"
-              >
-                Khác
-              </Link>
-            </li>
+            {categories && categories.length > 0 ? (
+              categories.map((category) => (
+                <li key={category.category_id}>
+                  <Link
+                    href={`/categories/${category.slug}`}
+                    className="base-medium text-white hover:text-gray-300"
+                  >
+                    {category.category_name}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-400">Loading categories...</li>
+            )}
           </ul>
         </div>
       </div>

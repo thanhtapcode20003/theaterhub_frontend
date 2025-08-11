@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Showtime, SeatPrice, TicketType } from "@/types/showtimes";
+import type { Event } from "@/types/events";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -88,7 +89,7 @@ export const getLowestTicketPrice = (
 export const getFormattedLowestPrice = (
   data: SeatPrice[] | TicketType[] | undefined
 ): string => {
-  if (!data || !Array.isArray(data) || data.length === 0) return "0 đ";
+  if (!data || !Array.isArray(data) || data.length === 0) return "99.000 đ";
 
   let lowestPrice = 0;
 
@@ -135,6 +136,20 @@ export const getTimeStamp = (date: Date) => {
   if (minutes < 60) return `${minutes} minutes ago`;
   if (hours < 24) return `${hours} hours ago`;
   return `${days} days ago`;
+};
+
+export const getEarliestTimeEvents = (events: Event[]) => {
+  return [...events].sort((a, b) => {
+    const aStartTime =
+      a.showtimes && a.showtimes.length > 0
+        ? new Date(a.showtimes[0].start_time).getTime()
+        : Infinity;
+    const bStartTime =
+      b.showtimes && b.showtimes.length > 0
+        ? new Date(b.showtimes[0].start_time).getTime()
+        : Infinity;
+    return aStartTime - bStartTime;
+  });
 };
 
 /**
