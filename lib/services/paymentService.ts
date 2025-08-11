@@ -34,6 +34,29 @@ export interface CreatePaymentLinkResponse {
   };
 }
 
+export interface CreateSeatedBookingRequest {
+  showtime_id: number;
+  seat_ids: number[];
+}
+
+export interface CreateSeatedBookingResponse {
+  success: boolean;
+  message: string;
+  order_id: number;
+  event_title: string;
+  location_name: string;
+  start_time: string;
+  total_amount: number;
+  tickets: Array<{
+    seat_id: number;
+    seat_row: string;
+    seat_number: number;
+    seat_type_name: string;
+    seat_type_code: string;
+    price: number;
+  }>;
+}
+
 /**
  * Create a general booking
  * POST /api/bookings/general
@@ -43,6 +66,18 @@ export const createGeneralBooking = async (
 ): Promise<CreateGeneralBookingResponse | string> => {
   const response = await post<CreateGeneralBookingResponse>(
     API_ENDPOINTS.PAYMENT.CREATE_GENERAL_BOOKING,
+    data
+  );
+  return response.success
+    ? response.data || "Create booking failed"
+    : response.error || "Create booking failed";
+};
+
+export const createSeatedBooking = async (
+  data: CreateSeatedBookingRequest
+): Promise<CreateSeatedBookingResponse | string> => {
+  const response = await post<CreateSeatedBookingResponse>(
+    API_ENDPOINTS.PAYMENT.CREATE_SEATED_BOOKING,
     data
   );
   return response.success
@@ -115,6 +150,63 @@ export const processPayment = async (
   } catch (error: any) {
     console.error("Payment process error:", error);
     throw new Error(error.message || "Payment process failed");
+  }
+};
+
+/**
+ * Complete seated payment flow: create seated booking -> create payment link -> return checkout URL
+ */
+export const processSeatedPayment = async (
+  showtimeId: number,
+  seatIds: number[]
+): Promise<string> => {
+  try {
+    // Step 1: Create seated booking
+    console.log("Creating seated booking...", {
+      showtime_id: showtimeId,
+      seat_ids: seatIds,
+    });
+
+    const bookingResult = await createSeatedBooking({
+      showtime_id: showtimeId,
+      seat_ids: seatIds,
+    });
+
+    if (typeof bookingResult === "string") {
+      throw new Error(bookingResult);
+    }
+
+    if (!bookingResult.success || !bookingResult.order_id) {
+      throw new Error(
+        bookingResult.message || "Failed to create seated booking"
+      );
+    }
+
+    const orderId = bookingResult.order_id;
+    console.log("Seated booking created with order_id:", orderId);
+
+    // Step 2: Create payment link
+    console.log("Creating payment link for order_id:", orderId);
+
+    const paymentResult = await createPaymentLink({
+      order_id: orderId,
+    });
+
+    if (typeof paymentResult === "string") {
+      throw new Error(paymentResult);
+    }
+
+    if (!paymentResult.success || !paymentResult.paymentLink?.checkoutUrl) {
+      throw new Error("Failed to create payment link");
+    }
+
+    const checkoutUrl = paymentResult.paymentLink.checkoutUrl;
+    console.log("Payment link created, checkout URL:", checkoutUrl);
+
+    return checkoutUrl;
+  } catch (error: any) {
+    console.error("Seated payment process error:", error);
+    throw new Error(error.message || "Seated payment process failed");
   }
 };
 

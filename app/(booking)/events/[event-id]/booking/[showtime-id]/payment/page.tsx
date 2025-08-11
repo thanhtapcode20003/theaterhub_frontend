@@ -17,7 +17,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Loading from "@/components/ui/loading";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { processPayment } from "@/lib/services/paymentService";
+import {
+  processPayment,
+  processSeatedPayment,
+} from "@/lib/services/paymentService";
 import { showToast } from "@/components/ui/toast";
 import VietQR_logo from "@/public/logo/VietQR_logo.png";
 
@@ -28,7 +31,16 @@ interface BookingData {
   showtime: string;
   location: string;
   address: string;
-  tickets: Array<{
+  bookingType: "general" | "seated";
+  seats?: Array<{
+    seatId: number;
+    seatRow: string;
+    seatNumber: number;
+    seatTypeName: string;
+    seatTypeCode: string;
+    price: number;
+  }>;
+  tickets?: Array<{
     typeId: number;
     typeName: string;
     quantity: number;
@@ -62,15 +74,29 @@ const Payment = () => {
     const totalAmount = parseFloat(searchParams.get("totalAmount") || "0");
     const totalQuantity = parseInt(searchParams.get("totalQuantity") || "0");
 
-    // Parse tickets data
-    const ticketsParam = searchParams.get("tickets");
+    // Parse seats data
+    const seatsParam = searchParams.get("seats");
+    let seats: BookingData["seats"] = [];
     let tickets: BookingData["tickets"] = [];
+    let bookingType: "general" | "seated" = "general";
 
-    if (ticketsParam) {
+    if (seatsParam) {
       try {
-        tickets = JSON.parse(decodeURIComponent(ticketsParam));
+        seats = JSON.parse(decodeURIComponent(seatsParam));
+        bookingType = "seated";
       } catch (error) {
-        console.error("Error parsing tickets data:", error);
+        console.error("Error parsing seats data:", error);
+      }
+    } else {
+      // Parse tickets data for general booking
+      const ticketsParam = searchParams.get("tickets");
+      if (ticketsParam) {
+        try {
+          tickets = JSON.parse(decodeURIComponent(ticketsParam));
+          bookingType = "general";
+        } catch (error) {
+          console.error("Error parsing tickets data:", error);
+        }
       }
     }
 
@@ -82,6 +108,8 @@ const Payment = () => {
         showtime,
         location,
         address,
+        bookingType,
+        seats,
         tickets,
         totalAmount,
         totalQuantity,
@@ -101,11 +129,24 @@ const Payment = () => {
     setProcessing(true);
 
     try {
-      // Use PaymentService to handle the complete payment flow
-      const checkoutUrl = await processPayment(
-        bookingData.showtimeId,
-        bookingData.totalQuantity
-      );
+      let checkoutUrl: string;
+
+      if (bookingData.bookingType === "seated") {
+        // Extract seat IDs from the selected seats
+        const seatIds = bookingData.seats?.map((seat) => seat.seatId) || [];
+
+        // Use PaymentService to handle the complete seated payment flow
+        checkoutUrl = await processSeatedPayment(
+          bookingData.showtimeId,
+          seatIds
+        );
+      } else {
+        // Use PaymentService to handle the complete general payment flow
+        checkoutUrl = await processPayment(
+          bookingData.showtimeId,
+          bookingData.totalQuantity
+        );
+      }
 
       // Navigate to checkout URL
       window.location.href = checkoutUrl;
@@ -247,25 +288,54 @@ const Payment = () => {
 
             <Separator className="my-4" />
 
-            {/* Ticket Details */}
+            {/* Booking Details */}
             <div className="space-y-3 mb-6">
-              <h5 className="font-medium text-gray-800">Chi tiết vé</h5>
-              {bookingData.tickets.map((ticket, index) => (
-                <div key={index} className="flex justify-between text-sm">
-                  <div>
-                    <div className="text-gray-800">{ticket.typeName}</div>
-                    <div className="text-gray-500">x{ticket.quantity}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-gray-800">
-                      {formatCurrency(ticket.price * ticket.quantity)}
+              <h5 className="font-medium text-gray-800">
+                {bookingData.bookingType === "seated"
+                  ? "Chi tiết ghế"
+                  : "Chi tiết vé"}
+              </h5>
+
+              {bookingData.bookingType === "seated"
+                ? // Seat details for seated booking
+                  bookingData.seats?.map((seat, index) => (
+                    <div key={index} className="flex justify-between text-sm">
+                      <div>
+                        <div className="text-gray-800">
+                          {seat.seatRow}
+                          {seat.seatNumber} - {seat.seatTypeName}
+                        </div>
+                        <div className="text-gray-500">
+                          Ghế {seat.seatTypeCode}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-gray-800">
+                          {formatCurrency(seat.price)}
+                        </div>
+                        <div className="text-gray-500">
+                          {formatCurrency(seat.price)}/ghế
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-gray-500">
-                      {formatCurrency(ticket.price)}/vé
+                  ))
+                : // Ticket details for general booking
+                  bookingData.tickets?.map((ticket, index) => (
+                    <div key={index} className="flex justify-between text-sm">
+                      <div>
+                        <div className="text-gray-800">{ticket.typeName}</div>
+                        <div className="text-gray-500">x{ticket.quantity}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-gray-800">
+                          {formatCurrency(ticket.price * ticket.quantity)}
+                        </div>
+                        <div className="text-gray-500">
+                          {formatCurrency(ticket.price)}/vé
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  ))}
             </div>
 
             <Separator className="my-4" />

@@ -62,6 +62,21 @@ const Home = () => {
     </div>
   );
 
+  // Category Section Skeleton Component
+  const CategorySectionSkeleton = ({ index }: { index: number }) => (
+    <div key={`category-skeleton-${index}`} className="mb-8">
+      <div className="flex items-center justify-between px-4 sm:px-0">
+        <Skeleton className="h-6 w-1/4 mb-4" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-4 sm:px-0">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <EventCardSkeleton key={`event-skeleton-${index}-${i}`} />
+        ))}
+      </div>
+    </div>
+  );
+
   // Loading state
   if (loading) {
     return (
@@ -133,6 +148,23 @@ const Home = () => {
             <CarouselPrevious className="left-2 top-[40%]" />
             <CarouselNext className="right-2 top-[40%]" />
           </Carousel>
+        </div>
+
+        {/* Categories Skeleton */}
+        <div className="mt-8 md:mt-12">
+          <div className="mb-4 md:mb-6 px-4 sm:px-0">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
+              Danh mục sự kiện
+            </h2>
+          </div>
+          <div>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <CategorySectionSkeleton
+                key={`category-skeleton-${index}`}
+                index={index}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );

@@ -99,6 +99,7 @@ export const API_ENDPOINTS = {
   // Showtimes endpoints
   PAYMENT: {
     CREATE_GENERAL_BOOKING: "/bookings/general",
+    CREATE_SEATED_BOOKING: "/bookings/seated",
     CREATE_PAYMENT: "/payments/create-link",
   },
 } as const;

@@ -10,7 +10,6 @@ import {
   Ticket,
   ZonedTicket,
   Seat,
-  TicketTypesResponse,
   GeneralTicketTypesResponse,
   ZonedTicketTypesResponse,
   SeatedTicketTypesResponse,
