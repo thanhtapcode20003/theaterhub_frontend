@@ -110,7 +110,7 @@ export const processPayment = async (
 ): Promise<string> => {
   try {
     // Step 1: Create booking
-    console.log("Creating booking...", { showtime_id: showtimeId, quantity });
+    // console.log("Creating booking...", { showtime_id: showtimeId, quantity });
 
     const bookingResult = await createGeneralBooking({
       showtime_id: showtimeId,
@@ -126,10 +126,10 @@ export const processPayment = async (
     }
 
     const orderId = bookingResult.order_id;
-    console.log("Booking created with order_id:", orderId);
+    // console.log("Booking created with order_id:", orderId);
 
     // Step 2: Create payment link
-    console.log("Creating payment link for order_id:", orderId);
+    // console.log("Creating payment link for order_id:", orderId);
 
     const paymentResult = await createPaymentLink({
       order_id: orderId,
@@ -144,7 +144,7 @@ export const processPayment = async (
     }
 
     const checkoutUrl = paymentResult.paymentLink.checkoutUrl;
-    console.log("Payment link created, checkout URL:", checkoutUrl);
+    // console.log("Payment link created, checkout URL:", checkoutUrl);
 
     return checkoutUrl;
   } catch (error: any) {
@@ -162,10 +162,11 @@ export const processSeatedPayment = async (
 ): Promise<string> => {
   try {
     // Step 1: Create seated booking
-    console.log("Creating seated booking...", {
-      showtime_id: showtimeId,
-      seat_ids: seatIds,
-    });
+    // console.log("Creating seated booking...",
+    // {
+    //   showtime_id: showtimeId,
+    //   seat_ids: seatIds,
+    // });
 
     const bookingResult = await createSeatedBooking({
       showtime_id: showtimeId,
@@ -183,10 +184,10 @@ export const processSeatedPayment = async (
     }
 
     const orderId = bookingResult.order_id;
-    console.log("Seated booking created with order_id:", orderId);
+    // console.log("Seated booking created with order_id:", orderId);
 
     // Step 2: Create payment link
-    console.log("Creating payment link for order_id:", orderId);
+    // console.log("Creating payment link for order_id:", orderId);
 
     const paymentResult = await createPaymentLink({
       order_id: orderId,
@@ -201,7 +202,7 @@ export const processSeatedPayment = async (
     }
 
     const checkoutUrl = paymentResult.paymentLink.checkoutUrl;
-    console.log("Payment link created, checkout URL:", checkoutUrl);
+    // console.log("Payment link created, checkout URL:", checkoutUrl);
 
     return checkoutUrl;
   } catch (error: any) {

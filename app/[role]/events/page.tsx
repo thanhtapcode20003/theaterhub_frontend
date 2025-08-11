@@ -165,7 +165,7 @@ const EventsPage = () => {
       if (typeof result === "string") {
         throw new Error(result);
       }
-      console.log(result);
+      // console.log(result);
       // Store the created event ID for later steps
       if (typeof result === "object" && "event" in result) {
         const event = result.event as any;
@@ -224,7 +224,7 @@ const EventsPage = () => {
         start_time: startTime,
       });
 
-      console.log(result);
+      // console.log(result);
 
       if (typeof result === "string") {
         throw new Error(result);
@@ -270,7 +270,7 @@ const EventsPage = () => {
 
     setLoading(true);
     try {
-      console.log(locationData);
+      // console.log(locationData);
 
       const result = await createLocation({
         ...locationData,
@@ -364,7 +364,7 @@ const EventsPage = () => {
 
   const next = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const back = () => setStep((prev) => Math.max(prev - 1, 0));
-  console.log(createdEventId);
+  // console.log(createdEventId);
 
   return (
     <div className="min-h-screen bg-black p-6">

@@ -19,7 +19,7 @@ export const useUsers = () => {
 
         // Get users from API
         const apiUsers = (await getUsers()) as any;
-        console.log("API Users:", apiUsers);
+        // console.log("API Users:", apiUsers);
 
         if (apiUsers && apiUsers.users && apiUsers.users.length > 0) {
           // Transform API data to match User type
@@ -37,7 +37,7 @@ export const useUsers = () => {
           setUsers(transformedUsers);
         } else {
           // No users available
-          console.log("No users available from API");
+          // console.log("No users available from API");
           setUsers([]);
         }
 
@@ -73,7 +73,7 @@ export const useUsers = () => {
     await executeWithLoading(async () => {
       try {
         const apiUsers = (await getUsers()) as any;
-        console.log("Refreshed API Users:", apiUsers);
+        // console.log("Refreshed API Users:", apiUsers);
 
         if (apiUsers && apiUsers.users && apiUsers.users.length > 0) {
           const transformedUsers: User[] = apiUsers.users.map((user: any) => ({

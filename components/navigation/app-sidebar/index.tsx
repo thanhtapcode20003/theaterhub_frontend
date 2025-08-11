@@ -72,7 +72,7 @@ export function AppSidebar() {
   };
 
   const roleConfig = getRoleConfig(userRole);
-  console.log(user);
+  // console.log(user);
   return (
     <Sidebar
       collapsible="icon"

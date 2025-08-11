@@ -173,7 +173,7 @@ const EventPage = () => {
     return notFound();
   }
 
-  console.log(event);
+  // console.log(event);
 
   return (
     <>

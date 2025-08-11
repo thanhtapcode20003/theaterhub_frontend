@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = (token: string, userData: User) => {
     // Prevent duplicate login calls
     if (loginInProgressRef.current) {
-      console.log("Login already in progress, skipping...");
+      // console.log("Login already in progress, skipping...");
       return;
     }
 
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check if user is already logged in with the same token
     const existingToken = AuthService.getToken();
     if (existingToken === token && isAuthenticated) {
-      console.log("User already logged in with this token, skipping...");
+      // console.log("User already logged in with this token, skipping...");
       return;
     }
 

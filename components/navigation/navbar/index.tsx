@@ -76,7 +76,7 @@ const Navbar = () => {
     fetchCategories();
   }, []);
 
-  console.log(categories);
+  // console.log(categories);
 
   // Show loading state while checking authentication
   if (loading) {

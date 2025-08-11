@@ -98,7 +98,7 @@ const BookingPage = () => {
           data = await getPublicGeneralTicketTypes(eventId);
         }
 
-        console.log(data);
+        // console.log(data);
 
         if (data) {
           setTicketData(data);
@@ -492,7 +492,7 @@ const BookingPage = () => {
       ? (ticketData as SeatedTicketTypesResponse)?.seats || []
       : [];
 
-  console.log(ticketData);
+  // console.log(ticketData);
 
   return (
     <div className="min-h-screen bg-black text-white flex">

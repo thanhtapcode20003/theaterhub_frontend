@@ -23,7 +23,7 @@ export class AuthService {
         API_ENDPOINTS.AUTH.REGISTER,
         userData
       );
-      console.log(response);
+      // console.log(response);
       if (!response.success) {
         throw new Error(response.error || "Registration failed");
       }
@@ -43,7 +43,7 @@ export class AuthService {
       const response = await get<AuthResponse>(
         `${API_ENDPOINTS.AUTH.VERIFY_EMAIL}?code=${code}`
       );
-      console.log(response);
+      // console.log(response);
       if (!response.success) {
         throw new Error(response.error || "Email verification failed");
       }
@@ -258,7 +258,7 @@ export class AuthService {
 
       // Mark cleanup as completed
       localStorage.setItem(cleanupKey, "true");
-      console.log("🧹 Cleaned up old localStorage entries:", oldKeys);
+      // console.log("🧹 Cleaned up old localStorage entries:", oldKeys);
     }
   }
 

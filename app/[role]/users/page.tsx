@@ -16,7 +16,7 @@ const Users = () => {
     handleRefreshData,
   } = useUsers();
 
-  console.log(users);
+  // console.log(users);
 
   return (
     <div className="admin-page-bg">

@@ -72,23 +72,23 @@ const OAuthCallback = () => {
     params: ReturnType<typeof getCallbackParams>,
     user: User
   ) => {
-    console.log("🎉 OAuth Callback Success!");
-    console.log("📋 Authentication Details:");
-    console.log("  ✅ Success:", params.success);
-    console.log("  🔑 Token:", params.token);
-    console.log("  👤 User Information:");
-    console.log("    - ID:", user.user_id);
-    console.log("    - Name:", user.name);
-    console.log("    - Email:", user.email);
-    console.log("    - Role:", user.role);
-    console.log("    - Avatar:", user.avatar);
-    console.log("    - Phone:", user.phone || "Not provided");
-    console.log(
-      "  💬 Message:",
-      params.messageParam
-        ? decodeURIComponent(params.messageParam)
-        : "Default success message"
-    );
+    ("🎉 OAuth Callback Success!");
+    // console.log("📋 Authentication Details:");
+    // console.log("  ✅ Success:", params.success);
+    // console.log("  🔑 Token:", params.token);
+    // console.log("  👤 User Information:");
+    // console.log("    - ID:", user.user_id);
+    // console.log("    - Name:", user.name);
+    // console.log("    - Email:", user.email);
+    // console.log("    - Role:", user.role);
+    // console.log("    - Avatar:", user.avatar);
+    // console.log("    - Phone:", user.phone || "Not provided");
+    // console.log(
+    //   "  💬 Message:",
+    //   params.messageParam
+    //     ? decodeURIComponent(params.messageParam)
+    //     : "Default succonsole.logcess message"
+    // );
   };
 
   // Handle successful OAuth callback

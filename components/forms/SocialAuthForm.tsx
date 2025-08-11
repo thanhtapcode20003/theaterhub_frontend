@@ -5,6 +5,8 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 
 import AuthService from "@/lib/services/authService";
+import ROUTES from "@/constants/routes";
+import { Link } from "lucide-react";
 
 const SocialAuthForm = () => {
   const buttonClass =
@@ -12,7 +14,7 @@ const SocialAuthForm = () => {
 
   const handleGoogleSignIn = () => {
     try {
-      console.log("Initiating Google Sign In...");
+      // console.log("Initiating Google Sign In...");
       AuthService.initiateGoogleLogin();
     } catch (error) {
       console.error("Error during Google Sign In redirect:", error);

@@ -212,7 +212,7 @@ const Home = () => {
     .sort((a, b) => a.category_name.localeCompare(b.category_name))
     .map((category) => category.category_name);
 
-  console.log(events);
+  // console.log(events);
 
   return (
     <div className="w-full mx-auto px-0 sm:px-4">

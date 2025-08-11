@@ -12,7 +12,7 @@ const SignUp = () => {
     try {
       // This is handled by the AuthForm component itself now
       // The form will call AuthService.register internally
-      console.log("Sign up data:", data);
+      // console.log("Sign up data:", data);
       return { success: true };
     } catch (error: any) {
       console.error("Sign up error:", error);
