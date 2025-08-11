@@ -56,6 +56,37 @@ const DescriptionSection = ({
   );
 };
 
+// Skeleton for Description Section
+const DescriptionSectionSkeleton = () => (
+  <div className="mt-10">
+    <div className="background-black_ticket_detail rounded-lg p-6">
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-3/4 mb-2" />
+      <Skeleton className="h-4 w-1/2 mb-2" />
+    </div>
+  </div>
+);
+
+// Skeleton for Showtime Section
+const ShowtimeSectionSkeleton = () => (
+  <div className="mt-10">
+    <div className="background-black_ticket_detail rounded-lg p-6">
+      <Skeleton className="h-8 w-1/4 mb-4" />
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={`showtime-skeleton-${index}`}
+          className="border-b border-gray-600 py-4"
+        >
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-6 w-1/3" />
+            <Skeleton className="h-10 w-24 rounded-lg" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 const EventPage = () => {
   const params = useParams();
   const eventId = params["event-id"] as string;
@@ -82,52 +113,59 @@ const EventPage = () => {
 
   if (loading) {
     return (
-      <div className="h-auto background-black_ticket_detail rounded-3xl">
-        {/* Skeleton Loading */}
-        <div className="flex">
-          {/* Event Information Skeleton */}
-          <div className="flex-1 container mx-auto p-6 relative">
-            {/* Event Details - Top Section */}
-            <div>
-              {/* Title Skeleton */}
-              <Skeleton className="h-8 w-3/4 mb-6" />
+      <>
+        <div className="h-auto background-black_ticket_detail rounded-3xl">
+          {/* Skeleton Loading */}
+          <div className="flex">
+            {/* Event Information Skeleton */}
+            <div className="flex-1 container mx-auto p-6 relative">
+              {/* Event Details - Top Section */}
+              <div>
+                {/* Title Skeleton */}
+                <Skeleton className="h-8 w-3/4 mb-6" />
 
-              {/* Date & Time Section Skeleton */}
-              <div className="flex items-center mb-4">
-                <Skeleton className="w-6 h-6 mr-4 " />
-                <Skeleton className="h-5 w-48 " />
-              </div>
+                {/* Date & Time Section Skeleton */}
+                <div className="flex items-center mb-4">
+                  <Skeleton className="w-6 h-6 mr-4 " />
+                  <Skeleton className="h-5 w-48 " />
+                </div>
 
-              {/* Location Section Skeleton */}
-              <div className="flex items-center mb-6">
-                <Skeleton className="w-6 h-6 mr-4 " />
-                <div>
-                  <Skeleton className="h-5 w-64 mb-1 " />
-                  <Skeleton className="h-4 w-40 " />
+                {/* Location Section Skeleton */}
+                <div className="flex items-center mb-6">
+                  <Skeleton className="w-6 h-6 mr-4 " />
+                  <div>
+                    <Skeleton className="h-5 w-64 mb-1 " />
+                    <Skeleton className="h-4 w-40 " />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Price Section - Fixed Bottom Skeleton */}
-            <div className="absolute bottom-6 left-6 right-6 border-t border-gray-600 pt-6">
-              <div className="flex justify-between items-center">
-                <Skeleton className="h-6 w-20 " />
-                <Skeleton className="h-8 w-32 " />
+              {/* Price Section - Fixed Bottom Skeleton */}
+              <div className="absolute bottom-6 left-6 right-6 border-t border-gray-600 pt-6">
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-6 w-20 " />
+                  <Skeleton className="h-8 w-32 " />
+                </div>
+
+                {/* Book Button Skeleton */}
+                <Skeleton className="w-full h-12 mt-6 rounded-xl " />
               </div>
-
-              {/* Book Button Skeleton */}
-              <Skeleton className="w-full h-12 mt-6 rounded-xl " />
             </div>
-          </div>
 
-          {/* Poster Skeleton */}
-          <div className="flex-2">
-            <div className="relative rounded-lg overflow-hidden shadow-2xl">
-              <Skeleton className="w-220 h-120 object-cover" />
+            {/* Poster Skeleton */}
+            <div className="flex-2">
+              <div className="relative rounded-lg overflow-hidden shadow-2xl">
+                <Skeleton className="w-220 h-120 object-cover" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        {/* Description Section Skeleton */}
+        <DescriptionSectionSkeleton />
+
+        {/* Showtime Section Skeleton */}
+        <ShowtimeSectionSkeleton />
+      </>
     );
   }
 
@@ -259,6 +297,15 @@ const EventPage = () => {
         </div>
       </div>
 
+      {/* Description Section */}
+      {event.description && event.description.length > 0 && (
+        <div className="mt-10">
+          <div className="background-black_ticket_detail rounded-lg">
+            <DescriptionSection description={event.description} />
+          </div>
+        </div>
+      )}
+
       {/* Showtime Section */}
       {event.showtimes && event.showtimes.length > 0 && (
         <div className="mt-10">
@@ -348,15 +395,6 @@ const EventPage = () => {
                 </AccordionItem>
               ))}
             </Accordion>
-          </div>
-        </div>
-      )}
-
-      {/* Description Section */}
-      {event.description && event.description.length > 0 && (
-        <div className="mt-10">
-          <div className="background-black_ticket_detail rounded-lg">
-            <DescriptionSection description={event.description} />
           </div>
         </div>
       )}
