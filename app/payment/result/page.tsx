@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { CheckCircle, XCircle, ArrowLeft, Receipt, Home } from "lucide-react";
+import { XCircle, Receipt, Home } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ interface PaymentResult {
   orderCode: string;
 }
 
-const PaymentResultPage = () => {
+const PaymentResultContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -226,6 +226,18 @@ const PaymentResultPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const PaymentResultPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <Loading fullScreen size="lg" variant="primary" text="Đang tải..." />
+      }
+    >
+      <PaymentResultContent />
+    </Suspense>
   );
 };
 
