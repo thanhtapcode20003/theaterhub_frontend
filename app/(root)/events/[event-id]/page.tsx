@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/accordion";
 import { EventDescriptionContent } from "@/types";
 import ExpandableDescription from "@/components/ui/ExpandableDescription";
+import { useAuth } from "@/contexts/AuthContext";
 
 const DescriptionSection = ({
   description,
@@ -89,10 +90,70 @@ const ShowtimeSectionSkeleton = () => (
 
 const EventPage = () => {
   const params = useParams();
+  const router = useRouter();
   const eventId = params["event-id"] as string;
+  const { isAuthenticated } = useAuth();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Function to check if showtime has passed
+  const isShowtimePassed = (startTime: string) => {
+    const now = new Date();
+    const showtimeDate = new Date(startTime);
+    return now > showtimeDate;
+  };
+
+  // Function to handle booking button click
+  const handleBookingClick = (showtime: any) => {
+    if (!isAuthenticated) {
+      router.push("/sign-in");
+      return;
+    }
+
+    // If authenticated, navigate to booking page
+    const pathname = APP_ROUTES.EVENT_BOOKING(
+      parseInt(eventId),
+      showtime.showtime_id
+    );
+    const query = new URLSearchParams({
+      eventName: event?.title || "",
+      eventId: event?.event_id?.toString() || "",
+      eventType: event?.event_type || "",
+    }).toString();
+
+    router.push(`${pathname}?${query}`);
+  };
+
+  // Function to render booking button based on showtime status
+  const renderBookingButton = (
+    showtime: any,
+    isMainButton: boolean = false
+  ) => {
+    if (!event) return null;
+
+    const hasPassed = isShowtimePassed(showtime.start_time);
+
+    if (hasPassed) {
+      return (
+        <Button
+          disabled
+          className={`${isMainButton ? "w-full mt-6" : "px-6 py-2 text-sm"} bg-gray-600 text-gray-400 cursor-not-allowed rounded-xl transition-all duration-400 ease-in-out`}
+        >
+          Đã hết vé
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        onClick={() => handleBookingClick(showtime)}
+        className={`${isMainButton ? "w-full mt-6" : "px-6 py-2 text-sm"} primary-gradient py-3 text-lg font-semibold rounded-xl transition-all duration-400 ease-in-out transform hover:scale-105`}
+      >
+        Mua vé ngay
+      </Button>
+    );
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -245,39 +306,33 @@ const EventPage = () => {
               </div>
 
               {/* Book Button */}
-              {event.showtimes && (
-                <Link
-                  href={{
-                    pathname: APP_ROUTES.EVENT_BOOKING(
-                      parseInt(eventId),
-                      (() => {
-                        const now = new Date();
-                        const nearestShowtime = event.showtimes
-                          .filter(
-                            (showtime) => new Date(showtime.start_time) > now
-                          )
-                          .sort(
-                            (a, b) =>
-                              new Date(a.start_time).getTime() -
-                              new Date(b.start_time).getTime()
-                          )[0];
-                        return nearestShowtime
-                          ? nearestShowtime.showtime_id
-                          : event.showtimes[0].showtime_id;
-                      })()
-                    ),
-                    query: {
-                      eventName: event.title,
-                      eventId: event.event_id,
-                      eventType: event.event_type,
-                    },
-                  }}
-                >
-                  <Button className="w-full mt-6 primary-gradient py-3 text-lg font-semibold rounded-xl transition-all duration-400 ease-in-out transform hover:scale-105">
-                    Mua vé ngay
-                  </Button>
-                </Link>
-              )}
+              {event &&
+                event.showtimes &&
+                (() => {
+                  const showtimes = event.showtimes;
+                  const now = new Date();
+                  const nearestShowtime = showtimes
+                    .filter((showtime) => new Date(showtime.start_time) > now)
+                    .sort(
+                      (a, b) =>
+                        new Date(a.start_time).getTime() -
+                        new Date(b.start_time).getTime()
+                    )[0];
+
+                  if (nearestShowtime) {
+                    return renderBookingButton(nearestShowtime, true);
+                  } else {
+                    // If all showtimes have passed, show disabled button
+                    return (
+                      <Button
+                        disabled
+                        className="w-full mt-6 bg-gray-600 text-gray-400 cursor-not-allowed rounded-xl transition-all duration-400 ease-in-out"
+                      >
+                        Đã hết vé
+                      </Button>
+                    );
+                  }
+                })()}
             </div>
           </div>
 
@@ -325,24 +380,7 @@ const EventPage = () => {
                         {formatDateTime(showtime.start_time)}
                       </div>
                     </AccordionTrigger>
-                    <Link
-                      href={{
-                        pathname: APP_ROUTES.EVENT_BOOKING(
-                          parseInt(eventId),
-                          showtime.showtime_id
-                        ),
-                        query: {
-                          eventName: event.title,
-                          eventId: event.event_id,
-                          eventType: event.event_type,
-                        },
-                      }}
-                      className="ml-4"
-                    >
-                      <Button className="primary-gradient px-6 py-2 text-sm font-semibold rounded-lg transition-all duration-300 hover:scale-105">
-                        Mua vé ngay
-                      </Button>
-                    </Link>
+                    {renderBookingButton(showtime)}
                   </div>
 
                   <AccordionContent>
