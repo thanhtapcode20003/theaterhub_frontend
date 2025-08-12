@@ -307,7 +307,7 @@ const Payment = () => {
                     {eventData?.showtimes
                       ? (() => {
                           const showtime = eventData.showtimes.find(
-                            (s) => s.showtime_id === bookingData.showtimeId
+                            (s: any) => s.showtime_id === bookingData.showtimeId
                           );
                           return showtime
                             ? formatDateTime(showtime.start_time)
@@ -326,7 +326,8 @@ const Payment = () => {
                         : eventData?.showtimes
                           ? (() => {
                               const showtime = eventData.showtimes.find(
-                                (s) => s.showtime_id === bookingData.showtimeId
+                                (s: any) =>
+                                  s.showtime_id === bookingData.showtimeId
                               );
                               return showtime?.location_name || "Loading...";
                             })()
