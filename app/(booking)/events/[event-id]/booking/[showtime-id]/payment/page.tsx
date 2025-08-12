@@ -23,6 +23,8 @@ import {
 } from "@/lib/services/paymentService";
 import { showToast } from "@/components/ui/toast";
 import VietQR_logo from "@/public/logo/VietQR_logo.png";
+import { getPublicEventById } from "@/lib/services/eventService";
+import { getLocationById } from "@/lib/services/locationService";
 
 interface BookingData {
   eventId: number;
@@ -57,66 +59,96 @@ const Payment = () => {
   const { user } = useAuth();
 
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const [eventData, setEventData] = useState<any>(null);
+  const [locationData, setLocationData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("vietqr");
   const buttonPaymentClass =
     "primary-gradient paragraph-semibold min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900 transition-all duration-300 hover:opacity-90 active:scale-[0.98]";
 
-  // Extract booking data from URL params
+  // Extract booking data from URL params and fetch event data
   useEffect(() => {
-    const eventId = parseInt(params["event-id"] as string);
-    const showtimeId = parseInt(params["showtime-id"] as string);
-    const eventName = searchParams.get("eventName") || "Event";
-    const showtime = searchParams.get("showtime") || "";
-    const location = searchParams.get("location") || "";
-    const address = searchParams.get("address") || "";
-    const totalAmount = parseFloat(searchParams.get("totalAmount") || "0");
-    const totalQuantity = parseInt(searchParams.get("totalQuantity") || "0");
-
-    // Parse seats data
-    const seatsParam = searchParams.get("seats");
-    let seats: BookingData["seats"] = [];
-    let tickets: BookingData["tickets"] = [];
-    let bookingType: "general" | "seated" = "general";
-
-    if (seatsParam) {
+    const fetchData = async () => {
       try {
-        seats = JSON.parse(decodeURIComponent(seatsParam));
-        bookingType = "seated";
-      } catch (error) {
-        console.error("Error parsing seats data:", error);
-      }
-    } else {
-      // Parse tickets data for general booking
-      const ticketsParam = searchParams.get("tickets");
-      if (ticketsParam) {
-        try {
-          tickets = JSON.parse(decodeURIComponent(ticketsParam));
-          bookingType = "general";
-        } catch (error) {
-          console.error("Error parsing tickets data:", error);
+        const eventId = parseInt(params["event-id"] as string);
+        const showtimeId = parseInt(params["showtime-id"] as string);
+        const eventName = searchParams.get("eventName") || "Event";
+        const totalAmount = parseFloat(searchParams.get("totalAmount") || "0");
+        const totalQuantity = parseInt(
+          searchParams.get("totalQuantity") || "0"
+        );
+
+        // Parse seats data
+        const seatsParam = searchParams.get("seats");
+        let seats: BookingData["seats"] = [];
+        let tickets: BookingData["tickets"] = [];
+        let bookingType: "general" | "seated" = "general";
+
+        if (seatsParam) {
+          try {
+            seats = JSON.parse(decodeURIComponent(seatsParam));
+            bookingType = "seated";
+          } catch (error) {
+            console.error("Error parsing seats data:", error);
+          }
+        } else {
+          // Parse tickets data for general booking
+          const ticketsParam = searchParams.get("tickets");
+          if (ticketsParam) {
+            try {
+              tickets = JSON.parse(decodeURIComponent(ticketsParam));
+              bookingType = "general";
+            } catch (error) {
+              console.error("Error parsing tickets data:", error);
+            }
+          }
         }
+
+        // Fetch event data to get showtime and location information
+        if (eventId && showtimeId) {
+          const event = await getPublicEventById(eventId);
+          setEventData(event);
+
+          if (event?.showtimes) {
+            const showtime = event.showtimes.find(
+              (s) => s.showtime_id === showtimeId
+            );
+            if (showtime) {
+              // Fetch location data if available
+              if (showtime.location_id) {
+                try {
+                  const location = await getLocationById(showtime.location_id);
+                  setLocationData(location);
+                } catch (error) {
+                  console.error("Error fetching location:", error);
+                }
+              }
+            }
+          }
+
+          setBookingData({
+            eventId,
+            eventName,
+            showtimeId,
+            showtime: "", // Will be formatted from event data
+            location: "", // Will be filled from location data
+            address: "", // Will be filled from location data
+            bookingType,
+            seats,
+            tickets,
+            totalAmount,
+            totalQuantity,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    if (eventId && showtimeId && totalAmount > 0) {
-      setBookingData({
-        eventId,
-        eventName,
-        showtimeId,
-        showtime,
-        location,
-        address,
-        bookingType,
-        seats,
-        tickets,
-        totalAmount,
-        totalQuantity,
-      });
-    }
-
-    setLoading(false);
+    fetchData();
   }, [params, searchParams]);
 
   const handleGoBack = () => {
@@ -271,15 +303,37 @@ const Payment = () => {
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <CalendarDays className="h-4 w-4 text-gray-500" />
-                  <span>{formatDateTime(bookingData.showtime)}</span>
+                  <span>
+                    {eventData?.showtimes
+                      ? (() => {
+                          const showtime = eventData.showtimes.find(
+                            (s) => s.showtime_id === bookingData.showtimeId
+                          );
+                          return showtime
+                            ? formatDateTime(showtime.start_time)
+                            : "Loading...";
+                        })()
+                      : "Loading..."}
+                  </span>
                 </div>
 
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 mt-0.5 text-gray-500" />
                   <div>
-                    <div className="text-gray-600">{bookingData.location}</div>
+                    <div className="text-gray-600">
+                      {locationData
+                        ? locationData.name
+                        : eventData?.showtimes
+                          ? (() => {
+                              const showtime = eventData.showtimes.find(
+                                (s) => s.showtime_id === bookingData.showtimeId
+                              );
+                              return showtime?.location_name || "Loading...";
+                            })()
+                          : "Loading..."}
+                    </div>
                     <div className="text-xs text-gray-500">
-                      {bookingData.address}
+                      {locationData ? locationData.location : "Loading..."}
                     </div>
                   </div>
                 </div>

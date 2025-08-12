@@ -15,11 +15,6 @@ export const getSidebarLinks = (userRole?: string) => {
           url: "/admin/users",
           icon: Users,
         },
-        {
-          title: "Events",
-          url: "/admin/events",
-          icon: Calendar,
-        },
       ];
     case "staff":
       return [

@@ -33,6 +33,13 @@ export const getLocations = async (): Promise<Location[]> => {
   return response.success && response.data ? response.data : [];
 };
 
+export const getLocationById = async (id: number): Promise<Location | null> => {
+  const response = await get<LocationResponse>(
+    `${API_ENDPOINTS.LOCATIONS.DETAIL}/${id}`
+  );
+  return response.success && response.data ? response.data.location : null;
+};
+
 /**
  * Create a new location
  */

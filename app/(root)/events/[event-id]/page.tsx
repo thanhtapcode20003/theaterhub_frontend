@@ -10,6 +10,7 @@ import { APP_ROUTES } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPublicEventById } from "@/lib/services/eventService";
+import { getLocationById } from "@/lib/services/locationService";
 import { Event } from "@/types";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaCalendar } from "react-icons/fa";
@@ -95,6 +96,7 @@ const EventPage = () => {
   const { isAuthenticated } = useAuth();
 
   const [event, setEvent] = useState<Event | null>(null);
+  const [location, setLocation] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   // Function to check if showtime has passed
@@ -160,6 +162,21 @@ const EventPage = () => {
       try {
         const eventData = await getPublicEventById(parseInt(eventId));
         setEvent(eventData);
+
+        // Fetch location data if event has showtimes with location_id
+        if (eventData?.showtimes && eventData.showtimes.length > 0) {
+          const firstShowtime = eventData.showtimes[0];
+          if (firstShowtime.location_id) {
+            try {
+              const locationData = await getLocationById(
+                firstShowtime.location_id
+              );
+              setLocation(locationData);
+            } catch (locationError) {
+              console.error("Error fetching location:", locationError);
+            }
+          }
+        }
       } catch (error) {
         console.error("Error fetching event:", error);
       } finally {
@@ -234,7 +251,7 @@ const EventPage = () => {
     return notFound();
   }
 
-  // console.log(event);
+  console.log(event);
 
   return (
     <>
@@ -264,24 +281,48 @@ const EventPage = () => {
               </div>
 
               {/* Location Section */}
-              <div className="flex items-center mb-6">
+              <div className="flex items-start mb-6">
                 <div className="mr-4 mt-1">
                   <FaMapMarkerAlt className="w-6 h-6 text-white transition-all duration-200 hover:text-red-400 hover:scale-110" />
                 </div>
-                {event.showtimes &&
-                  event.showtimes.length > 0 &&
-                  event.showtimes[0].location_name && (
-                    <div>
-                      <p className="text-red-500 font-semibold text-sm">
-                        {event.showtimes[0].location_name}
+                {location ? (
+                  <div>
+                    <p className="text-red-500 font-semibold text-sm">
+                      {location.name}
+                    </p>
+                    <p className="text-gray-300 text-xs mt-1">
+                      {location.location}
+                    </p>
+                    {/* {location.description && (
+                      <p className="text-gray-400 text-xs mt-1">
+                        {location.description}
                       </p>
-                      {event.custom_location && (
-                        <p className="text-gray-300 text-sm mt-1">
-                          {event.custom_location}
-                        </p>
-                      )}
-                    </div>
-                  )}
+                    )} */}
+                    {location.map_url && (
+                      <a
+                        href={location.map_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 text-xs mt-1 hover:text-blue-300 underline"
+                      >
+                        Xem trên bản đồ
+                      </a>
+                    )}
+                  </div>
+                ) : event.showtimes &&
+                  event.showtimes.length > 0 &&
+                  event.showtimes[0].location_name ? (
+                  <div>
+                    <p className="text-red-500 font-semibold text-sm">
+                      {event.showtimes[0].location_name}
+                    </p>
+                    {event.custom_location && (
+                      <p className="text-gray-300 text-sm mt-1">
+                        {event.custom_location}
+                      </p>
+                    )}
+                  </div>
+                ) : null}
               </div>
             </div>
 
