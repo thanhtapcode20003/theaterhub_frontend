@@ -26,16 +26,6 @@ export const getEventCategoryById = async (
   return response.success && response.data ? response.data.data || null : null;
 };
 
-// Get event category by slug
-export const getEventCategoryBySlug = async (
-  slug: string
-): Promise<EventCategory | null> => {
-  const response = await get<EventCategoryResponse>(
-    `${API_ENDPOINTS.EVENT_CATEGORIES.BY_SLUG}/${slug}`
-  );
-  return response.success && response.data ? response.data.data || null : null;
-};
-
 // Create event category
 export const createEventCategory = async (
   category: CreateEventCategoryRequest
@@ -101,12 +91,6 @@ export const updateEventCategoryWithAutoSlug = async (
 ): Promise<EventCategory | string> => {
   const slug = generateSlug(categoryName);
   return updateEventCategory(id, { category_name: categoryName, slug });
-};
-
-// Check if slug exists (useful for validation)
-export const checkSlugExists = async (slug: string): Promise<boolean> => {
-  const category = await getEventCategoryBySlug(slug);
-  return category !== null;
 };
 
 // Get categories by name search (client-side filtering)
