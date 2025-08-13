@@ -86,6 +86,54 @@ export class AuthService {
   }
 
   /**
+   * Send forgot password request
+   * POST /api/users/forgot-password
+   */
+  static async forgotPassword(email: string): Promise<AuthResponse> {
+    try {
+      const response = await post<AuthResponse>(
+        API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+        { email }
+      );
+
+      if (!response.success) {
+        throw new Error(
+          response.error || "Failed to send password reset email"
+        );
+      }
+
+      return response.data as AuthResponse;
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to send password reset email");
+    }
+  }
+
+  /**
+   * Reset password with OTP
+   * POST /api/users/reset-password
+   */
+  static async resetPassword(data: {
+    email: string;
+    otp: string;
+    newPassword: string;
+  }): Promise<AuthResponse> {
+    try {
+      const response = await post<AuthResponse>(
+        API_ENDPOINTS.AUTH.RESET_PASSWORD,
+        data
+      );
+
+      if (!response.success) {
+        throw new Error(response.error || "Failed to reset password");
+      }
+
+      return response.data as AuthResponse;
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to reset password");
+    }
+  }
+
+  /**
    * Login with email and password
    * POST /api/email-auth/login
    */

@@ -1,18 +1,16 @@
 import { z } from "zod";
 
 export const SignInSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: "Email không được để trống." })
-    .email({ message: "Vui lòng cung cấp địa chỉ email hợp lệ." }),
+  email: z.string().min(1, { message: "Email không được để trống." }),
+  // .email({ message: "Vui lòng cung cấp địa chỉ email hợp lệ." }),
 
   password: z
     .string()
     .min(1, { message: "Mật khẩu không được để trống." })
-    .max(100, { message: "Mật khẩu không được vượt quá 100 ký tự." })
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
-      message: "Mật khẩu phải chứa ít nhất 1 chữ thường, 1 chữ hoa và 1 số.",
-    }),
+    .max(100, { message: "Mật khẩu không được vượt quá 100 ký tự." }),
+  // .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+  //   message: "Mật khẩu phải chứa ít nhất 1 chữ thường, 1 chữ hoa và 1 số.",
+  // }),
 });
 
 export const SignUpSchema = z
@@ -93,3 +91,38 @@ export const CreateEventSchema = z.object({
     .min(10, { message: "Mô tả phải có ít nhất 10 ký tự." })
     .max(2000, { message: "Mô tả không được vượt quá 2000 ký tự." }),
 });
+
+// Password Reset Schemas
+export const ForgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "Email không được để trống." })
+    .email({ message: "Vui lòng cung cấp địa chỉ email hợp lệ." }),
+});
+
+export const ResetPasswordSchema = z
+  .object({
+    email: z
+      .string()
+      .min(1, { message: "Email không được để trống." })
+      .email({ message: "Vui lòng cung cấp địa chỉ email hợp lệ." }),
+    otp: z
+      .string()
+      .min(6, { message: "Mã OTP phải có 6 chữ số." })
+      .max(6, { message: "Mã OTP phải có 6 chữ số." })
+      .regex(/^\d{6}$/, { message: "Mã OTP chỉ được chứa số." }),
+    newPassword: z
+      .string()
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự." })
+      .max(100, { message: "Mật khẩu không được vượt quá 100 ký tự." })
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+        message: "Mật khẩu phải chứa ít nhất 1 chữ thường, 1 chữ hoa và 1 số.",
+      }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Xác nhận mật khẩu không được để trống." }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Mật khẩu không khớp",
+    path: ["confirmPassword"],
+  });

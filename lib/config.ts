@@ -21,6 +21,8 @@ export const API_ENDPOINTS = {
     LOGIN: "/email-auth/login",
     VERIFY_EMAIL: "/email-auth/verify",
     RESEND_OTP: "/email-auth/resend",
+    FORGOT_PASSWORD: "/users/forgot-password",
+    RESET_PASSWORD: "/users/reset-password",
     // LOGOUT: "/email-auth/logout",
     // REFRESH_TOKEN: "/auth/refresh",
   },
