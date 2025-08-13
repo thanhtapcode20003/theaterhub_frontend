@@ -70,6 +70,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           width={1200}
           height={270}
           className="w-full h-86 object-cover"
+          priority
         />
       )}
 

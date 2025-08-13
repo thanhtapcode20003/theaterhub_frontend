@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Ticket,
   User,
@@ -11,6 +11,9 @@ import {
   ChevronDown,
   Plus,
   Search,
+  Tag,
+  Calendar,
+  MapPin,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import OAuthCallback from "@/components/auth/OAuthCallback";
@@ -23,7 +26,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { getCategories } from "@/lib/services/categoryService";
+import { getPublicEvents } from "@/lib/services/eventService";
 import { EventCategory } from "@/types";
+import { Event } from "@/types/events";
 
 // Dynamic menu configuration
 const getDropdownMenuItems = (userRole?: string) => [
@@ -61,22 +66,198 @@ const Navbar = () => {
   const dropdownMenuItems = getDropdownMenuItems(user?.role);
   const visibleMenuItems = dropdownMenuItems.filter((item) => item.visible);
 
+  // Search state
   const [categories, setCategories] = useState<EventCategory[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredResults, setFilteredResults] = useState<
+    Array<EventCategory | Event>
+  >([]);
+  const [searchLoading, setSearchLoading] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
+      setSearchLoading(true);
       try {
-        const response = await getCategories();
-        setCategories(response.data || []);
+        const [categoriesResponse, eventsResponse] = await Promise.all([
+          getCategories(),
+          getPublicEvents(),
+        ]);
+        setCategories(categoriesResponse.data || []);
+        setEvents(eventsResponse || []);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setSearchLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchData();
   }, []);
 
-  // console.log(categories);
+  // Search functionality with skeleton loading like your React project
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredResults([]);
+      setShowSkeleton(true);
+      return;
+    }
+
+    const searchTermLower = searchTerm.toLowerCase();
+
+    // Search categories
+    const matchingCategories = categories.filter((category) =>
+      category.category_name.toLowerCase().includes(searchTermLower)
+    );
+
+    // Search events
+    const matchingEvents = events.filter(
+      (event) =>
+        event.title.toLowerCase().includes(searchTermLower) ||
+        (event.category?.category_name &&
+          event.category.category_name.toLowerCase().includes(searchTermLower))
+    );
+
+    // Combine and limit results (categories first, then events)
+    const combinedResults = [
+      ...matchingCategories.map((cat) => ({ ...cat, isCategory: true })),
+      ...matchingEvents,
+    ].slice(0, 100);
+
+    setFilteredResults(combinedResults);
+
+    // Show skeleton for 500ms like your React project
+    setShowSkeleton(true);
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, categories, events]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setShowResults(true);
+  };
+
+  const handleResultClick = (result: any) => {
+    if (result.isCategory) {
+      window.location.href = `/categories/${result.slug}`;
+    } else {
+      window.location.href = `/events/${result.event_id}`;
+    }
+    setSearchTerm("");
+    setShowResults(false);
+  };
+
+  const handleClickOutside = () => {
+    setTimeout(() => {
+      setShowResults(false);
+    }, 200);
+  };
+
+  // Skeleton component
+  const SearchSkeleton = () => (
+    <div className="space-y-2">
+      {Array(5)
+        .fill(0)
+        .map((_, index) => (
+          <div key={index} className="flex items-center p-3 animate-pulse">
+            <div className="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
+            <div className="flex-1">
+              <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+            </div>
+          </div>
+        ))}
+    </div>
+  );
+
+  const renderSearchResults = () => {
+    if (searchLoading || showSkeleton) {
+      return <SearchSkeleton />;
+    }
+
+    if (filteredResults.length === 0 && searchTerm.trim() !== "") {
+      return (
+        <div className="p-4 text-center text-gray-500">
+          Không tìm thấy kết quả nào
+        </div>
+      );
+    }
+
+    return filteredResults.map((result: any) => {
+      if (result.isCategory) {
+        // Category result
+        const category = result as EventCategory;
+        return (
+          <div
+            key={`category-${category.category_id}`}
+            className="flex items-center p-3 hover:bg-red-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors bg-red-25 border-l-4 border-l-red-500"
+            onMouseDown={() => handleResultClick(result)}
+          >
+            <div className="mr-3 p-2 bg-red-100 rounded-full">
+              <Tag className="w-5 h-5 text-red-600" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-red-700">
+                Danh mục: {category.category_name}
+              </p>
+              <p className="text-sm text-gray-500">
+                Xem tất cả sự kiện trong danh mục này
+              </p>
+            </div>
+          </div>
+        );
+      } else {
+        // Event result
+        const event = result as Event;
+        return (
+          <div
+            key={`event-${event.event_id}`}
+            className="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+            onMouseDown={() => handleResultClick(result)}
+          >
+            <div className="mr-3">
+              {event.poster_url ? (
+                <img
+                  src={event.poster_url}
+                  alt={event.title}
+                  className="w-10 h-10 rounded object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/icons/default-avatar.png";
+                  }}
+                />
+              ) : (
+                <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-gray-500" />
+                </div>
+              )}
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <p className="font-medium text-gray-900 truncate">
+                {event.title}
+              </p>
+              <div className="flex items-center text-sm text-gray-500">
+                {event.category && (
+                  <span className="mr-2">{event.category.category_name}</span>
+                )}
+                {event.custom_location && (
+                  <div className="flex items-center">
+                    <MapPin className="w-3 h-3 mr-1" />
+                    <span className="truncate">{event.custom_location}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    });
+  };
 
   // Show loading state while checking authentication
   if (loading) {
@@ -138,21 +319,51 @@ const Navbar = () => {
           </Link>
 
           {/* Search bar */}
-          <div className="hidden lg:flex items-center bg-white rounded-full overflow-hidden shadow-sm border border-gray-200 max-w-md flex-1 mx-8">
-            <div className="flex items-center flex-1">
-              <Search className="w-5 h-5 text-gray-400 ml-4" />
-              <input
-                type="text"
-                placeholder="Bạn tìm gì hôm nay?"
-                className="flex-1 px-3 py-3 outline-none text-gray-900 placeholder-gray-500 bg-transparent"
-              />
-            </div>
-            <Button
-              className="bg-white hover:bg-white text-gray-700 hover:text-black outline-none border-none"
-              size="sm"
-            >
-              Tìm kiếm
-            </Button>
+          <div className="hidden lg:flex items-center bg-white rounded-full overflow-visible shadow-sm border border-gray-200 max-w-md flex-1 mx-8 relative z-50">
+            {searchLoading ? (
+              <div className="flex-1 px-3 py-3">
+                <div className="h-4 bg-gray-300 rounded animate-pulse"></div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center flex-1">
+                  <Search className="w-5 h-5 text-gray-400 ml-4" />
+                  <input
+                    type="text"
+                    placeholder="Bạn tìm gì hôm nay?"
+                    className="flex-1 px-3 py-3 outline-none text-gray-900 placeholder-gray-500 bg-transparent"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    onBlur={handleClickOutside}
+                  />
+                </div>
+                <button className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 text-gray-700 rounded-full cursor-pointer hover:text-black">
+                  <Search className="text-xl" />
+                </button>
+
+                {/* Search Results Dropdown */}
+                {showResults && searchTerm.trim() !== "" && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-80 overflow-y-auto z-[9999] min-w-full">
+                    {filteredResults.length > 0 ||
+                    searchLoading ||
+                    showSkeleton ? (
+                      <>
+                        {!searchLoading && !showSkeleton && (
+                          <div className="p-2 text-xs text-gray-500 border-b bg-gray-50">
+                            {filteredResults.length} kết quả cho "{searchTerm}"
+                          </div>
+                        )}
+                        <div className="p-2">{renderSearchResults()}</div>
+                      </>
+                    ) : (
+                      <div className="p-4 text-center text-gray-500">
+                        Không tìm thấy kết quả nào
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* Right navigation buttons */}
