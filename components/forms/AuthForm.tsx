@@ -651,15 +651,6 @@ const AuthForm = ({
           </Button>
         </form>
       </Form>
-
-      <div className="mt-6 text-center">
-        <Link
-          href={ROUTES.SIGN_IN}
-          className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-        >
-          Quay lại đăng nhập
-        </Link>
-      </div>
     </div>
   );
 
