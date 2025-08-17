@@ -30,13 +30,14 @@ const SeatGroup: React.FC<SeatGroupProps> = ({
           <button
             key={seat.seat_id}
             onClick={() => onSeatClick(seat)}
-            disabled={seat.status === "booked" || seat.status === "disabled"}
+            disabled={seat.status === "paid" || seat.status === "disabled"}
             className={`
               w-10 h-10 rounded text-xs font-bold border-2 transition-all duration-200
               ${getSeatStyles(seat, selectedSeats.has(seat.seat_id))}
             `}
             title={`${seat.seat_type_name} - ${seat.price}đ`}
           >
+            {seat.seat_row}
             {seat.seat_number}
           </button>
         ))}
@@ -47,7 +48,7 @@ const SeatGroup: React.FC<SeatGroupProps> = ({
 };
 
 const getSeatStyles = (seat: Seat, isSelected: boolean): string => {
-  if (seat.status === "booked") {
+  if (seat.status === "paid") {
     return "bg-gray-500 border-gray-500 text-gray-300 cursor-not-allowed";
   }
 
@@ -98,7 +99,7 @@ const SeatPicker: React.FC<SeatPickerProps> = ({
   });
 
   const handleSeatClick = (seat: Seat) => {
-    if (seat.status === "booked" || seat.status === "disabled") return;
+    if (seat.status === "paid" || seat.status === "disabled") return;
 
     const newSelectedSeats = new Set(selectedSeats);
 

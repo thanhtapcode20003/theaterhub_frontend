@@ -21,7 +21,7 @@ export interface Seat {
   seat_type_code: string;
   seat_type_name: string;
   price: string;
-  status: "available" | "booked" | "selected" | "disabled";
+  status: "available" | "paid" | "selected" | "disabled";
 }
 
 export interface Showtime {
