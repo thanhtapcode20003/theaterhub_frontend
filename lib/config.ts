@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
     CREATE: "/tickets",
     DETAIL: "/tickets",
     CANCEL: "/tickets",
+    MY_TICKETS: "/tickets/my-tickets",
   },
   // Locations endpoints
   LOCATIONS: {

@@ -60,10 +60,10 @@ const PaymentResultContent = () => {
   };
 
   const handleViewTickets = () => {
-    if (user?.role) {
-      router.push(`/${user.role}`);
+    if (orderCode) {
+      router.push(`/tickets/${orderCode}`);
     } else {
-      router.push(ROUTES.HOME);
+      router.push("/tickets");
     }
   };
 
@@ -206,7 +206,7 @@ const PaymentResultContent = () => {
                       className="flex-1 bg-red-600 hover:bg-red-700 text-white"
                     >
                       <Receipt className="h-4 w-4 mr-2" />
-                      Xem vé đã đặt
+                      Xem chi tiết vé
                     </Button>
                   )}
 
