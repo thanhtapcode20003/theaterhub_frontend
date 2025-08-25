@@ -1,0 +1,14 @@
+node_modules
+
+browsing_history
+.env
+
+.next
+
+.git
+
+*.log
+
+npm-debug.log*
+
+coverage
